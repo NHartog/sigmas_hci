@@ -3,27 +3,31 @@
 import { ReactNode } from "react";
 import { Box, ButtonGroup, Button } from "@mui/material";
 import Link from "next/link";
+import LaunchIcon from '@mui/icons-material/Launch';
+import InfoIcon from '@mui/icons-material/Info';
+import HomeIcon from '@mui/icons-material/Home';
 
 const SidebarLayout = ({ children, params }: { children: ReactNode, params: {userType: string}} ) => {
 
     const allTabs = {
         manager: [
-            { label: "Manager Home", path: "/manager/admin/home" },
-            { label: "Student Manager", path: "/manager/admin/studentManager" },
-            { label: "Professor Manager", path: "/manager/admin/professorManager" },
-            { label: "Course Manager", path: "/manager/admin/courseManager" },
-            { label: "Settings", path: "/manager/admin/settings" },
+            { label: "Manager Home", path: "/manager/admin/home", icon: <></> },
+            { label: "Student Manager", path: "/manager/admin/studentManager", icon: <></> },
+            { label: "Professor Manager", path: "/manager/admin/professorManager", icon: <></> },
+            { label: "Course Manager", path: "/manager/admin/courseManager", icon: <></> },
+            { label: "Settings", path: "/manager/admin/settings", icon: <></> },
         ],
         student: [
-            { label: "Student Home", path: "/student/ta/home" },
-            { label: "Application", path: "/student/application" },
+            { label: "Student Home", path: "/student/ta/home", icon: <HomeIcon/> },
+            { label: "Application", path: "/student/application", icon: <LaunchIcon/> },
         ],
         professor: [
-            { label: "Professor Home", path: "/professor/overview/home" },
-            { label: "Course Manager", path: "/professor/overview/courseManager" },
+            { label: "Professor Home", path: "/professor/overview/home", icon: <HomeIcon/> },
+            { label: "Course Manager", path: "/professor/overview/courseManager", icon: <></> },
+            { label: "Application", path: "/professor/application", icon: <LaunchIcon/> },
         ],
         common: [
-            { label: "About", path: `/${params.userType}/about` },
+            { label: "About", path: `/${params.userType}/about`, icon: <InfoIcon/> },
         ],
     };
 
@@ -63,6 +67,7 @@ const SidebarLayout = ({ children, params }: { children: ReactNode, params: {use
                                         bgcolor: '#FF5F00',
                                     },
                                 }}
+                                startIcon={tab.icon}
                             >
                                 {tab.label}
                             </Button>
