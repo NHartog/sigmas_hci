@@ -1,6 +1,7 @@
 "use client"
 import * as React from 'react';
 import { alpha } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -16,7 +17,8 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useState } from 'react';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -96,7 +98,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;
-	button: JSX.Element;
+	button?: JSX.Element;
 }
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	const { numSelected } = props;
@@ -121,7 +123,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 			>
 				{props.title}
 			</Typography>
-			{numSelected > 0 && (
+			{(numSelected > 0 && props.button) && (
 				<>
 					<Tooltip title="Add TA Preference">
 						{props.button}
@@ -133,7 +135,76 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	);
 }
 
-export function EnhancedTable({ rows, headCells, title, button }: { rows: any[], headCells: HeadCell[], title: string, button: JSX.Element }) {
+function AdvancedTooltip(): JSX.Element {
+	const [selectedButton, setSelectedButton] = useState<string>('all')
+	const [selectedSelect, setSelectedSelect] = useState<string>('pickafilter')
+
+	function handleChange(_: any, val: string) {
+		setSelectedButton(val)
+	}
+
+	function handleSelectChange(event: any, _: any) {
+		setSelectedSelect(event.target.value as string)
+	}
+
+	return (
+		<Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 }, }} >
+			<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{width: "100%", paddingX: 1}}>
+				<Tooltip title="Graduate Status">
+					<ToggleButtonGroup
+						color="primary"
+						value={selectedButton}
+						exclusive
+						onChange={handleChange}
+
+						aria-label="Platform"
+					>
+						<ToggleButton value="all" size="large">All</ToggleButton>
+						<ToggleButton value="phd" size="large">Ph.D</ToggleButton>
+						<ToggleButton value="graduate" size="large">Graduate</ToggleButton>
+						<ToggleButton value="undergraduate" size="large">Undergraduate</ToggleButton>
+					</ToggleButtonGroup>
+				</Tooltip>
+				<Tooltip title="Search By Applicant Name">
+					<FormControl sx={{ m: 1 }} variant="outlined">
+						<InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+						<OutlinedInput
+							id="outlined-adornment-password"
+							type={'text'}
+							endAdornment={
+								<InputAdornment position="end">
+									<IconButton
+										edge="end"
+									>
+										<SearchIcon />
+									</IconButton>
+								</InputAdornment>
+							}
+							label="Password"
+						/>
+					</FormControl>
+				</Tooltip>
+				<Tooltip title="Filter by Application Status" placement="top">
+					<FormControl>
+						<InputLabel id="demo-simple-select-label">Age</InputLabel>
+						<Select
+							value={selectedSelect}
+							label="Age"
+							onChange={handleSelectChange}
+							sx={{ width: 'max-content' }}
+						>
+							<MenuItem value={'pickafilter'}>Pick A Filter</MenuItem>
+							<MenuItem value={'Pending'}>Pending</MenuItem>
+							<MenuItem value={'Accepted'}>Accepted</MenuItem>
+						</Select>
+					</FormControl>
+				</Tooltip>
+			</Stack>
+		</Toolbar>
+	)
+}
+
+export function EnhancedTable({ rows, headCells, title, button, advancedTooltip }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean }) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<string>('id');
 	const [selected, setSelected] = React.useState<number>();
@@ -179,6 +250,7 @@ export function EnhancedTable({ rows, headCells, title, button }: { rows: any[],
 		<Box sx={{ width: '100%' }}>
 			<Paper sx={{ width: '100%', mb: 2 }} elevation={5}>
 				<EnhancedTableToolbar numSelected={selected || -1} title={title} button={button} />
+				{advancedTooltip && <AdvancedTooltip />}
 				<TableContainer>
 					<Table
 						sx={{ minWidth: 750 }}
