@@ -1,6 +1,7 @@
 "use server";
 
 import {Box, Typography} from '@mui/material'
+import CourseTable from "@/Component/courseManagementTable";
 
 export default async function LandingPage() {
 
@@ -12,6 +13,7 @@ export default async function LandingPage() {
             <Typography variant="body1" paragraph>
                 Here we will add stuff about Course management
             </Typography>
+            <CourseTable />
         </Box>
     );
 }
