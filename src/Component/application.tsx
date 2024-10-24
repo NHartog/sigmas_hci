@@ -8,13 +8,11 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import {Stack} from "@mui/system";
-import {Checkbox, FormControlLabel, IconButton, Slider, Divider} from "@mui/material";
+import {Checkbox, FormControlLabel, IconButton, Slider, Divider, Container, RadioGroup, Radio} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import CustomizedSteppers from './customStepper'
 
 
 // Steps array containing titles for the stepper
@@ -26,21 +24,6 @@ const collegeStatus = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate'];
 
 const courses = ['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5'];
 
-interface OverviewProps {
-    studentInfo: {
-        semesterAdmitted: string;
-        collegeStatus: string;
-        ufGpa: string;
-        ufid: string;
-        ufEmail: string;
-    };
-    coursePreferences: {
-        course: string;
-        preference: number;
-        taken: boolean;
-    }[];
-}
-
 export default function ApplicationStepper() {
     const [activeStep, setActiveStep] = useState(0);
     const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
@@ -50,6 +33,10 @@ export default function ApplicationStepper() {
         ufGPA: '',
         ufID: '',
         ufEmail: '',
+        score: '',
+        isUSA: 'yes',
+        responseOne: '',
+        responseTwo: '',
         coursePreferences: [{ course: '', preference: 1, taken: false }]
     });
 
@@ -73,6 +60,22 @@ export default function ApplicationStepper() {
         setFormData({ ...formData, ufEmail: event.target.value as string });
     };
 
+    const handleRadioChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setFormData({ ...formData, isUSA: event.target.value as string });
+    };
+
+    const handleScoreChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setFormData({ ...formData, score: event.target.value as string });
+    };
+
+    const handleResponseOneChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setFormData({ ...formData, responseOne: event.target.value as string });
+    };
+
+    const handleResponseTwoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setFormData({ ...formData, responseTwo: event.target.value as string });
+    };
+
     const handlePreferenceChange = (index: number, field: string, value: unknown) => {
         const updatedPreferences = [...formData.coursePreferences];
         updatedPreferences[index][field] = value;
@@ -93,206 +96,336 @@ export default function ApplicationStepper() {
         setFormData({ ...formData, coursePreferences: updatedPreferences });
     };
 
+    const handleNext = () => {
+        // Simple validation for step 0
+        if (activeStep === 0) {
+            const { selectedSemester, selectedCollegeStatus, ufGPA, ufID, ufEmail } = formData;
+            if (!selectedSemester || !selectedCollegeStatus || !ufGPA || !ufID || !ufEmail) {
+                alert('Please fill out all fields.');
+                return;
+            }
+        }
+
+        // Allow navigation to the next step
+        setActiveStep((prev) => prev + 1);
+    };
+
     const renderStepContent = (step: number) => {
         switch (step) {
             case 0:
                 return (
-                    <Box
-                        sx={{
-                            padding: 3,
-                            borderRadius: 2,
-                            border: '1px solid #ccc',
-                            maxWidth: '500px',
-                            margin: 'auto',
-                            marginTop: 5,
-                            marginBottom: 5,
-                            backgroundColor: '#f5f5f5',
-                            width: '100%'
-                        }}
-                    >
-                        {/* Semester Admitted Dropdown */}
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel>Semester Admitted</InputLabel>
-                            <Select
-                                value={formData.selectedSemester}
-                                onChange={handleSemesterChange}
-                                label="Semester Admitted"
+                    <Container sx={{ padding: 2 }}>
+                        <Box
+                            sx={{
+                                padding: 3,
+                                borderRadius: 2,
+                                border: '1px solid #ccc',
+                                maxWidth: '80%',
+                                margin: 'auto',
+                                marginTop: 5,
+                                marginBottom: 5,
+                                backgroundColor: '#f5f5f5',
+                                width: '100%',
+                                textAlign: 'start'
+                            }}
+                        >
+                            {/* Semester Admitted Dropdown */}
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>Semester Admitted</InputLabel>
+                                <Select
+                                    value={formData.selectedSemester}
+                                    onChange={handleSemesterChange}
+                                    label="Semester Admitted"
+                                    variant="outlined"
+                                >
+                                    {semesters.map((semester) => (
+                                        <MenuItem key={semester} value={semester}>
+                                            {semester}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {/* College Status Dropdown */}
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>College Status</InputLabel>
+                                <Select
+                                    value={formData.selectedCollegeStatus}
+                                    onChange={handleCollegeStatusChange}
+                                    label="College Status"
+                                    variant="outlined"
+                                >
+                                    {collegeStatus.map((status) => (
+                                        <MenuItem key={status} value={status}>
+                                            {status}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {/* UF GPA Field */}
+                            <TextField
+                                value={formData.ufGPA}
+                                onChange={handleGPAChange}
+                                label="UF GPA"
+                                name="ufGpa"
                                 variant="outlined"
-                            >
-                                {semesters.map((semester) => (
-                                    <MenuItem key={semester} value={semester}>
-                                        {semester}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
 
-                        {/* College Status Dropdown */}
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel>College Status</InputLabel>
-                            <Select
-                                value={formData.selectedCollegeStatus}
-                                onChange={handleCollegeStatusChange}
-                                label="College Status"
+                            {/* UFID Field */}
+                            <TextField
+                                value={formData.ufID}
+                                onChange={handleIDChange}
+                                label="UFID"
+                                name="ufid"
                                 variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
+
+                            {/* UF Email Field */}
+                            <TextField
+                                value={formData.ufEmail}
+                                onChange={handleEmailChange}
+                                label="UF Email"
+                                name="ufEmail"
+                                type="email"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                required
+                            />
+                        </Box>
+
+                        <Box
+                            sx={{
+                                padding: 3,
+                                borderRadius: 2,
+                                border: '1px solid #ccc',
+                                maxWidth: '80%',
+                                margin: 'auto',
+                                marginTop: 5,
+                                marginBottom: 5,
+                                backgroundColor: '#f5f5f5',
+                                width: '100%',
+                                textAlign: 'start'
+                            }}
+                        >
+                            <Typography variant="h6" gutterBottom>
+                                Is your country of origin the USA?
+                            </Typography>
+
+                            <RadioGroup
+                                row
+                                aria-label="country-of-origin"
+                                value={formData.isUSA}
+                                onChange={handleRadioChange}
                             >
-                                {collegeStatus.map((status) => (
-                                    <MenuItem key={status} value={status}>
-                                        {status}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                <FormControlLabel value="no" control={<Radio />} label="No" />
+                            </RadioGroup>
 
-                        {/* UF GPA Field */}
-                        <TextField
-                            value={formData.ufGPA}
-                            onChange={handleGPAChange}
-                            label="UF GPA"
-                            name="ufGpa"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            required
-                        />
+                            {formData.isUSA === 'no' && (
+                                <TextField
+                                    label="SPEAK/TOEFL iBT Score"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={formData.score}
+                                    onChange= {handleScoreChange}
+                                    sx={{ mt: 2 }}
+                                    disabled={formData.isUSA === 'yes'}
+                                />
+                            )}
+                        </Box>
 
-                        {/* UFID Field */}
-                        <TextField
-                            value={formData.ufID}
-                            onChange={handleIDChange}
-                            label="UFID"
-                            name="ufid"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            required
-                        />
+                        <Box
+                            sx={{
+                                padding: 3,
+                                borderRadius: 2,
+                                border: '1px solid #ccc',
+                                maxWidth: '80%',
+                                margin: 'auto',
+                                marginTop: 5,
+                                marginBottom: 5,
+                                backgroundColor: '#f5f5f5',
+                                width: '100%',
+                                textAlign: 'start'
+                            }}
+                        >
+                            <Typography>
+                                What are your reasearch areas and teaching intrests?
+                            </Typography>
+                            <TextField
+                                value={formData.responseOne}
+                                onChange={handleResponseOneChange}
+                                label=""
+                                name="ufGpa"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                required
+                                multiline
+                                rows = {4}
+                            />
 
-                        {/* UF Email Field */}
-                        <TextField
-                            value={formData.ufEmail}
-                            onChange={handleEmailChange}
-                            label="UF Email"
-                            name="ufEmail"
-                            type="email"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            required
-                        />
-                    </Box>
+                            <Typography sx={{marginTop: '20'}}>
+                                List your travel plan during the applying semester. Type N/A is there is no plan
+                            </Typography>
+                            <TextField
+                                value={formData.responseTwo}
+                                onChange={handleResponseTwoChange}
+                                label=""
+                                name="ufGpa"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                required
+                                multiline
+                                rows = {4}
+                            />
+                        </Box>
+                    </Container>
                 );
             case 1:
                 return (
-                    <Stack spacing={2} sx={{ width: '100%', marginTop: 5}}>
-                        {formData.coursePreferences.map((preference, index) => (
-                            <Box
-                                key={index}
-                                sx={{
-                                    padding: 2,
-                                    borderRadius: 2,
-                                    border: '1px solid #ccc',
-                                    backgroundColor: '#f5f5f5',
-                                    width: '100%'
-                                }}
-                            >
-                                <Stack spacing={2} direction="row" sx={{ width: '100%'}}>
-                                    {/* Course Dropdown */}
-                                    <FormControl sx={{minWidth: '40%'}} margin="normal">
-                                        <InputLabel>Course</InputLabel>
-                                        <Select
-                                            value={preference.course}
-                                            onChange={(event) => handlePreferenceChange(index, 'course', event.target.value)}
-                                            label="Course"
-                                            variant="outlined"
+                    <Container sx={{ padding: 2 }}>
+                        <Stack spacing={2} sx={{ width: '100%', marginTop: 5 }}>
+                            {formData.coursePreferences.map((preference, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{
+                                        padding: 2,
+                                        borderRadius: 2,
+                                        border: '1px solid #ccc',
+                                        backgroundColor: '#f5f5f5',
+                                        width: '100%'
+                                    }}
+                                >
+                                    <Stack spacing={2} direction="row" sx={{ width: '100%' }}>
+                                        {/* Course Dropdown */}
+                                        <FormControl sx={{ minWidth: '40%' }} margin="normal">
+                                            <InputLabel>Course</InputLabel>
+                                            <Select
+                                                value={preference.course}
+                                                onChange={(event) => handlePreferenceChange(index, 'course', event.target.value)}
+                                                label="Course"
+                                                variant="outlined"
+                                            >
+                                                {courses.map((course) => (
+                                                    <MenuItem key={course} value={course}>
+                                                        {course}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                        {/* Preference Level Slider */}
+                                        <Typography>Preference Level: {preference.preference}</Typography>
+                                        <Slider
+                                            valueLabelDisplay="auto"
+                                            marks={[
+                                                { value: 1, label: '1' },
+                                                { value: 2, label: '2' },
+                                                { value: 3, label: '3' },
+                                                { value: 4, label: '4' },
+                                                { value: 5, label: '5' }
+                                            ]}
+                                            onChange={(event, newValue) => handlePreferenceChange(index, 'preference', newValue)}
+                                            aria-labelledby="preference-slider"
+                                            step={1}
+                                            min={1}
+                                            max={5}
+                                            value={formData.coursePreferences[index].preference}
+                                            sx={{ width: '40%' }}
+                                        />
 
+                                        {/* Course Taken Checkbox */}
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={preference.taken}
+                                                    onChange={(event) => handlePreferenceChange(index, 'taken', event.target.checked)}
+                                                />
+                                            }
+                                            label="Course Taken"
+                                            labelPlacement="start"
+                                        />
+
+                                        {/* Delete Preference Button */}
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDeletePreference(index)}
+                                            disabled={formData.coursePreferences.length === 1}
                                         >
-                                            {courses.map((course) => (
-                                                <MenuItem key={course} value={course}>
-                                                    {course}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    {/* Preference Level Slider */}
-                                    <Typography>Preference Level: {preference.preference}</Typography>
-                                    <Slider
-                                        valueLabelDisplay="auto"
-                                        marks={[
-                                            { value: 1, label: '1' },
-                                            { value: 2, label: '2' },
-                                            { value: 3, label: '3' },
-                                            { value: 4, label: '4' },
-                                            { value: 5, label: '5' }
-                                        ]}
-                                        onChange={(event, newValue) => handlePreferenceChange(index, 'preference', newValue)}
-                                        aria-labelledby="preference-slider"
-                                        step={1}
-                                        min={1}
-                                        max={5}
-                                        sx={{ width: '40%'}}
-                                    />
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Stack>
+                                </Box>
+                            ))}
 
-                                    {/* Course Taken Checkbox */}
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={preference.taken}
-                                                onChange={(event) => handlePreferenceChange(index, 'taken', event.target.checked)}
-
-                                            />
-                                        }
-                                        label="Course Taken"
-                                        labelPlacement="start"
-                                    />
-
-                                    {/* Delete Preference Button */}
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => handleDeletePreference(index)}
-                                        disabled={formData.coursePreferences.length === 1}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Stack>
-                            </Box>
-                        ))}
-
-                        {/* Add Course Preference Button */}
-                        {formData.coursePreferences.length < 5 && (
-                            <Button variant="contained" onClick={handleAddPreference} sx={{alignItems: 'center'}}>
-                                Add Course Preference
-                            </Button>
-                        )}
-                    </Stack>
+                            {/* Add Course Preference Button */}
+                            {formData.coursePreferences.length < 5 && (
+                                <Button variant="contained" onClick={handleAddPreference} sx={{ alignItems: 'center' }}>
+                                    Add Course Preference
+                                </Button>
+                            )}
+                        </Stack>
+                    </Container>
                 );
             case 2:
                 return (
-                    <Box sx={{ padding: 3 }}>
-                        <Typography variant="h6">Overview</Typography>
+                    <Container maxWidth = 'sm'>
+                        <Box sx={{ padding: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, marginTop: 2}}>
+                            <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>Overview</Typography>
 
-                        {/* Student Information */}
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Student Information</Typography>
-                        <Typography>Semester Admitted: {formData.selectedSemester}</Typography>
-                        <Typography>College Status: {formData.selectedCollegeStatus}</Typography>
-                        <Typography>UF GPA: {formData.ufGPA}</Typography>
-                        <Typography>UFID: {formData.ufID}</Typography>
-                        <Typography>UF Email: {formData.ufEmail}</Typography>
+                            {/* Student Information */}
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>Student Information</Typography>
+                            <Box sx={{ border: '1px solid #ccc', borderRadius: 1, padding: 2, backgroundColor: '#fff', mb: 3 }}>
+                                <Typography><strong>Semester Admitted:</strong> {formData.selectedSemester}</Typography>
+                                <Typography><strong>College Status:</strong> {formData.selectedCollegeStatus}</Typography>
+                                <Typography><strong>UF GPA:</strong> {formData.ufGPA}</Typography>
+                                <Typography><strong>UFID:</strong> {formData.ufID}</Typography>
+                                <Typography><strong>UF Email:</strong> {formData.ufEmail}</Typography>
 
-                        {/* Course Preferences */}
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3 }}>Course Preferences</Typography>
-                        {formData.coursePreferences.map((preference, index) => (
-                            <Box key={index} sx={{ marginBottom: 2 }}>
-                                <Typography>Course: {preference.course}</Typography>
-                                <Typography>Preference Level: {preference.preference}</Typography>
-                                <Typography>Course Taken: {preference.taken ? 'Yes' : 'No'}</Typography>
+                                {/* Country of Origin */}
+                                <Typography><strong>Country of Origin:</strong> {formData.isUSA === 'yes' ? 'USA' : 'Other'}</Typography>
+
+                                {/* TOEFL/SPEAK Score, only shown if the country is not USA */}
+                                {formData.isUSA === 'no' && (
+                                    <Typography><strong>TOEFL/SPEAK Score:</strong> {formData.score}</Typography>
+                                )}
+                                <Button variant="outlined" color="primary" onClick={() => setActiveStep(0)} sx={{ mt: 1 }}>Edit</Button>
                             </Box>
-                        ))}
 
-                        {/* Final Notes */}
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3 }}>Final Confirmation</Typography>
-                        <Typography>Please review and confirm all the information before submission.</Typography>
-                    </Box>
+                            {/* Student Responses */}
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>Student Responses</Typography>
+                            <Box sx={{ border: '1px solid #ccc', borderRadius: 1, padding: 2, backgroundColor: '#fff', mb: 3 }}>
+                                <Typography><strong>Research Plans:</strong> {formData.responseOne}</Typography>
+                                <Typography><strong>Travel Plans:</strong> {formData.responseTwo}</Typography>
+                                <Button variant="outlined" color="primary" onClick={() => setActiveStep(0)} sx={{ mt: 1 }}>Edit</Button>
+                            </Box>
+
+                            {/* Course Preferences */}
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>Course Preferences</Typography>
+                            <Box sx={{ border: '1px solid #ccc', borderRadius: 1, padding: 2, backgroundColor: '#fff', mb: 3 }}>
+                                {formData.coursePreferences.map((preference, index) => (
+                                    <Box key={index} sx={{ borderBottom: index < formData.coursePreferences.length - 1 ? '1px solid #ccc' : 'none'}}>
+                                        <Typography><strong>Course:</strong> {preference.course}</Typography>
+                                        <Typography><strong>Preference Level:</strong> {preference.preference}</Typography>
+                                        <Typography><strong>Course Taken:</strong> {preference.taken ? 'Yes' : 'No'}</Typography>
+                                        <Button variant="outlined" color="primary" onClick={() => setActiveStep(1)} sx={{ mt: 1, marginBottom: 1 }}>Edit</Button>
+                                    </Box>
+                                ))}
+                            </Box>
+
+                            {/* Final Notes */}
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3 }}>Final Confirmation</Typography>
+                            <Typography>Please review and confirm all the information before submission.</Typography>
+                        </Box>
+                    </Container>
                 );
             default:
                 return <Typography>Unknown step</Typography>;
@@ -301,15 +434,7 @@ export default function ApplicationStepper() {
 
     return (
         <Stack sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Stepper Linear activeStep={activeStep} sx={{width: '100%'}}>
-                {steps.map((label, index) => (
-                    <Step key={label} completed={completed[index]}>
-                        <StepButton color="inherit" onClick={() => setActiveStep(index)}>
-                            {label}
-                        </StepButton>
-                    </Step>
-                ))}
-            </Stepper>
+            <CustomizedSteppers activeStep = {activeStep} />
             <Box sx={{ width: '100%' }}>
                 {renderStepContent(activeStep)}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -323,9 +448,9 @@ export default function ApplicationStepper() {
                     </Button>
                     <Box sx={{ width: '100%', flex: '1 1 auto' }} />
                     <Button
-                        onClick={() => setActiveStep((prev) => prev + 1)}
+                        onClick={() => handleNext()}
                         disabled={activeStep === steps.length - 1}
-                        sx={{ mr: 1 }}
+                        sx={{ width: '100%', mr: 1 }}
                     >
                         Next
                     </Button>
