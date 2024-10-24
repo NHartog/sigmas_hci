@@ -6,6 +6,7 @@ import Link from "next/link";
 import LaunchIcon from '@mui/icons-material/Launch';
 import InfoIcon from '@mui/icons-material/Info';
 import HomeIcon from '@mui/icons-material/Home';
+import ArticleIcon from '@mui/icons-material/Article';
 
 const SidebarLayout = ({ children, params }: { children: ReactNode, params: {userType: string}} ) => {
 
@@ -23,7 +24,7 @@ const SidebarLayout = ({ children, params }: { children: ReactNode, params: {use
         ],
         professor: [
             { label: "Professor Home", path: "/professor/overview/home", icon: <HomeIcon/> },
-            { label: "Course Manager", path: "/professor/overview/courseManager", icon: <></> },
+            { label: "Course Manager", path: "/professor/overview/courseManager", icon: <ArticleIcon/> },
             { label: "Application", path: "/professor/application", icon: <LaunchIcon/> },
         ],
         common: [
