@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, ButtonGroup, TextField, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Stack, Divider } from '@mui/material';
+import Link from "next/link";
 
 const ProfessorManagementTable = () => {
 
@@ -39,7 +40,7 @@ const ProfessorManagementTable = () => {
         <Box sx={{padding: 1}}><Paper>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2, marginTop: "20px" }}>
                 <div style={{display: "flex", gap: "16px"}}>
-                    <div><span>Filters: </span> </div>
+                    <div style={{marginLeft: "20px", verticalAlign: "middle"}}><span>Filters: </span> </div>
                     <div><ButtonGroup>
                         {codeFilters.map((prefix) => (
                             <Button
@@ -74,7 +75,7 @@ const ProfessorManagementTable = () => {
                     />
             </Stack>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                    <Typography variant="h6">Professors</Typography>
+                    <Typography variant="h6" style={{marginLeft: "20px"}}>Professors</Typography>
                     <Button variant="outlined" sx={{marginRight: "20px"}}>+ Add a Professor</Button>
             </Stack>
             <Table>
@@ -93,14 +94,18 @@ const ProfessorManagementTable = () => {
                             <TableCell style={{textAlign: "center"}}>
                                 {professor.courses.map((course, cIndex) => (
                                     <React.Fragment key={cIndex}><div style={{textAlign: "center"}}>
-                                <strong>{course}</strong>
+                                <Link href={`/manager/admin/courseDetails/${course}`}><strong>{course}</strong></Link>
                                 {cIndex < professor.courses.length - 1 ? <strong>, </strong> : null}</div>
                                 </React.Fragment>
                                 ))}
                                 {professor.assigned ? null : <strong>Unassigned</strong>}
                             </TableCell>
                             <TableCell style={{textAlign: "center"}}><strong>Assign a Course</strong></TableCell>
-                            <TableCell style={{textAlign: "center"}}><strong>Professor Details</strong></TableCell>
+                            <TableCell style={{textAlign: "center"}}>
+                                <Link href={`/manager/admin/professorDetails/${professor.name.substring(professor.name.indexOf(" ")+1)}_${professor.name.substring(0,professor.name.indexOf(" "))}`}>
+                                <strong>Professor Details</strong>
+                                </Link>
+                                </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
