@@ -1,6 +1,7 @@
 "use server";
 
 import {Box, Typography} from '@mui/material'
+import ProfessorManagementTable from "@/Component/professorManagementTable";
 
 export default async function LandingPage() {
 
@@ -10,8 +11,9 @@ export default async function LandingPage() {
                 This is the professor Manager Page
             </Typography>
             <Typography variant="body1" paragraph>
-                Here we will add stuff aboutt the professor management
+                Here we will add stuff about the professor management
             </Typography>
+            <ProfessorManagementTable />
         </Box>
     );
 }
