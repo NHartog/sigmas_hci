@@ -7,24 +7,34 @@ console.log(conn)
 export const studentSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
-    gpa: Number
+    gpa: Number,
+    username: String,
+    password: String
 })
 
 export const professorSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
-    age: Number
+    age: Number,
+    username: String,
+    password: String
 })
 
 export const managerSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
-    som: Number
+    som: Number,
+    username: String,
+    password: String
 })
 
-export const studentModel = mongoose.model('Student', studentSchema)
-export const professorModel = mongoose.model('Professor', professorSchema)
-export const managerModel = mongoose.model('Manager', managerSchema)
+function getModel(name: string) {
+    return mongoose.model(name, studentSchema)
+}
+
+export const studentModel = mongoose.models.Student ?? getModel('Student')
+export const professorModel = mongoose.models.Professor ?? getModel('Professor')
+export const managerModel = mongoose.models.Manager ?? getModel('Manager')
 
 export type genericModel = typeof studentModel | typeof professorModel | typeof managerModel
 
@@ -73,11 +83,11 @@ export async function modifyDatastore<T>(model: mongoose.Model<T>, type: httpTyp
             break;
         }
         case httpType.DELETE: {
-            if(options.id){
+            if (options.id) {
                 return await model.findByIdAndDelete(options.id)
             }
-            if(options.filter){
-                if(options.relatesToOne){
+            if (options.filter) {
+                if (options.relatesToOne) {
                     return await model.deleteOne(options.filter)
                 }
                 return await model.deleteMany(options.filter)
