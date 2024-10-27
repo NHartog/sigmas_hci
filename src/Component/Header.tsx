@@ -4,7 +4,7 @@ import SettingsIcon from "@mui/icons-material/Settings"; // Replace with your de
 
 const Header = () => {
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{height: '64px'}}>
             <Toolbar>
                 <IconButton edge="start" color="inherit" aria-label="home">
                     <HomeIcon />
