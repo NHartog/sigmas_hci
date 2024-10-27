@@ -94,16 +94,22 @@ const ProfessorManagementTable = () => {
                             <TableCell style={{textAlign: "center"}}>
                                 {professor.courses.map((course, cIndex) => (
                                     <React.Fragment key={cIndex}><div style={{textAlign: "center"}}>
-                                <Link href={`/manager/admin/courseDetails/${course}`}><strong>{course}</strong></Link>
+                                <Link href={`/manager/admin/courseDetails/${course}`}>
+                                    <strong style={{color: "blue"}}><u>{course}</u></strong>
+                                </Link>
                                 {cIndex < professor.courses.length - 1 ? <strong>, </strong> : null}</div>
                                 </React.Fragment>
                                 ))}
                                 {professor.assigned ? null : <strong>Unassigned</strong>}
                             </TableCell>
-                            <TableCell style={{textAlign: "center"}}><strong>Assign a Course</strong></TableCell>
+                            <TableCell style={{textAlign: "center"}}>
+                                <Button sx={{border: "3px solid black", width: "60%", height: "100%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}>
+                                    + Assign A Course
+                                </Button>
+                            </TableCell>
                             <TableCell style={{textAlign: "center"}}>
                                 <Link href={`/manager/admin/professorDetails/${professor.name.substring(professor.name.indexOf(" ")+1)}_${professor.name.substring(0,professor.name.indexOf(" "))}`}>
-                                <strong>Professor Details</strong>
+                                <strong style={{color: "blue"}}><u>Professor Details</u></strong>
                                 </Link>
                                 </TableCell>
                         </TableRow>
