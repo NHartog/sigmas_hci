@@ -79,7 +79,7 @@ const ProfessorManagementTable = () => {
                     <Button variant="outlined" sx={{marginRight: "20px"}}>+ Add a Professor</Button>
             </Stack>
             <Table>
-                <TableHead style={{borderCollapse: "collapse"}}>
+                <TableHead>
                     <TableRow>
                         <TableCell style={{textAlign: 'center'}}><strong>Professor Name</strong></TableCell>
                         <TableCell style={{textAlign: 'center'}}><strong>Courses Assigned</strong></TableCell>

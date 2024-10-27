@@ -41,7 +41,9 @@ const CourseDetails = ({params}) => {
                         <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
                             Students Enrolled: 
                         </Typography>
-                        <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>{params.enrolled}</Typography>
+                        <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
+                            {params.enrolled}
+                        </Typography>
                     </Card>
                     <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                         <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
@@ -66,8 +68,8 @@ const CourseDetails = ({params}) => {
                             Assigned TAs: 
                         </Typography>
                         <Box sx={{padding: "10px", margin: "5px", width: "50%", display: "flex", flexDirection: "column", alignItems: "right" }}>
-                            {params.tas.map((ta, index) => (
-                                <Typography key={index} sx={{textAlign: "right", fontSize: "150%"}}>{ta}</Typography>
+                            {params.tas.map((ta: string) => (
+                                <Typography sx={{textAlign: "right", fontSize: "150%"}}>{ta}</Typography>
                             ))}
                             {params.tas.length > 0 ? null : <Typography sx={{textAlign: "right", fontSize: "150%"}}>None Assigned</Typography>}
                             <Button sx={{alignSelf: "flex-end", border: "3px solid black", width: "80%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}>
@@ -113,8 +115,8 @@ const CourseDetails = ({params}) => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {params.prosp_tas.map((prosp_ta, index) => (
-                                    <TableRow key={index}>
+                                {params.prosp_tas.map((prosp_ta: any) => (
+                                    <TableRow>
                                         <TableCell style={{textAlign: "center"}}><strong>{prosp_ta.name}</strong></TableCell>
                                         <TableCell style={{textAlign: "center"}}><strong>{prosp_ta.status}</strong></TableCell>
                                         <TableCell style={{textAlign: "center"}}>
