@@ -5,6 +5,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
 import Header from "@/Component/Header";
+import { Box } from "@mui/material";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -24,20 +25,22 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: {
+    children,
+}: {
     children: React.ReactNode;
 }) {
     return (
         <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>
-                <Header />
-                {children}
-            </ThemeProvider>
-        </AppRouterCacheProvider>
-        </body>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100vh' }}>
+                <AppRouterCacheProvider>
+                    <ThemeProvider theme={theme}>
+                        <Header />
+                        <Box sx={{ width: '100vw', height: 'calc(100% - 64px)' }}>
+                            {children}
+                        </Box>
+                    </ThemeProvider>
+                </AppRouterCacheProvider>
+            </body>
         </html>
     );
 }

@@ -42,14 +42,14 @@ const SidebarLayout = ({ children, params }: { children: ReactNode, params: {use
     }
 
     return (
-        <Box sx={{ display: 'flex', height: '100vh' }}>
+        <Box sx={{ display: 'flex', height: '100%' }}>
             <Box
                 sx={{
                     width: 240,
                     padding: 1,
                     bgcolor: 'background.paper',
                     borderRight: '1px solid #ccc',
-                    height: '100vh',
+                    height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center-up', // Center buttons vertically
