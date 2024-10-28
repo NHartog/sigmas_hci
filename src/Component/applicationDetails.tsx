@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, ButtonGroup, Card, TextField, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Stack } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { EnhancedTable, HeadCell } from '@/app/[userType]/admin/customMangerTable';
+import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import Link from "next/link";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';

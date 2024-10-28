@@ -1,7 +1,7 @@
 "use server";
 
 import {Box, Button, Typography} from '@mui/material'
-import { EnhancedTable, HeadCell } from '../home/customTable';
+import { EnhancedTable, HeadCell } from '@/Component/customTable';
 
 const rows = [
     {

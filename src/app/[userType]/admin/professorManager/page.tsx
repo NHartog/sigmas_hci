@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Box, Button, ButtonGroup } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { EnhancedTable, HeadCell } from '../customMangerTable';
+import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 
 let myVariable;

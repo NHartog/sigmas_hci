@@ -6,7 +6,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CableIcon from '@mui/icons-material/Cable';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
-import { EnhancedTable, HeadCell } from '../customMangerTable';
+import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 
 export default async function LandingPage() {
 

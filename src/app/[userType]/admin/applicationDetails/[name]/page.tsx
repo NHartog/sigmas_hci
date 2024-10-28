@@ -1,7 +1,6 @@
 "use server";
 import { ReactNode } from "react";
 import { Box, ButtonGroup, Button, Typography } from "@mui/material";
-import Link from "next/link";
 import ApplicationDetails from "@/Component/applicationDetails";
 
 export default async function LandingPage({ children, params }: { children: ReactNode, params: {name: string}} ) {

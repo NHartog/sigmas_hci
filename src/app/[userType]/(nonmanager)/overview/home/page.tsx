@@ -1,7 +1,7 @@
 "use server";
 
 import { Box, Button, Typography } from '@mui/material'
-import { EnhancedTable, HeadCell } from './customTable'
+import { EnhancedTable, HeadCell } from '@/Component/customTable'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 const rows = [
