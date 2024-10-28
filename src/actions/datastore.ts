@@ -8,6 +8,7 @@ export const studentSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
     gpa: Number,
+    application: String,
     username: String,
     password: String
 })
@@ -16,6 +17,7 @@ export const professorSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
     age: Number,
+    application: String,
     username: String,
     password: String
 })
@@ -74,23 +76,28 @@ export async function modifyDatastore<T>(model: mongoose.Model<T>, type: httpTyp
             break;
         }
         case httpType.PUSH: {
-            if (options.recordData && options.filter) {
-                if (options.relatesToOne) {
-                    return await model.updateOne(options.filter, options.recordData)
+            if (options.recordData) {
+                if (options.id) {
+                    return await model.findByIdAndUpdate({_id: options.id}, options.recordData).exec()
                 }
-                return await model.updateMany(options.filter, options.recordData)
+                if (options.filter) {
+                    if (options.relatesToOne) {
+                        return await model.updateOne(options.filter, options.recordData).exec()
+                    }
+                    return await model.updateMany(options.filter, options.recordData).exec()
+                }
             }
             break;
         }
         case httpType.DELETE: {
             if (options.id) {
-                return await model.findByIdAndDelete(options.id)
+                return await model.findByIdAndDelete(options.id).exec()
             }
             if (options.filter) {
                 if (options.relatesToOne) {
-                    return await model.deleteOne(options.filter)
+                    return await model.deleteOne(options.filter).exec()
                 }
-                return await model.deleteMany(options.filter)
+                return await model.deleteMany(options.filter).exec()
             }
             break;
         }
