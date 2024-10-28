@@ -78,7 +78,9 @@ const SidebarLayout = ({ children, params }: { children: ReactNode, params: {use
             </Box>
             <Box
                 sx={{
-                    flexGrow: 1,
+                    height: '100%',
+                    overflowY: 'auto',
+                    width: '100%',
                     padding: 2,
                     bgcolor: 'background.default',
                 }}

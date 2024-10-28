@@ -1,24 +1,24 @@
 "use server";
 
-import {Box, Typography} from '@mui/material'
-import Stepper from '@mui/material/Stepper'
-import Step from '@mui/material/Step'
-import StepLabel from '@mui/material/StepLabel'
+import { Typography } from '@mui/material'
 import ApplicationStepper from '@/Component/application'
-import {Stack} from "@mui/system";
+import { Stack } from "@mui/system";
+import { getApplicationData } from '@/actions/application';
 
 
 export default async function LandingPage() {
 
+    const applicationData = await getApplicationData()
+
     return (
         <Stack style={{ padding: "20px", textAlign: "center", justifyContent: "center" }}>
             <Typography variant="h2" component="h1" gutterBottom>
-                This is the Application Page
+                Teaching Assistant Application
             </Typography>
             <Typography variant="body1" paragraph>
-                Here we will add Application
+                Please fill the application to the best of your ability
             </Typography>
-            <ApplicationStepper />
+            <ApplicationStepper applicationData={applicationData} />
         </Stack>
     );
 }
