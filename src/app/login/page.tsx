@@ -1,7 +1,7 @@
 "use client"
 import { Typography, TextField, Button, Box, Paper, FormControl, FormHelperText } from "@mui/material"; // Import Material-UI components
 import { redirectUser } from "@/actions/login";
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton } from '@mui/lab';
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {

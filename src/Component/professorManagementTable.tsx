@@ -3,12 +3,16 @@
 import React, { useState } from 'react';
 import { Box, Button, ButtonGroup, TextField, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Stack, Divider } from '@mui/material';
 import Link from "next/link";
+import CourseDetails from "@/Component/courseDetails";
 
 const ProfessorManagementTable = () => {
 
     const [searchText, setSearchText] = useState('');
     const [asgnFilters, setasgnFilters] = useState('');
     const [selectedPrefixes, setSelectedPrefixes] = useState<string[]>([]);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+
     const assignFilters = ["Only Unassigned", "Only Assigned"];
     const codeFilters = ['CDA', 'CIS', 'COP', 'CGS']
 
@@ -29,13 +33,22 @@ const ProfessorManagementTable = () => {
 
     };
 
+    const openDialog = (course: string) => {
+        setSelectedCourse(course);
+        setDialogOpen(true);
+    };
 
+    const closeDialog = () => {
+        setDialogOpen(false);
+        setSelectedCourse(null);
+    };
 
+    const courseDetails = {course: `CAP5100`, enrolled: 81, seats: 144, professor: "Jaime Ruiz", linked_courses: "N/A", tas: [], prosp_tas: [{name: "John Adams", status: "Undergraduate"}]}
     //In the future, we'll get this based on backend
     const professors = [{name: 'Jaime Ruiz', assigned: true, courses: ['CAP5100', 'CAP5900']},
                         {name: 'Professor 2', assigned: true, courses: ['CNT5106C']},
                         {name: 'Professor 3', assigned: false, courses: [null]}]
-    
+
         return (
         <Box sx={{padding: 1}}><Paper>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2, marginTop: "20px" }}>
@@ -65,7 +78,7 @@ const ProfessorManagementTable = () => {
                 </ButtonGroup>
                 </div>
                 </div>
-                
+
             <TextField
                         label="Search by Last Name"
                         variant="outlined"
@@ -93,14 +106,17 @@ const ProfessorManagementTable = () => {
                             <TableCell style={{textAlign: "center"}}><strong>{professor.name}</strong></TableCell>
                             <TableCell style={{textAlign: "center"}}>
                                 {professor.courses.map((course, cIndex) => (
-                                    <React.Fragment key={cIndex}><div style={{textAlign: "center"}}>
-                                <Link href={`/manager/admin/courseDetails/${course}`}>
-                                    <strong style={{color: "blue"}}><u>{course}</u></strong>
-                                </Link>
-                                {cIndex < professor.courses.length - 1 ? <strong>, </strong> : null}</div>
-                                </React.Fragment>
+                                    course ? (
+                                        <React.Fragment key={cIndex}>
+                                            <div style={{ textAlign: "center" }}>
+                                                    <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
+                                                          onClick={() => openDialog(course)}>
+                                                        {course}
+                                                    </span>
+                                            </div>
+                                        </React.Fragment>
+                                    ) : <strong>Unassigned</strong>
                                 ))}
-                                {professor.assigned ? null : <strong>Unassigned</strong>}
                             </TableCell>
                             <TableCell style={{textAlign: "center"}}>
                                 <Button sx={{border: "3px solid black", width: "60%", height: "100%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}>
@@ -116,7 +132,9 @@ const ProfessorManagementTable = () => {
                     ))}
                 </TableBody>
             </Table>
-        </Paper></Box>
+        </Paper>
+            <CourseDetails open={dialogOpen} close={closeDialog} params={courseDetails || ''} />
+        </Box>
     )
 
 };
