@@ -189,7 +189,7 @@ function AdvancedTooltip(): JSX.Element {
     )
 }
 
-export function EnhancedTable({ rows, headCells, title, button, advancedTooltip }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean }) {
+export function EnhancedTable({ rows, headCells, title, button, advancedTooltip, onRowSelect }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean, onRowSelect: (row: any) => void;}) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<string>('id');
     const [selected, setSelected] = React.useState<number>();
@@ -207,7 +207,11 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip 
 
 
     const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-        setSelected(selected == id ? undefined : id)
+        const selectedRow = rows.find(row => row.id === id);
+        setSelected(selected == id ? undefined : id);
+        if (selectedRow) {
+            onRowSelect(selectedRow);
+        }
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -282,11 +286,15 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip 
                                         >
                                             {row[headCells[0].id]}
                                         </TableCell>
+
                                         {headCells.map((headCell: HeadCell, idx: number) => {
                                             if (idx == 0) {
                                                 return <></>
                                             }
-                                            return <TableCell align="right">{row[headCells[idx].id]}</TableCell>
+                                            const cellValue = row[headCells[idx].id];
+                                            return(<TableCell align="right">
+                                                {Array.isArray(cellValue) ? cellValue.join(', ') : cellValue}
+                                            </TableCell>);
                                         })}
                                     </TableRow>
                                 );
