@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,10 +9,11 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {Stack} from "@mui/system";
-import {Checkbox, FormControlLabel, IconButton, Slider, Divider, Container, RadioGroup, Radio} from "@mui/material";
+import { Stack } from "@mui/system";
+import { Checkbox, FormControlLabel, IconButton, Slider, Divider, Container, RadioGroup, Radio } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomizedSteppers from './customStepper'
+import { saveForLater } from '@/actions/application';
 
 
 // Steps array containing titles for the stepper
@@ -24,21 +25,22 @@ const collegeStatus = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate'];
 
 const courses = ['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5'];
 
-export default function ApplicationStepper() {
+const defaultApplication = {
+    selectedSemester: '',
+    selectedCollegeStatus: '',
+    ufGPA: '',
+    ufID: '',
+    ufEmail: '',
+    score: '',
+    isUSA: 'yes',
+    responseOne: '',
+    responseTwo: '',
+    coursePreferences: [{ course: '', preference: 1, taken: false }]
+}
+
+export default function ApplicationStepper({ applicationData }: { applicationData?: typeof defaultApplication }) {
     const [activeStep, setActiveStep] = useState(0);
-    const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
-    const [formData, setFormData] = useState({
-        selectedSemester: '',
-        selectedCollegeStatus: '',
-        ufGPA: '',
-        ufID: '',
-        ufEmail: '',
-        score: '',
-        isUSA: 'yes',
-        responseOne: '',
-        responseTwo: '',
-        coursePreferences: [{ course: '', preference: 1, taken: false }]
-    });
+    const [formData, setFormData] = useState<typeof defaultApplication>(applicationData || defaultApplication);
 
     const handleSemesterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setFormData({ ...formData, selectedSemester: event.target.value as string });
@@ -235,7 +237,7 @@ export default function ApplicationStepper() {
                                     variant="outlined"
                                     fullWidth
                                     value={formData.score}
-                                    onChange= {handleScoreChange}
+                                    onChange={handleScoreChange}
                                     sx={{ mt: 2 }}
                                     disabled={formData.isUSA === 'yes'}
                                 />
@@ -269,10 +271,10 @@ export default function ApplicationStepper() {
                                 margin="normal"
                                 required
                                 multiline
-                                rows = {4}
+                                rows={4}
                             />
 
-                            <Typography sx={{marginTop: '20'}}>
+                            <Typography sx={{ marginTop: '20' }}>
                                 List your travel plan during the applying semester. Type N/A is there is no plan
                             </Typography>
                             <TextField
@@ -285,7 +287,7 @@ export default function ApplicationStepper() {
                                 margin="normal"
                                 required
                                 multiline
-                                rows = {4}
+                                rows={4}
                             />
                         </Box>
                     </Container>
@@ -377,8 +379,8 @@ export default function ApplicationStepper() {
                 );
             case 2:
                 return (
-                    <Container maxWidth = 'sm'>
-                        <Box sx={{ padding: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, marginTop: 2}}>
+                    <Container maxWidth='sm'>
+                        <Box sx={{ padding: 3, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: 1, marginTop: 2 }}>
                             <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>Overview</Typography>
 
                             {/* Student Information */}
@@ -412,7 +414,7 @@ export default function ApplicationStepper() {
                             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>Course Preferences</Typography>
                             <Box sx={{ border: '1px solid #ccc', borderRadius: 1, padding: 2, backgroundColor: '#fff', mb: 3 }}>
                                 {formData.coursePreferences.map((preference, index) => (
-                                    <Box key={index} sx={{ borderBottom: index < formData.coursePreferences.length - 1 ? '1px solid #ccc' : 'none'}}>
+                                    <Box key={index} sx={{ borderBottom: index < formData.coursePreferences.length - 1 ? '1px solid #ccc' : 'none' }}>
                                         <Typography><strong>Course:</strong> {preference.course}</Typography>
                                         <Typography><strong>Preference Level:</strong> {preference.preference}</Typography>
                                         <Typography><strong>Course Taken:</strong> {preference.taken ? 'Yes' : 'No'}</Typography>
@@ -432,37 +434,44 @@ export default function ApplicationStepper() {
         }
     };
 
+    function saveForLaterClient(){
+        saveForLater(formData)
+    }
+
     return (
         <Stack sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
-            <CustomizedSteppers activeStep = {activeStep} />
+            <CustomizedSteppers activeStep={activeStep} />
             <Box sx={{ width: '100%' }}>
                 {renderStepContent(activeStep)}
-                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', pt: 2 }}>
+                <Stack direction="row" justifyContent="space-between" sx={{ width: '100%', pt: 2 }}>
                     <Button
                         color="inherit"
                         disabled={activeStep === 0}
                         onClick={() => setActiveStep((prev) => prev - 1)}
-                        sx={{ width: '100%', mr: 1 }}
                     >
                         Back
                     </Button>
-                    <Box sx={{ width: '100%', flex: '1 1 auto' }} />
+                    <Button
+                        color="inherit"
+                        variant="outlined"
+                        onClick={saveForLaterClient}
+                    >
+                        Save For Later
+                    </Button>
                     <Button
                         onClick={() => handleNext()}
                         disabled={activeStep === steps.length - 1}
-                        sx={{ width: '100%', mr: 1 }}
                     >
                         Next
                     </Button>
                     {activeStep === steps.length - 1 && (
                         <Button
                             onClick={() => alert('Submit the form')}
-                            sx={{ width: '100%', ml: 1 }}
                         >
                             Submit
                         </Button>
                     )}
-                </Box>
+                </Stack>
             </Box>
         </Stack>
     );
