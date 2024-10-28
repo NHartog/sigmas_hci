@@ -95,6 +95,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 		</TableHead>
 	);
 }
+
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	title: string;

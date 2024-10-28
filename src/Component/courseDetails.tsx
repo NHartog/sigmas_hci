@@ -21,7 +21,7 @@ import {
 
 import Link from "next/link";
 
-const CourseDetails = ({open, close, params}) => {
+const CourseDetails = ({open: any, close: any, params: any}) => {
 
     const gradLevel = ["PhD", "Graduate", "Undergraduate", "All"]
     const [selectedStatus, setStatus] = useState<string[]>([]);
