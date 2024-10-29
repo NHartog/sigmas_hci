@@ -1,156 +1,108 @@
-"use client";
-
 import React, { useState } from 'react';
 import {
     Box,
     Button,
-    ButtonGroup,
     Card,
     TextField,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Paper,
-    Stack,
-    DialogContent, Dialog, DialogTitle
+    DialogContent,
+    Dialog,
+    DialogTitle,
+    IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
+const CourseDetails = ({ open, close, params }) => {
+    const [editMode, setEditMode] = useState(false);
+    const [courseDetails, setCourseDetails] = useState(params);
+    const [tempDetails, setTempDetails] = useState(params);
 
-import Link from "next/link";
-
-const CourseDetails = ({open, close, params}) => {
-
-    const gradLevel = ["PhD", "Graduate", "Undergraduate", "All"]
-    const [selectedStatus, setStatus] = useState<string[]>([]);
-    const [searchText, setSearchText] = useState('');
-
-    const handleStatus = (status: string) => {
-        if(status === "All" && !selectedStatus.includes(status)){
-            setStatus(["PhD", "Graduate", "Undergraduate", "All"])
+    const handleEditToggle = () => {
+        if (editMode) {
+            // Save changes
+            setCourseDetails(tempDetails);
         }
-        else if(status=="All"){
-            setStatus([])
-        }
-        else if (selectedStatus.includes(status)) {
-            setStatus(selectedStatus.filter((p) => p !== status && p !== "All"));
-        } else {
-            setStatus([...selectedStatus, status]);
-        }
+        setEditMode(!editMode);
+    };
+
+    const handleCancel = () => {
+        // Reset to original details
+        setTempDetails(courseDetails);
+        setEditMode(false);
+    };
+
+    const handleChange = (field, value) => {
+        setTempDetails(prevDetails => ({ ...prevDetails, [field]: value }));
+    };
+
+    const handleRemoveItem = (field, item) => {
+        setTempDetails(prevDetails => ({
+            ...prevDetails,
+            [field]: prevDetails[field].filter(i => i !== item)
+        }));
     };
 
     return (
-        <Dialog open={open} onClose={close} fullWidth maxWidth="max">
-            <DialogTitle>{params.course} Details</DialogTitle>
+        <Dialog open={open} onClose={close} fullWidth>
+            <DialogTitle>
+                {courseDetails.Course} Details
+                <Button onClick={handleEditToggle} sx={{ marginLeft: 2 }}>
+                    {editMode ? "Save" : "Edit"}
+                </Button>
+                {editMode && (
+                    <Button onClick={handleCancel} sx={{ marginLeft: 1 }}>
+                        Cancel
+                    </Button>
+                )}
+            </DialogTitle>
+
             <DialogContent>
-                <Box style={{ padding: "20px", textAlign: "center", gridTemplateColumns: '1fr 1fr'}}>
-                    <Box sx={{backgroundColor: "rgba(255, 127, 50, 1)",
-                        borderTopLeftRadius: "15px", borderTopRightRadius: "15px",
-                        padding: "20px"
-                    }}>
-                        <Typography variant="h3">
-                            {params.course} Details
-                        </Typography>
+                <Box style={{ textAlign: "center", width: "100%" }}>
+                    <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
+                        <Typography variant="h3">{courseDetails.Course} Details</Typography>
                     </Box>
 
-                    <Box sx={{display: "flex", flexDirection: "row", alignItems: "stretch"}}>
-                        <Box sx={{width: "40%"}}>
-                            <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    Students Enrolled:
+                    {['Prefix', 'Title', 'Current_Enrollment', 'Max_Enrollment', 'Sections'].map(field => (
+                        <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} key={field}>
+                            <Typography sx={{ textAlign: "left", fontSize: "150%", padding: "10px", width: "50%" }}>
+                                {field.replace('_', ' ')}:
+                            </Typography>
+                            {editMode ? (
+                                <TextField
+                                    value={tempDetails[field]}
+                                    onChange={e => handleChange(field, e.target.value)}
+                                    sx={{ fontSize: "150%", padding: "10px", width: "50%" }}
+                                />
+                            ) : (
+                                <Typography sx={{ textAlign: "right", fontSize: "150%", padding: "10px", width: "50%" }}>
+                                    {courseDetails[field]}
                                 </Typography>
-                                <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    {params.enrolled}
-                                </Typography>
-                            </Card>
-                            <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    Total Seats:
-                                </Typography>
-                                <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>{params.seats}</Typography>
-                            </Card>
-                            <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    Professor:
-                                </Typography>
-                                <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>{params.professor}</Typography>
-                            </Card>
-                            <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    Linked Courses:
-                                </Typography>
-                                <Typography sx={{textAlign: "right", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>{params.linked_courses}</Typography>
-                            </Card>
-                            <Card sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                                <Typography sx={{textAlign: "left", fontSize: "150%", padding: "10px", margin: "5px", width: "50%"}}>
-                                    Assigned TAs:
-                                </Typography>
-                                <Box sx={{padding: "10px", margin: "5px", width: "50%", display: "flex", flexDirection: "column", alignItems: "right" }}>
-                                    {params.tas.map((ta: string) => (
-                                        <Typography sx={{textAlign: "right", fontSize: "150%"}}>{ta}</Typography>
-                                    ))}
-                                    {params.tas.length > 0 ? null : <Typography sx={{textAlign: "right", fontSize: "150%"}}>None Assigned</Typography>}
-                                    <Button sx={{alignSelf: "flex-end", border: "3px solid black", width: "80%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}>
-                                        + Assign a TA
-                                    </Button>
-                                </Box>
-                            </Card>
-                        </Box>
-                        <Box sx={{width: "60%"}}>
-                            <Paper sx={{paddingTop: "10px", height: "100%"}}>
-                                <Typography variant="h4">Prospective Applicants</Typography>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2, marginTop: "10px" }}>
-                                    <div style={{display: "flex", gap: "16px"}}>
-                                        <div style={{marginLeft: "10px", marginTop: "13px", verticalAlign: "middle"}}><span>Filters: </span> </div>
-                                        <div><ButtonGroup sx={{marginTop: "8px"}}>
-                                            {gradLevel.map((status) => (
-                                                <Button
-                                                    key={status}
-                                                    variant={selectedStatus.includes(status) || selectedStatus.includes("All")  ? 'contained' : 'outlined'}
-                                                    onClick={() => handleStatus(status)}
-                                                >
-                                                    {status}
-                                                </Button>
-                                            ))}
-                                        </ButtonGroup>
-                                        </div>
-                                    </div>
+                            )}
+                        </Card>
+                    ))}
 
-                                    <TextField
-                                        label="Search by Last Name"
-                                        variant="outlined"
-                                        value={searchText}
-                                        onChange={(e) => setSearchText(e.target.value)}
-                                        sx={{ width: 300, marginRight: "10px", marginTop: "10px"}}
-                                    />
-                                </Stack>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell style={{textAlign: 'center'}}><strong>Applicant Name</strong></TableCell>
-                                            <TableCell style={{textAlign: 'center'}}><strong>Status</strong></TableCell>
-                                            <TableCell style={{textAlign: 'center'}}><strong>Application</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {params.prosp_tas.map((prosp_ta: any) => (
-                                            <TableRow>
-                                                <TableCell style={{textAlign: "center"}}><strong>{prosp_ta.name}</strong></TableCell>
-                                                <TableCell style={{textAlign: "center"}}><strong>{prosp_ta.status}</strong></TableCell>
-                                                <TableCell style={{textAlign: "center"}}>
-                                                    <Link href={`/manager/admin/applicationDetails/${prosp_ta.name.substring(prosp_ta.name.indexOf(" ")+1)}_${prosp_ta.name.substring(0,prosp_ta.name.indexOf(" "))}`}>
-                                                        <strong style={{color: "blue"}}><u>View Application</u></strong>
-                                                    </Link>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </Paper>
-                        </Box>
-                    </Box>
+                    {['Professors', 'Assigned_TAs'].map(field => (
+                        <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} key={field}>
+                            <Typography sx={{ textAlign: "left", fontSize: "150%", padding: "10px", width: "50%" }}>
+                                {field.replace('_', ' ')}:
+                            </Typography>
+                            <Box sx={{ padding: "10px", width: "50%", display: "flex", flexDirection: "column" }}>
+                                {tempDetails[field].map(item => (
+                                    <Box key={item} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <Typography sx={{ fontSize: "150%" }}>{item}</Typography>
+                                        {editMode && (
+                                            <IconButton onClick={() => handleRemoveItem(field, item)} size="small">
+                                                <CloseIcon fontSize="small" />
+                                            </IconButton>
+                                        )}
+                                    </Box>
+                                ))}
+                                {!tempDetails[field].length && (
+                                    <Typography sx={{ fontSize: "150%" }}>None Assigned</Typography>
+                                )}
+                            </Box>
+                        </Card>
+                    ))}
                 </Box>
             </DialogContent>
         </Dialog>
