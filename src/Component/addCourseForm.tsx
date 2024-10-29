@@ -21,53 +21,29 @@ import {
     DialogContent, Dialog, DialogTitle
 } from '@mui/material';
 import Link from "next/link";
-import { httpType, httpOptions, professorModel, modifyDatastore } from '@/actions/datastore';
+import { httpType, httpOptions, courseModel, modifyDatastore } from '@/actions/datastore';
+import { stringify } from 'querystring';
 
-const AddProfessorForm = ({open, onClose}) => {
+const AddCourseForm = ({open, onClose}) => {
 
-    const fakeCourses = ['CAP5100', 'CNT5106C', 'CAP5900', 'CAD3020', 'AST2000']
+    let seats: string = '';
+    let enrolled: string = '';
 
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        department: '',
-        course: ''
+        prefix: '',
+        title: '',
+        numTaHours: '',
+        enrollment: ''
       });
 
-    const [filteredItems, setFilteredItems] = useState([])
-    
-    const handleFilteredItems = (value) => {
-        if(value === '' || fakeCourses.includes(value)){
-            setFilteredItems([])
-        }
-        else{
-            const matches = fakeCourses.filter(item => item.toLowerCase().includes(value.toLowerCase()))
-            console.log(matches, "     ", value)
-            setFilteredItems(matches)
-        }
-    };
 
     const handleFormData = (e) => {
-        
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,  // Dynamically update based on input name
-        }));
-
-        if(name === 'course'){
-            handleFilteredItems(value)
-        }
-        
-    };
-
-    const handleItemClick = (item) => {
-        setFormData((prevData) => ({
+            const { name, value } = e.target;
+            setFormData((prevData) => ({
             ...prevData,
-            ['course']: item
+            [name]: value,  // Dynamically update based on input name
             }));
-            setFilteredItems([]);
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -77,13 +53,13 @@ const AddProfessorForm = ({open, onClose}) => {
             recordData: JSON.stringify(formData) // Convert the object to a JSON string
             
         };
-        modifyDatastore(professorModel, httpType.POST, TheseHttpOptions);
+        modifyDatastore(courseModel, httpType.POST, TheseHttpOptions);
         onClose();
       };
       
     return(
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="max" scroll="paper">
-        <DialogTitle>Add Professor</DialogTitle>
+        <DialogTitle>Add Course</DialogTitle>
         <DialogContent>
             <Box style={{ padding: "20px", textAlign: "center", gridTemplateColumns: '1fr 1fr'}}>
                 <Box sx={{backgroundColor: "rgba(255, 127, 50, 1)",
@@ -91,21 +67,21 @@ const AddProfessorForm = ({open, onClose}) => {
                         padding: "20px"
                     }}>
                     <Typography variant="h3">
-                        Add Professor
+                        Add Course
                     </Typography>
                 </Box>
             </Box>
             <form onSubmit={handleSubmit}>
             <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Name:
+                    Course Code:
                 </Typography>
                 <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
                     <TextField
-                        name="name"
-                        label="Name"
+                        name="prefix"
+                        label="Course Code"
                         variant="outlined"
-                        value={formData.name}
+                        value={formData.prefix}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />
@@ -113,14 +89,14 @@ const AddProfessorForm = ({open, onClose}) => {
             </Box>
             <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Email:
+                    Full Title:
                 </Typography>
                 <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
                     <TextField
-                        name="email"
-                        label="Email"
+                        name="title"
+                        label="Full Title"
                         variant="outlined"
-                        value={formData.email}
+                        value={formData.title}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />
@@ -128,14 +104,14 @@ const AddProfessorForm = ({open, onClose}) => {
             </Box>
             <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Department:
+                    Number of TA Hours:
                 </Typography>
                 <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
                     <TextField
-                        name="department"
-                        label="Department"
+                        name="numTaHours"
+                        label="Number of TA Hours"
                         variant="outlined"
-                        value={formData.department}
+                        value={formData.numTaHours}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />
@@ -143,29 +119,17 @@ const AddProfessorForm = ({open, onClose}) => {
             </Box>
             <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Course:
-                    <Typography variant="subtitle1">(Leave blank if not assigning)</Typography>
+                    Enrollment:
                 </Typography>
                 <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
                     <TextField
-                        name="course"
-                        label="Course"
+                        name="enrollment"
+                        label="Enrollment"
                         variant="outlined"
-                        value={formData.course}
+                        value={formData.enrollment}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />
-                    {filteredItems.length > 0 && (
-                        <Paper style={{ position: 'absolute', zIndex: 1, width: '100%' }}>
-                        <List>
-                            {filteredItems.map((item, index) => (
-                            <ListItem button key={index} onClick={() => handleItemClick(item)}>
-                                <ListItemText primary={item} />
-                            </ListItem>
-                            ))}
-                        </List>
-                        </Paper>
-                    )}
                 </Typography>
             </Box>
             <Box sx={{textAlign: "center", paddingTop: "20px"}}>
@@ -179,4 +143,4 @@ const AddProfessorForm = ({open, onClose}) => {
       )
 }
 
-export default AddProfessorForm;
+export default AddCourseForm;
