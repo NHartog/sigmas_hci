@@ -91,7 +91,6 @@ function ColorlibStepIcon(props: StepIconProps) {
 const steps = ['Student Information', 'Course Preferences', 'Verify Information'];
 
 export default function CustomizedSteppers(activeStep : any) {
-    console.log(activeStep);
     return (
         <Stack sx={{ width: '100%' }} spacing={4}>
             <Stepper alternativeLabel activeStep={activeStep.activeStep} connector={<ColorlibConnector />}>

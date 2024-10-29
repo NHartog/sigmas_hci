@@ -13,7 +13,7 @@ import { Stack } from "@mui/system";
 import { Checkbox, FormControlLabel, IconButton, Slider, Divider, Container, RadioGroup, Radio } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomizedSteppers from './customStepper'
-import { saveForLater } from '@/actions/application';
+import { saveForLater, submitApplication } from '@/actions/application';
 
 
 // Steps array containing titles for the stepper
@@ -438,6 +438,10 @@ export default function ApplicationStepper({ applicationData }: { applicationDat
         saveForLater(formData)
     }
 
+    function submitApplicationClient(){
+        submitApplication(formData)
+    }
+
     return (
         <Stack sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
             <CustomizedSteppers activeStep={activeStep} />
@@ -466,7 +470,7 @@ export default function ApplicationStepper({ applicationData }: { applicationDat
                     </Button>
                     {activeStep === steps.length - 1 && (
                         <Button
-                            onClick={() => alert('Submit the form')}
+                            onClick={submitApplicationClient}
                         >
                             Submit
                         </Button>

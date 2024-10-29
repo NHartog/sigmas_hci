@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
 
-const conn = mongoose.connect('mongodb://127.0.0.1/sigmas_hci');
-
-console.log(conn)
+mongoose.connect('mongodb://127.0.0.1/sigmas_hci');
 
 export const studentSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
-    gpa: Number,
     application: String,
+    applicationStatus: Boolean,
+    applicationChangeWasASubmit: Boolean,
+    applicationCompletionStatus: Boolean,
+    applicationLastEditDate: Date,
     username: String,
     password: String
 })
@@ -17,7 +18,6 @@ export const professorSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
     age: Number,
-    application: String,
     username: String,
     password: String
 })

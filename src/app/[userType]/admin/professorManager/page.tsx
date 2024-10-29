@@ -6,7 +6,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 
-let myVariable;
+let myVariable: any;
 
 const courses = [
     { id: 1, Professor: 'Jamie Ruiz', enrolled: 71, seats: 100, name: "Human Computer Interaction", prefix: "CAP 5100" }
@@ -26,11 +26,10 @@ const assignedCoursesHeadCells: HeadCell[] = [
 
 export default function LandingPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedProfessor, setSelectedProfessor] = useState(null);
+    const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
 
     const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         setSelectedProfessor(professor);
-        console.log(professor);
         setDialogOpen(true);
     };
 

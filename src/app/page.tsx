@@ -1,12 +1,10 @@
 "use server";
 
-import {Box, Button, Container, Stack, Typography} from '@mui/material'
-import {headers} from "next/headers";
+import {Box, Button, Container, Typography} from '@mui/material'
 import About from "@/Component/about"
 import Image from 'next/image';
 
 export default async function LandingPage() {
-    console.log("meow")
   return (
       <Box style={{ padding: 20, textAlign: "center" }}>
         <Typography variant="h2" color= "black"gutterBottom>

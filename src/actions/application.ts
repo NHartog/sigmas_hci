@@ -15,28 +15,71 @@ export async function getApplicationData(): Promise<any> {
     return undefined
 }
 
+export async function getUserData(): Promise<any> {
+    const user = JSON.parse(cookies().get('user')?.value || '{}')
+
+    if (user) {
+        return user
+    }
+
+    return undefined
+}
+
 export async function saveForLater(formData: any): Promise<void> {
     const user = JSON.parse(cookies().get('user')?.value || '{}')
-    const type = cookies().get('userType')?.value
 
     const options = {
         id: user._id,
         recordData: {
-            application: JSON.stringify(formData)
+            application: JSON.stringify(formData),
+            applicationLastEditDate: new Date(),
+            applicationChangeWasASubmit: false,
         }
     }
 
-    if (type == 'student') {
-        await modifyDatastore(studentModel, httpType.PUSH, options)
-        const newUser = await modifyDatastore(studentModel, httpType.GET, options)
-        cookies().set('user', JSON.stringify(newUser))
-        revalidatePath('/student')
-        redirect("/student/ta/home");
-    } else if (type == 'professor') {
-        await modifyDatastore(professorModel, httpType.PUSH, options)
-        const newUser = await modifyDatastore(professorModel, httpType.GET, options)
-        cookies().set('user', JSON.stringify(newUser))
-        revalidatePath('/professor')
-        redirect("/professor/overview/home");
+    await modifyDatastore(studentModel, httpType.PUSH, options)
+    const newUser = await modifyDatastore(studentModel, httpType.GET, options)
+    cookies().set('user', JSON.stringify(newUser))
+    revalidatePath('/student')
+    redirect("/student/ta/home");
+}
+
+export async function submitApplication(formData: any): Promise<void> {
+    const user = await getUserData()
+
+    const options = {
+        id: user._id,
+        recordData: {
+            application: JSON.stringify(formData),
+            applicationLastEditDate: new Date(),
+            applicationCompletionStatus: true,
+            applicationChangeWasASubmit: true,
+        }
     }
+
+    await modifyDatastore(studentModel, httpType.PUSH, options)
+    const newUser = await modifyDatastore(studentModel, httpType.GET, options)
+    cookies().set('user', JSON.stringify(newUser))
+    revalidatePath('/student')
+    redirect("/student/ta/home");
+}
+
+export async function withdrawApplication(): Promise<void> {
+    const user = await getUserData()
+    console.log('here')
+
+    const options = {
+        id: user._id,
+        recordData: {
+            application: '',
+            applicationStatus: false,
+            applicationCompletionStatus: false,
+        }
+    }
+
+    await modifyDatastore(studentModel, httpType.PUSH, options)
+    const newUser = await modifyDatastore(studentModel, httpType.GET, options)
+    cookies().set('user', JSON.stringify(newUser))
+    revalidatePath('/student')
+    redirect("/student/ta/home");
 }
