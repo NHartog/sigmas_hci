@@ -138,7 +138,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
 function AdvancedTooltip(): JSX.Element {
 	const [selectedButton, setSelectedButton] = useState<string>('all')
-	const [selectedSelect, setSelectedSelect] = useState<string>('pickafilter')
+	const [selectedSelect, setSelectedSelect] = useState<string>('all')
 
 	function handleChange(_: any, val: string) {
 		setSelectedButton(val)
@@ -168,7 +168,7 @@ function AdvancedTooltip(): JSX.Element {
 				</Tooltip>
 				<Tooltip title="Search By Applicant Name">
 					<FormControl sx={{ m: 1 }} variant="outlined">
-						<InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+						<InputLabel htmlFor="outlined-adornment-password">Name</InputLabel>
 						<OutlinedInput
 							id="outlined-adornment-password"
 							type={'text'}
@@ -187,14 +187,14 @@ function AdvancedTooltip(): JSX.Element {
 				</Tooltip>
 				<Tooltip title="Filter by Application Status" placement="top">
 					<FormControl>
-						<InputLabel id="demo-simple-select-label">Age</InputLabel>
+						<InputLabel id="demo-simple-select-label">Status</InputLabel>
 						<Select
 							value={selectedSelect}
-							label="Age"
+							label="Status"
 							onChange={handleSelectChange}
 							sx={{ width: 'max-content' }}
 						>
-							<MenuItem value={'pickafilter'}>Pick A Filter</MenuItem>
+							<MenuItem value={'all'}>Any</MenuItem>
 							<MenuItem value={'Pending'}>Pending</MenuItem>
 							<MenuItem value={'Accepted'}>Accepted</MenuItem>
 						</Select>
