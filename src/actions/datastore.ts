@@ -5,6 +5,7 @@ mongoose.connect('mongodb://127.0.0.1/sigmas_hci');
 export const studentSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
+    status: String,
     application: String,
     applicationStatus: Boolean,
     applicationChangeWasASubmit: Boolean,
@@ -30,15 +31,22 @@ export const managerSchema = new mongoose.Schema({
     password: String
 })
 
-function getModel(name: string) {
-    return mongoose.model(name, studentSchema)
+export const courseSchema = new mongoose.Schema({
+    _id: mongoose.Schema.ObjectId,
+    prefix: String,
+    title: String,
+    numTaHours: Number,
+    enrollment: String,
+})
+
+function getModel(name: string, schema: any) {
+    return mongoose.model(name, schema)
 }
 
-export const studentModel = mongoose.models.Student ?? getModel('Student')
-export const professorModel = mongoose.models.Professor ?? getModel('Professor')
-export const managerModel = mongoose.models.Manager ?? getModel('Manager')
-
-export type genericModel = typeof studentModel | typeof professorModel | typeof managerModel
+export const studentModel = mongoose.models.Student ?? getModel('Student', studentSchema)
+export const professorModel = mongoose.models.Professor ?? getModel('Professor', professorSchema)
+export const managerModel = mongoose.models.Manager ?? getModel('Manager', managerSchema)
+export const courseModel = mongoose.models.Course ?? getModel('Course', courseSchema)
 
 export enum httpType {
     GET = 'GET',

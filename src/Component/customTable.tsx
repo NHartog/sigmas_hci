@@ -68,11 +68,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 	return (
 		<TableHead>
-			<TableRow>
+			<TableRow key={'tablehead'}>
 				<TableCell padding="checkbox" />
 				{props.headCells.map((headCell: any) => (
 					<TableCell
-						key={headCell.id}
+						key={'tableheadCell' + headCell.id}
 						align={'right'}
 						padding={headCell.disablePadding ? 'none' : 'normal'}
 						sortDirection={orderBy === headCell.id ? order : false}
@@ -271,16 +271,16 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip 
 
 								return (
 									<TableRow
+										key={'tableBody' + index}
 										hover
 										onClick={(event: any) => handleClick(event, row.id)}
 										role="checkbox"
 										aria-checked={isItemSelected}
 										tabIndex={-1}
-										key={row.id}
 										selected={isItemSelected}
 										sx={{ cursor: 'pointer' }}
 									>
-										<TableCell padding="checkbox">
+										<TableCell key={'checkbox'} padding="checkbox">
 											<Checkbox
 												color="primary"
 												checked={isItemSelected}
@@ -291,6 +291,7 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip 
 										</TableCell>
 										<TableCell
 											component="th"
+											key={'idLabel'}
 											id={labelId}
 											scope="row"
 											padding="none"
@@ -302,20 +303,11 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip 
 											if (idx == 0) {
 												return <></>
 											}
-											return <TableCell align="right">{row[headCells[idx].id]}</TableCell>
+											return <TableCell key={'headCells' + idx} align="right">{row[headCells[idx].id]}</TableCell>
 										})}
 									</TableRow>
 								);
 							})}
-							{emptyRows > 0 && (
-								<TableRow
-									style={{
-										height: 53 * emptyRows,
-									}}
-								>
-									<TableCell colSpan={6} />
-								</TableRow>
-							)}
 						</TableBody>
 					</Table>
 				</TableContainer>
