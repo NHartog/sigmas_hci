@@ -17,11 +17,16 @@ import {
     TableRow
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import StarIcon from '@mui/icons-material/Star';
+import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 import Link from "next/link";
 
 const ProfessorDetails = ({ open, onClose, params }) => {
     const [editMode, setEditMode] = useState(false);
     const [editParams, setEditParams] = useState({ ...params });
+    const applicants = [{name: "Maggie Simpson", status: "PhD", course: "CAP5100", preference: 5},
+        {name: "John Adams", status: "Undergraduate", course: "CAP5100", preference: 3}
+    ]
 
     // Toggle edit mode
     const handleToggleEditMode = () => setEditMode(!editMode);
@@ -40,6 +45,19 @@ const ProfessorDetails = ({ open, onClose, params }) => {
         // You could pass editParams to a parent component here if needed.
         setEditMode(false);
     };
+
+    const IconRepeater = ({count}) => {
+        return (
+          <div>
+            {Array.from({ length: count }).map((_, index) => (
+                <StarTwoToneIcon sx={{color: "rgba(255,127,50,1)"}} />
+            ))}
+            {Array.from({ length: 5 - count }).map((_, index) => (
+                <StarTwoToneIcon sx={{color: "gray"}} />
+            ))}
+          </div>
+        );
+      };
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="max">
@@ -64,17 +82,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                             padding: "20px",
                         }}
                     >
-                        {editMode ? (
-                            <TextField
-                                label="Professor"
-                                value={editParams.Professor}
-                                onChange={handleChange("Professor")}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        ) : (
-                            <Typography variant="h3">{params.Professor}: Professor</Typography>
-                        )}
+                        <Typography variant="h3">{editParams.Professor}: Professor</Typography>
                     </Box>
 
                     <Accordion disableGutters>
@@ -142,6 +150,35 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                             ) : (
                                 <Typography variant="h4">No Courses Assigned yet for this semester</Typography>
                             )}
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion disableGutters>
+                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                            <Typography variant="h4">Professor Preferences</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Applicant</TableCell>
+                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Status</TableCell>
+                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Course</TableCell>
+                                    <TableCell style={{textAlign: 'center', width: "40%"}}>Preference Level</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {applicants.map((applicant) => (
+                                    <TableRow>
+                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.name}</strong></TableCell>
+                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.status}</strong></TableCell>
+                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.course}</strong></TableCell>
+                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>
+                                            <IconRepeater count={applicant.preference} />
+                                            </strong></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                         </AccordionDetails>
                     </Accordion>
                 </Box>

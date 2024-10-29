@@ -5,6 +5,7 @@ import { Box, Button, ButtonGroup } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
+import AddProfessorForm from '@/Component/addProfessorForm';
 
 let myVariable: any;
 
@@ -25,16 +26,18 @@ const assignedCoursesHeadCells: HeadCell[] = [
 ];
 
 export default function LandingPage() {
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [profDetailsDialogOpen, setProfDetailsDialogOpen] = useState(false);
+    const [addProfDialogOpen, setAddProfDialogOpen] = useState(false);
     const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
 
     const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         setSelectedProfessor(professor);
-        setDialogOpen(true);
+        setProfDetailsDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
-        setDialogOpen(false);
+        setProfDetailsDialogOpen(false);
+        setAddProfDialogOpen(false);
         setSelectedProfessor(null);
     };
 
@@ -45,7 +48,11 @@ export default function LandingPage() {
 
     const handleButtonOneClick =() => {
         handleViewDetails(myVariable);
-    }
+    };
+
+    const handleAddProfDialog = () =>{
+        setAddProfDialogOpen(true);
+    };
 
     const button = (
         <ButtonGroup sx={{ marginTop: "3px" }}>
@@ -73,11 +80,17 @@ export default function LandingPage() {
                 advancedTooltip
                 onRowSelect={handleRowSelect} // Pass the handleRowSelect function
             />
-            {dialogOpen && (
+            {profDetailsDialogOpen && (
                 <ProfessorDetailsDialog
-                    open={dialogOpen}
+                    open={profDetailsDialogOpen}
                     onClose={handleCloseDialog}
                     params={selectedProfessor}
+                />
+            )}
+            {addProfDialogOpen && (
+                <AddProfessorForm
+                    open={addProfDialogOpen}
+                    onClose={handleCloseDialog}
                 />
             )}
         </Box>
