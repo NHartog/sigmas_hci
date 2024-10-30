@@ -96,46 +96,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-interface EnhancedTableToolbarProps {
-    numSelected: number;
-    title: string;
-    button?: JSX.Element;
-}
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-    const { numSelected } = props;
-    return (
-        <Toolbar
-            sx={[
-                {
-                    pl: { sm: 2 },
-                    pr: { xs: 1, sm: 1 },
-                },
-                numSelected > 0 && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                },
-            ]}
-        >
-            <Stack direction="row" justifyContent={'space-between'} alignItems="center" sx={{ width: 1 }}>
-                <Typography
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    {props.title}
-                </Typography>
-                {(numSelected > 0 && props.button) && (
-                    <>
-                        <Tooltip title="Add TA Preference">
-                            {props.button}
-                        </Tooltip>
-                    </>
-                )
-                }
-            </Stack>
-        </Toolbar >
-    );
-}
 
 function AdvancedTooltip(): JSX.Element {
     const [selectedButton, setSelectedButton] = useState<string[]>()
@@ -196,6 +156,47 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip,
     const [selected, setSelected] = React.useState<number>();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    interface EnhancedTableToolbarProps {
+        numSelected: number;
+        title: string;
+        button?: JSX.Element;
+    }
+    function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
+        const { numSelected } = props;
+        return (
+            <Toolbar
+                sx={[
+                    {
+                        pl: { sm: 2 },
+                        pr: { xs: 1, sm: 1 },
+                    },
+                    numSelected > 0 && {
+                        bgcolor: (theme) =>
+                            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                    },
+                ]}
+            >
+                <Stack direction="row" justifyContent={'space-between'} alignItems="center" sx={{ width: 1 }}>
+                    <Typography
+                        variant="h6"
+                        id="tableTitle"
+                        component="div"
+                    >
+                        {props.title}
+                    </Typography>
+                    {(numSelected > 0 && props.button) && (
+                        <>
+                            <Tooltip title="Add TA Preference" onClick={() => setSelected(undefined)}>
+                                {props.button}
+                            </Tooltip>
+                        </>
+                    )
+                    }
+                </Stack>
+            </Toolbar >
+        );
+    }
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,

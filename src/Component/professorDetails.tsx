@@ -20,6 +20,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import StarIcon from '@mui/icons-material/Star';
 import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 import Link from "next/link";
+import { updateProfessor } from '@/actions/manager';
 
 const ProfessorDetails = ({ open, onClose, params }) => {
     const [editMode, setEditMode] = useState(false);
@@ -43,6 +44,10 @@ const ProfessorDetails = ({ open, onClose, params }) => {
     const handleSave = () => {
         // Call a function to save changes to the backend or update state
         // You could pass editParams to a parent component here if needed.
+
+        updateProfessor(editParams)
+
+        console.log(editParams)
         setEditMode(false);
     };
 
@@ -85,7 +90,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                         <Typography variant="h3">{editParams.Professor}: Professor</Typography>
                     </Box>
 
-                    <Accordion disableGutters>
+                    <Accordion disableGutters defaultExpanded>
                         <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                             <Typography variant="h4">Professor Details</Typography>
                         </AccordionSummary>
@@ -111,7 +116,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                                         />
                                     ) : (
                                         <Typography sx={{ textAlign: "left", fontSize: "150%", width: "50%" }}>
-                                            {params[field]}
+                                            {editParams[field]}
                                         </Typography>
                                     )}
                                 </Box>
@@ -119,7 +124,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion disableGutters>
+                    <Accordion disableGutters defaultExpanded>
                         <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                             <Typography variant="h4">Current Courses</Typography>
                         </AccordionSummary>
@@ -152,7 +157,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                             )}
                         </AccordionDetails>
                     </Accordion>
-                    <Accordion disableGutters>
+                    <Accordion disableGutters defaultExpanded>
                         <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                             <Typography variant="h4">Professor Preferences</Typography>
                         </AccordionSummary>

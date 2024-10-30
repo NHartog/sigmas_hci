@@ -19,6 +19,7 @@ export const professorSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
     email: String,
+    department: String,
     courses: [String],
     username: String,
     password: String

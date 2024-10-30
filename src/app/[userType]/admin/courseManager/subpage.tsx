@@ -117,9 +117,6 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" onClick={handleClickManageCourseTAs} endIcon={<PersonAddIcon />}>
                 Manage Course TAs
             </Button>
-            <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" endIcon={<CableIcon />}>
-                Link Course
-            </Button>
             <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" endIcon={<DeleteOutlineIcon />}>
                 Remove Course
             </Button>

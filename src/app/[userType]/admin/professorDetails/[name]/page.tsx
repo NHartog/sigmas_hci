@@ -28,6 +28,8 @@ export default async function LandingPage({ children, params }: { children: Reac
             </Box>
         );
     }
+
+
     //At this step we'll look up real details in the backend, but for the current moment everyone gets the same other details
     const professorDetails = {name: full_name, email: "prof@ufl.edu", department: "CISE", courses: [{name: "CAP5100", enrolled: 81, seats: 144}], assigned_tas: [{name: "Dustin Samuels", status: "Graduate", assigned_course: "CAP5100"}, {name: "Ed Chambers", status: "Undergraduate", assigned_course: "CNT5106C", preference: 5}], prosp_tas: [], prev_courses: [{course:'CAP5100', semester: "Spring 2023"}]}
     return (
