@@ -1,0 +1,109 @@
+"use client"
+
+import React, { useState } from 'react';
+import { Box, Button, ButtonGroup, Stack } from '@mui/material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
+import ProfessorDetailsDialog from "@/Component/professorDetails";
+import AddProfessorForm from '@/Component/addProfessorForm';
+
+export default function ProfessorSubPage({ assignedCoursesRows }: { assignedCoursesRows: any }) {
+
+	let myVariable: any;
+
+
+
+	//const assignedCoursesRows = [
+	//	{
+	//		id: 1,
+	//		Professor: 'Jamie Ruiz',
+	//		numTaHours: 0,
+	//		email: "jamie.ruiz@ufl.edu",
+	//		courses: ['CAP 5100']
+	//	},
+	//	{
+	//		id: 2,
+	//		Professor: 'Professor Prefessorson',
+	//		courses: ['YAP 9999'],
+	//		numTaHours: 0,
+	//		email: "jyap@ufl.edu"
+	//	},
+	//];
+
+
+	const assignedCoursesHeadCells: HeadCell[] = [
+		{ id: 'Professor', numeric: false, disablePadding: true, label: 'Professor' },
+		{ id: 'courses', numeric: false, disablePadding: false, label: 'Assigned Course' }
+	];
+
+	const [profDetailsDialogOpen, setProfDetailsDialogOpen] = useState(false);
+	const [addProfDialogOpen, setAddProfDialogOpen] = useState(false);
+	const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
+
+	const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
+		setSelectedProfessor(professor);
+		setProfDetailsDialogOpen(true);
+	};
+
+	const handleCloseDialog = () => {
+		setProfDetailsDialogOpen(false);
+		setAddProfDialogOpen(false);
+		setSelectedProfessor(null);
+	};
+
+	// New function to handle row selection
+	const handleRowSelect = (row: any) => {
+		myVariable = row; // Pass the selected row to handleViewDetails
+	};
+
+	const handleButtonOneClick = () => {
+		handleViewDetails(myVariable);
+	};
+
+	const handleAddProfDialog = () => {
+		setAddProfDialogOpen(true);
+	};
+
+	const button = (
+		<Stack direction="row">
+			<Button
+				sx={{ margin: 1, minWidth: 'max-content' }}
+				variant="contained"
+				endIcon={<PersonAddIcon />}
+				onClick={handleButtonOneClick}
+			>
+				View Professor Details
+			</Button>
+			<Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" endIcon={<PersonAddIcon />}>
+				Add Course
+			</Button>
+		</Stack>
+	);
+
+	return (
+		<>
+			<EnhancedTable
+				rows={assignedCoursesRows}
+				headCells={assignedCoursesHeadCells}
+				title="Professors"
+				button={button}
+				advancedTooltip
+				onRowSelect={handleRowSelect} // Pass the handleRowSelect function
+			/>
+			{profDetailsDialogOpen && (
+				<ProfessorDetailsDialog
+					open={profDetailsDialogOpen}
+					onClose={handleCloseDialog}
+					params={selectedProfessor}
+				/>
+			)}
+			{addProfDialogOpen && (
+				<AddProfessorForm
+					open={addProfDialogOpen}
+					onClose={handleCloseDialog}
+				/>
+			)}
+
+		</>
+	)
+}

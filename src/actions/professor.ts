@@ -1,7 +1,8 @@
 "use server"
 
 import { getUserData } from "./application"
-import { courseModel, httpType, modifyDatastore, studentModel } from "./datastore"
+import { modifyDatastore } from "./datastore"
+import { courseModel, httpType, studentModel } from "./datastoreTypes"
 
 
 export async function getCourses(): Promise<any[]> {
@@ -17,6 +18,7 @@ export async function getCourses(): Promise<any[]> {
 
     return copied.map((each: any, idx: number) => {
         each.id = idx + 1
+        each.enrollment = `${each.currentEnrollment}/${each.maxEnrollment}`
         return each
     })
 }

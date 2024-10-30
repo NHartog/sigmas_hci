@@ -1,7 +1,8 @@
 "use server";
 import { cookies } from 'next/headers'
 import {redirect} from "next/navigation";
-import { httpType, managerModel, modifyDatastore, professorModel, studentModel } from "./datastore";
+import { modifyDatastore } from './datastore';
+import { httpType, managerModel, professorModel, studentModel } from './datastoreTypes';
 
 export async function redirectUser(formData: FormData): Promise<boolean> {
     const username = formData.get("username") as string;
@@ -31,7 +32,7 @@ export async function redirectUser(formData: FormData): Promise<boolean> {
     }else if(potentiallyManager){
         cookieStore.set('user', JSON.stringify(potentiallyManager))
         cookieStore.set('userType', 'manager')
-        redirect("/manager/admin/home");
+        redirect("/manager/admin/studentManager");
     }
 
     await new Promise( resolve => setTimeout(resolve, 1000) );

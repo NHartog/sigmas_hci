@@ -1,9 +1,10 @@
 "use server"
 
 import { cookies } from 'next/headers'
-import { httpType, modifyDatastore, professorModel, studentModel } from './datastore'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { modifyDatastore } from './datastore'
+import { httpType, studentModel } from './datastoreTypes'
 
 export async function getApplicationData(): Promise<any> {
     const user = JSON.parse(cookies().get('user')?.value || '{}')

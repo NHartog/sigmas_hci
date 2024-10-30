@@ -6,16 +6,17 @@ import Link from "next/link";
 import LaunchIcon from '@mui/icons-material/Launch';
 import InfoIcon from '@mui/icons-material/Info';
 import HomeIcon from '@mui/icons-material/Home';
+import ClassIcon from '@mui/icons-material/Class';
+import SchoolIcon from '@mui/icons-material/School';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 const SidebarLayout = ({ children, params }: { children: ReactNode, params: {userType: string}} ) => {
 
     const allTabs = {
         manager: [
-            { label: "Manager Home", path: "/manager/admin/home", icon: <></> },
-            { label: "Student Manager", path: "/manager/admin/studentManager", icon: <></> },
-            { label: "Professor Manager", path: "/manager/admin/professorManager", icon: <></> },
-            { label: "Course Manager", path: "/manager/admin/courseManager", icon: <></> },
-            { label: "Settings", path: "/manager/admin/settings", icon: <></> },
+            { label: "Student Manager", path: "/manager/admin/studentManager", icon: <ManageAccountsIcon/> },
+            { label: "Professor Manager", path: "/manager/admin/professorManager", icon: <SchoolIcon/> },
+            { label: "Course Manager", path: "/manager/admin/courseManager", icon: <ClassIcon/> },
         ],
         student: [
             { label: "Student Home", path: "/student/ta/home", icon: <HomeIcon/> },
