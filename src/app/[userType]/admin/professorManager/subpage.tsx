@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Button, ButtonGroup, Stack } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
@@ -9,7 +9,7 @@ import AddProfessorForm from '@/Component/addProfessorForm';
 
 export default function ProfessorSubPage({ assignedCoursesRows }: { assignedCoursesRows: any }) {
 
-	let myVariable: any;
+	let myVariable = useRef();
 
 
 
@@ -48,16 +48,16 @@ export default function ProfessorSubPage({ assignedCoursesRows }: { assignedCour
 	const handleCloseDialog = () => {
 		setProfDetailsDialogOpen(false);
 		setAddProfDialogOpen(false);
-		setSelectedProfessor(null);
 	};
 
 	// New function to handle row selection
 	const handleRowSelect = (row: any) => {
-		myVariable = row; // Pass the selected row to handleViewDetails
+		//setSelectedProfessor(row)
+		myVariable.current = row; // Pass the selected row to handleViewDetails
 	};
 
 	const handleButtonOneClick = () => {
-		handleViewDetails(myVariable);
+		handleViewDetails(myVariable.current as any);
 	};
 
 	const handleAddProfDialog = () => {

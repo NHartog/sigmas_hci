@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { modifyDatastore } from "./datastore"
 import { courseModel, httpType, professorModel, studentModel } from "./datastoreTypes"
 
@@ -44,12 +45,30 @@ export async function getProfessors(): Promise<any[]> {
         var actualShape: any = {}
 
         actualShape.id = idx + 1
+        actualShape._id = each._id
         actualShape.Professor = each.name
         actualShape.email = each.email
+        actualShape.department = each.department
         actualShape.courses = each.courses
 
         return actualShape
     })
+}
+
+export async function updateProfessor(values: any): Promise<void> {
+
+
+    const copy = JSON.parse(JSON.stringify(values))
+
+    delete copy._id
+    const options = {
+        id: values._id,
+        relatesToOne: true,
+        recordData: copy
+    }
+
+    modifyDatastore(professorModel, httpType.PUSH, options)
+    revalidatePath('/manager')
 }
 
 export async function getManagerCourses(): Promise<any[]> {

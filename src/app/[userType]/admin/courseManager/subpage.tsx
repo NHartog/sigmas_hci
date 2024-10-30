@@ -7,10 +7,12 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CableIcon from '@mui/icons-material/Cable';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import CourseDetails from "@/Component/courseDetails";
 import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
+import AddCourseForm from '@/Component/addCourseForm';
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -52,7 +54,8 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         { id: 'Sections', numeric: true, disablePadding: false, label: 'Sections' },
     ];
 
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+    const [addCourseDialogOpen, setAddCourseDialogOpen] = useState(false);
     const [manageCourseProfessorsOpen, setManageCourseProfessorsOpen] = useState(false);
     const [manageCourseTAsOpen, setManageCourseTAsOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -60,7 +63,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         setSelectedCourse(professor);
         console.log(professor);
-        setDialogOpen(true);
+        setDetailsDialogOpen(true);
     };
 
     const handleSelectProfessorCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
@@ -74,7 +77,8 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     };
 
     const handleCloseDialog = () => {
-        setDialogOpen(false);
+        setDetailsDialogOpen(false);
+        setAddCourseDialogOpen(false);
         setSelectedCourse(null);
     };
 
@@ -102,6 +106,10 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         handleSelectTACourse(rowSelected);
     }
 
+    const handleAddCourse = () =>{
+        setAddCourseDialogOpen(true);
+    }
+
     const handleRowSelect = (row: any) => {
         rowSelected = row; // Pass the selected row to handleViewDetails
     };
@@ -116,9 +124,6 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             </Button>
             <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" onClick={handleClickManageCourseTAs} endIcon={<PersonAddIcon />}>
                 Manage Course TAs
-            </Button>
-            <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" endIcon={<CableIcon />}>
-                Link Course
             </Button>
             <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" endIcon={<DeleteOutlineIcon />}>
                 Remove Course
@@ -136,12 +141,28 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                 advancedTooltip
                 onRowSelect={handleRowSelect} // Pass the handleRowSelect function
             />
+            <Box sx={{textAlign: "right"}}>
+                <Button sx={{border: "3px solid black", width: "15%", height: "120%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}
+                onClick={handleAddCourse}
+                endIcon={<AddCircleIcon />}>
+                    Add a Course
+                </Button>
+            </Box>
             {
-                dialogOpen && (
+                detailsDialogOpen && (
                     <CourseDetails
-                        open={dialogOpen}
+                        open={detailsDialogOpen}
                         close={handleCloseDialog}
                         params={selectedCourse}
+                    />
+                )
+            }
+
+            {
+                addCourseDialogOpen && (
+                    <AddCourseForm
+                        open={addCourseDialogOpen}
+                        onClose={handleCloseDialog}
                     />
                 )
             }
