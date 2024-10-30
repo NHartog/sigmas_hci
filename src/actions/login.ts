@@ -22,6 +22,7 @@ export async function redirectUser(formData: FormData): Promise<boolean> {
     const potentiallyManager = await modifyDatastore(managerModel, httpType.GET, options)
 
     if(potentiallyStudent){
+
         cookieStore.set('user', JSON.stringify(potentiallyStudent))
         cookieStore.set('userType', 'student')
         redirect("/student/ta/home");

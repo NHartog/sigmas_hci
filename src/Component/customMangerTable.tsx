@@ -116,23 +116,22 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 },
             ]}
         >
-            <Stack direction="row" justifyContent={'space-between'} alignItems="center" sx={{ width: 1 }}>
-                <Typography
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    {props.title}
-                </Typography>
-                {(numSelected > 0 && props.button) && (
-                    <>
-                        <Tooltip title="Add TA Preference">
-                            {props.button}
-                        </Tooltip>
-                    </>
-                )
-                }
-            </Stack>
+            <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                id="tableTitle"
+                component="div"
+            >
+                {props.title}
+            </Typography>
+            {(numSelected > 0 && props.button) && (
+                <>
+                    <Tooltip title="Add TA Preference">
+                        {props.button}
+                    </Tooltip>
+                </>
+            )
+            }
         </Toolbar >
     );
 }
@@ -151,7 +150,7 @@ function AdvancedTooltip(): JSX.Element {
 
     return (
         <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 }, }} >
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: "100%", paddingX: 1 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{width: "100%", paddingX: 1}}>
                 <Tooltip title="Course Prefix">
                     <ToggleButtonGroup
                         color="primary"
@@ -190,7 +189,7 @@ function AdvancedTooltip(): JSX.Element {
     )
 }
 
-export function EnhancedTable({ rows, headCells, title, button, advancedTooltip, onRowSelect }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean, onRowSelect: (row: any) => void; }) {
+    export function EnhancedTable({ rows, headCells, title, button, advancedTooltip, onRowSelect }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean, onRowSelect: (row: any) => void;}) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<string>('id');
     const [selected, setSelected] = React.useState<number>();
@@ -293,7 +292,7 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip,
                                                 return <></>
                                             }
                                             const cellValue = row[headCells[idx].id];
-                                            return (<TableCell align="right">
+                                            return(<TableCell align="right">
                                                 {Array.isArray(cellValue) ? cellValue.join(', ') : cellValue}
                                             </TableCell>);
                                         })}
