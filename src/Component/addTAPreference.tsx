@@ -17,6 +17,7 @@ import {
     Slider,
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import {addTAPreference} from "@/actions/professor";
 
 interface Ta {
     id: number;
@@ -37,19 +38,29 @@ interface TaPreferenceDialogProps {
     close: () => void;
     students: Ta[];
     courses: Course[];
-    selected: { prefix: string | null; name: string | null }; // Updated to include selected
+    selected: { prefix: string | null; name: string | null; title: string | null };
 }
 
 export default function TaPreferenceDialog({ open, close, students, courses, selected }: TaPreferenceDialogProps) {
     const [selectedCourse, setSelectedCourse] = useState<string | null>(selected.prefix);
+    const [selectedCourseTitle, setSelectedCourseTitle] = useState<string | null>(selected.title);
     const [selectedTA, setSelectedTA] = useState<string | null>(selected.name);
     const [preferenceValue, setPreferenceValue] = useState<number | null>(3); // Default preference value
 
     useEffect(() => {
-        // Prefill selections when dialog opens or selected changes
         setSelectedCourse(selected.prefix);
+        setSelectedCourseTitle(selected.title);
         setSelectedTA(selected.name);
     }, [open, selected]);
+
+    const handleCourseChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        const coursePrefix = event.target.value as string;
+        setSelectedCourse(coursePrefix);
+
+        // Find and set the title associated with the selected prefix
+        const selectedCourseData = courses.find((course) => course.prefix === coursePrefix);
+        setSelectedCourseTitle(selectedCourseData ? selectedCourseData.title : null);
+    };
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         setPreferenceValue(newValue as number);
@@ -72,7 +83,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                                 <InputLabel>Select Course</InputLabel>
                                 <Select
                                     value={selectedCourse || ''}
-                                    onChange={(e) => setSelectedCourse(e.target.value)}
+                                    onChange={handleCourseChange}  // Updated to use handleCourseChange
                                     label="Select Course"
                                 >
                                     {courses.map((course) => (
@@ -85,7 +96,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                         </CardContent>
                     </Card>
 
-                     {/*TA Selection Card*/}
+                    {/* TA Selection Card */}
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h6" gutterBottom>
@@ -110,7 +121,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                             <Typography variant="subtitle1" gutterBottom sx={{ marginTop: 2 }}>
                                 Preference Level
                             </Typography>
-                            <Box sx={ {p:1}}>
+                            <Box sx={{ p: 1 }}>
                                 <Slider
                                     valueLabelDisplay="auto"
                                     marks={[
@@ -118,33 +129,44 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                                         { value: 2, label: '2' },
                                         { value: 3, label: '3' },
                                         { value: 4, label: '4' },
-                                        { value: 5, label: '5' }
+                                        { value: 5, label: '5' },
                                     ]}
                                     onChange={handleSliderChange}
                                     aria-labelledby="preference-slider"
                                     step={1}
                                     min={1}
                                     max={5}
-                                    value={preferenceValue || 3} // Default to 3 if preferenceValue is null
+                                    value={preferenceValue || 3}
                                     sx={{ width: '100%' }}
                                 />
                             </Box>
-
-
                         </CardContent>
                     </Card>
 
-                     {/*Add as TA Button*/}
+                    {/* Add as TA Button */}
                     <Button
                         variant="contained"
                         endIcon={<PersonAddIcon />}
-                        onClick={() => {
-                            // Add your logic for adding the selected course and TA here
-                            console.log("Selected Course:", selectedCourse);
-                            console.log("Selected TA:", selectedTA);
-                            console.log("Preference Level:", preferenceValue);
-                            // You can close the dialog after adding
-                            close();
+                        onClick={async () => {
+
+                            try {
+                                const response = await addTAPreference({
+                                    prefix: selectedCourse,
+                                    title: selectedCourseTitle,
+                                    student: selectedTA,
+                                    preference: preferenceValue,
+                                });
+
+                                if (response.success) {
+                                    alert(response.message); // Success alert
+                                    close();
+                                } else {
+                                    alert(response.message); // Error alert
+                                }
+                            } catch (error) {
+                                console.error('Error adding TA preference:', error);
+                                alert('An unexpected error occurred. Please try again.');
+                            }
                         }}
                         sx={{ marginTop: 2 }}
                     >

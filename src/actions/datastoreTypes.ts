@@ -45,6 +45,14 @@ export const courseSchema = new mongoose.Schema({
     sections: Number,
 })
 
+export const TAPreferenceSchema = new mongoose.Schema({
+    _id: mongoose.Schema.ObjectId,
+    prefix: String,
+    title: String,
+    student: String,
+    preference: Number,
+})
+
 function getModel(name: string, schema: any) {
     return mongoose.model(name, schema)
 }
@@ -53,6 +61,7 @@ export const studentModel = mongoose.models.Student ?? getModel('Student', stude
 export const professorModel = mongoose.models.Professor ?? getModel('Professor', professorSchema)
 export const managerModel = mongoose.models.Manager ?? getModel('Manager', managerSchema)
 export const courseModel = mongoose.models.Course ?? getModel('Course', courseSchema)
+export const TAPreferenceModel = mongoose.models.Tapreference ?? getModel('Tapreference', TAPreferenceSchema)
 
 export enum httpType {
     GET = 'GET',

@@ -2,7 +2,8 @@
 
 import { getUserData } from "./application"
 import { modifyDatastore } from "./datastore"
-import { courseModel, httpType, studentModel } from "./datastoreTypes"
+import {courseModel, httpType, studentModel, TAPreferenceModel} from "./datastoreTypes"
+import mongoose from "mongoose";
 
 
 export async function getCourses(): Promise<any[]> {
@@ -47,4 +48,40 @@ export async function getTAs(): Promise<any[]> {
 
         return actualShape
     })
+}
+
+export async function addTAPreference(recordData: any) {
+
+    const { prefix, title, student, preference } = recordData;
+
+    if (!prefix || !title || !student || preference === null) {
+        return {
+            success: false,
+            message: 'All fields are required. Please fill in all details.'
+        };
+    }
+
+    const existingPreference = await TAPreferenceModel.findOne({
+        prefix: recordData.prefix,
+        student: recordData.student
+    }).exec();
+    if (existingPreference) {
+        // Return an error response if a duplicate is found
+        return {
+            success: false,
+            message: `A TA preference for student ${recordData.student} in course ${recordData.prefix} already exists.`
+        };
+    }
+
+    await modifyDatastore(TAPreferenceModel, httpType.POST, {
+        recordData: {
+            _id: new mongoose.Types.ObjectId(),
+            ...recordData
+        }
+    });
+
+    return {
+        success: true,
+        message: 'TA preference added successfully!'
+    };
 }
