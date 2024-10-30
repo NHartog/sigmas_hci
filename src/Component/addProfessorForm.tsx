@@ -21,27 +21,29 @@ import {
     DialogContent, Dialog, DialogTitle
 } from '@mui/material';
 import Link from "next/link";
-import { httpType, httpOptions, professorModel, modifyDatastore } from '@/actions/datastore';
+import { postProf, getManagerCourses } from '@/actions/manager';
 
-const AddProfessorForm = ({open, onClose}) => {
+const AddProfessorForm = ({open, onClose, all_Courses}) => {
 
-    const fakeCourses = ['CAP5100', 'CNT5106C', 'CAP5900', 'CAD3020', 'AST2000']
-
+    const allPrefixes = all_Courses.map(obj => obj.Prefix); 
+    console.log(allPrefixes)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         department: '',
-        course: ''
+        course: '',
+        username: '',
+        password: '',
       });
 
     const [filteredItems, setFilteredItems] = useState([])
     
     const handleFilteredItems = (value) => {
-        if(value === '' || fakeCourses.includes(value)){
+        if(value === '' || allPrefixes.includes(value)){
             setFilteredItems([])
         }
         else{
-            const matches = fakeCourses.filter(item => item.toLowerCase().includes(value.toLowerCase()))
+            const matches = allPrefixes.filter(item => item.toLowerCase().includes(value.toLowerCase()))
             console.log(matches, "     ", value)
             setFilteredItems(matches)
         }
@@ -72,12 +74,8 @@ const AddProfessorForm = ({open, onClose}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);  // Log or send data to an API
-        // Example: You could send formData to a backend here
-        const TheseHttpOptions = {
-            recordData: JSON.stringify(formData) // Convert the object to a JSON string
-            
-        };
-        modifyDatastore(professorModel, httpType.POST, TheseHttpOptions);
+        const sentData = {...formData, courses: [formData.course]};
+        postProf(sentData);
         onClose();
       };
       
@@ -136,6 +134,36 @@ const AddProfessorForm = ({open, onClose}) => {
                         label="Department"
                         variant="outlined"
                         value={formData.department}
+                        onChange={(e) => handleFormData(e)}
+                        sx={{ width: "90%", marginTop: "10px" }}
+                    />
+                </Typography>
+            </Box>
+            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
+                    Username:
+                </Typography>
+                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
+                    <TextField
+                        name="username"
+                        label="Username"
+                        variant="outlined"
+                        value={formData.username}
+                        onChange={(e) => handleFormData(e)}
+                        sx={{ width: "90%", marginTop: "10px" }}
+                    />
+                </Typography>
+            </Box>
+            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
+                    Password:
+                </Typography>
+                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
+                    <TextField
+                        name="password"
+                        label="Password"
+                        variant="outlined"
+                        value={formData.password}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />

@@ -13,6 +13,7 @@ import CourseDetails from "@/Component/courseDetails";
 import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
+import AreYouSureDialog from '@/Component/areYouSureDialog';
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -56,9 +57,11 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
 
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [addCourseDialogOpen, setAddCourseDialogOpen] = useState(false);
+    const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
     const [manageCourseProfessorsOpen, setManageCourseProfessorsOpen] = useState(false);
     const [manageCourseTAsOpen, setManageCourseTAsOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
+    const [rowPrefix, setRowPrefix] = useState('');
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         setSelectedCourse(professor);
@@ -79,6 +82,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const handleCloseDialog = () => {
         setDetailsDialogOpen(false);
         setAddCourseDialogOpen(false);
+        setAreYouSureDialogOpen(false);
         setSelectedCourse(null);
     };
 
@@ -110,8 +114,17 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         setAddCourseDialogOpen(true);
     }
 
+    const handleAreYouSure = () =>{
+        setAreYouSureDialogOpen(true);
+    }
+
+    const handleDeleteCourse = () =>{
+        //TODO
+    }
+
     const handleRowSelect = (row: any) => {
         rowSelected = row; // Pass the selected row to handleViewDetails
+        setRowPrefix(rowSelected.Prefix);
     };
 
     const button = (
@@ -125,7 +138,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" onClick={handleClickManageCourseTAs} endIcon={<PersonAddIcon />}>
                 Manage Course TAs
             </Button>
-            <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" endIcon={<DeleteOutlineIcon />}>
+            <Button sx={{ margin: 1, width: 'max-content' }} variant="contained" onClick={handleAreYouSure} endIcon={<DeleteOutlineIcon />}>
                 Remove Course
             </Button>
         </Stack>
@@ -183,6 +196,16 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                         open={manageCourseTAsOpen}
                         close={handleCloseManageCourseTAs}
                         params={selectedCourse}
+                    />
+                )
+            }
+            {
+                areYouSureDialogOpen && (
+                    <AreYouSureDialog
+                        open={areYouSureDialogOpen}
+                        onClose={handleCloseDialog}
+                        onSure={handleDeleteCourse}
+                        toRemove={rowPrefix}
                     />
                 )
             }

@@ -109,3 +109,11 @@ export async function postCourse(formData) {
     console.log(newCourse);
 }
 
+export async function postProf(formData) {
+    const actualForm = {...formData, _id: new mongoose.Types.ObjectId()}
+    const options = {
+        recordData: actualForm
+    }
+    const newProf = await modifyDatastore(professorModel, httpType.POST, options);
+    console.log(newProf);
+}
