@@ -1,7 +1,8 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { modifyDatastore } from "./datastore"
+import mongoose from 'mongoose';
+import { modifyDatastore} from "./datastore"
 import { courseModel, httpType, professorModel, studentModel } from "./datastoreTypes"
 
 
@@ -99,4 +100,12 @@ export async function getManagerCourses(): Promise<any[]> {
     })
 }
 
+export async function postCourse(formData) {
+    const actualForm = {...formData, _id: new mongoose.Types.ObjectId()}
+    const options = {
+        recordData: actualForm
+    }
+    const newCourse = await modifyDatastore(courseModel, httpType.POST, options);
+    console.log(newCourse);
+}
 

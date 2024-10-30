@@ -21,8 +21,7 @@ import {
     DialogContent, Dialog, DialogTitle
 } from '@mui/material';
 import Link from "next/link";
-import { httpType, httpOptions, courseModel, modifyDatastore } from '@/actions/datastore';
-import { stringify } from 'querystring';
+import { postCourse } from '@/actions/manager';
 
 const AddCourseForm = ({open, onClose}) => {
 
@@ -33,7 +32,11 @@ const AddCourseForm = ({open, onClose}) => {
         prefix: '',
         title: '',
         numTaHours: '',
-        enrollment: ''
+        currentEnrollment: '',
+        maxEnrollment: '',
+        assignedTAs: [],
+        assignedProfessors: [],
+        sections: '',
       });
 
 
@@ -49,11 +52,7 @@ const AddCourseForm = ({open, onClose}) => {
         e.preventDefault();
         console.log(formData);  // Log or send data to an API
         // Example: You could send formData to a backend here
-        const TheseHttpOptions = {
-            recordData: JSON.stringify(formData) // Convert the object to a JSON string
-            
-        };
-        modifyDatastore(courseModel, httpType.POST, TheseHttpOptions);
+        postCourse(formData);
         onClose();
       };
       
@@ -119,14 +118,44 @@ const AddCourseForm = ({open, onClose}) => {
             </Box>
             <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Enrollment:
+                    Current Enrollment:
                 </Typography>
                 <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
                     <TextField
-                        name="enrollment"
-                        label="Enrollment"
+                        name="currentEnrollment"
+                        label="Current Enrollment"
                         variant="outlined"
-                        value={formData.enrollment}
+                        value={formData.currentEnrollment}
+                        onChange={(e) => handleFormData(e)}
+                        sx={{ width: "90%", marginTop: "10px" }}
+                    />
+                </Typography>
+            </Box>
+            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
+                    Max Enrollment:
+                </Typography>
+                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
+                    <TextField
+                        name="maxEnrollment"
+                        label="Max Enrollment"
+                        variant="outlined"
+                        value={formData.maxEnrollment}
+                        onChange={(e) => handleFormData(e)}
+                        sx={{ width: "90%", marginTop: "10px" }}
+                    />
+                </Typography>
+            </Box>
+            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
+                    Number of Sections:
+                </Typography>
+                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
+                    <TextField
+                        name="sections"
+                        label="Sections"
+                        variant="outlined"
+                        value={formData.sections}
                         onChange={(e) => handleFormData(e)}
                         sx={{ width: "90%", marginTop: "10px" }}
                     />
