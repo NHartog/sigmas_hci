@@ -49,6 +49,7 @@ const CourseTAs = ({ open, close, params }) => {
         }));
     };
 
+
     return (
         <Dialog open={open} onClose={close} fullWidth>
             <DialogTitle>
