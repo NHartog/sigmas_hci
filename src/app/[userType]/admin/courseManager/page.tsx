@@ -22,6 +22,8 @@ export default async function LandingPage() {
     //];
     const rows = await getManagerCourses();
 
+    console.log(rows);
+
     return (
         <Box sx={{ padding: 2 }}>
             <CourseSubPage coursesRows={rows}/>

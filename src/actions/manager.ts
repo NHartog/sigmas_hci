@@ -73,7 +73,7 @@ export async function updateProfessor(values: any): Promise<void> {
 }
 
 export async function getManagerCourses(): Promise<any[]> {
-
+    console.log("Courses:");
     const options = {
         query: {}
     }
@@ -116,4 +116,34 @@ export async function postProf(formData) {
     }
     const newProf = await modifyDatastore(professorModel, httpType.POST, options);
     console.log(newProf);
+}
+
+
+export async function deleteTAPreference(formData: any) {
+    // Check if required fields are provided in formData
+    console.log("Data:")
+    console.log(formData)
+
+    // Perform the deletion based on provided formData
+    const result = await modifyDatastore(courseModel, httpType.DELETE, {
+        filter: {
+            prefix: formData.Prefix
+        },
+        relatesToOne: true,  // Set to true to ensure only one record is deleted, if desired
+    });
+
+    console.log(result)
+
+    // Check if a record was actually deleted
+    if (result && result.deletedCount > 0) {
+        return {
+            success: true,
+            message: 'TA preference deleted successfully!',
+        };
+    } else {
+        return {
+            success: false,
+            message: 'No matching TA preference found to delete.',
+        };
+    }
 }

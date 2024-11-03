@@ -51,6 +51,7 @@ const CourseProfessors = ({ open, close, params }) => {
         }));
     };
 
+    console.log("rendered")
     return (
         <Dialog open={open} onClose={close} fullWidth>
             <DialogTitle>

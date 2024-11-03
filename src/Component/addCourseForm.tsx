@@ -55,7 +55,8 @@ const AddCourseForm = ({open, onClose}) => {
         postCourse(formData);
         onClose();
       };
-      
+
+    console.log("rendered")
     return(
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="max" scroll="paper">
         <DialogTitle>Add Course</DialogTitle>
