@@ -22,19 +22,15 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     // State to force re-render
     const [reload, setReload] = useState(false);
 
-    // Utility function to create list string
-    const makeListString = (list: string | any[]) => {
-        return list.join(", ");
-    };
 
     const coursesHeadCells: HeadCell[] = [
-        { id: 'Prefix', numeric: false, disablePadding: true, label: 'Course' },
-        { id: 'Title', numeric: false, disablePadding: false, label: 'Full Title' },
-        { id: 'Professors', numeric: false, disablePadding: true, label: 'Professors' },
-        { id: 'Assigned_TAs', numeric: false, disablePadding: false, label: 'Assigned TAs' },
-        { id: 'Current_Enrollment', numeric: true, disablePadding: true, label: 'Enrollment' },
-        { id: 'TA_Hours', numeric: true, disablePadding: false, label: 'TA Hours' },
-        { id: 'Sections', numeric: true, disablePadding: false, label: 'Sections' },
+        { id: 'prefix', numeric: false, disablePadding: true, label: 'Course' },
+        { id: 'title', numeric: false, disablePadding: false, label: 'Full Title' },
+        { id: 'professors', numeric: false, disablePadding: true, label: 'Professors' },
+        { id: 'assignedTas', numeric: false, disablePadding: false, label: 'Assigned TAs' },
+        { id: 'currentEnrollment', numeric: true, disablePadding: true, label: 'Enrollment' },
+        { id: 'numTaHours', numeric: true, disablePadding: false, label: 'TA Hours' },
+        { id: 'sections', numeric: true, disablePadding: false, label: 'Sections' },
     ];
 
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);

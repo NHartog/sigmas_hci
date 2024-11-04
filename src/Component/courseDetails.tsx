@@ -17,14 +17,16 @@ const CourseDetails = ({ open, close, params }) => {
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
+    const numericFields = ['currentEnrollment', 'maxEnrollment', 'numTaHours', 'sections'];
+    //I know this is lazy but rather than make a function to translate each field this just feels easier
+    const titleFormat = {prefix: 'Prefix', title: 'Title', professors: 'Professors', assignedTas: 'Assigned TAs', currentEnrollment: 'Current Enrollment', maxEnrollment: 'Max Enrollment', numTaHours: 'TA Hours', sections: 'Sections'};
 
-    const handleEditToggle = async () => {
+    const handleEditToggle = () => {
         if (editMode) {
             // Save changes
             setCourseDetails(tempDetails);
             //Push new details to database
-            const result = await updateCourse(tempDetails);
-            console.log(result);
+            updateCourse(tempDetails);
         }
         setEditMode(!editMode);
     };
@@ -36,6 +38,9 @@ const CourseDetails = ({ open, close, params }) => {
     };
 
     const handleChange = (field, value) => {
+        if(numericFields.includes(field)){
+            value = Number(value);
+        }
         setTempDetails(prevDetails => ({ ...prevDetails, [field]: value }));
     };
 
@@ -66,10 +71,10 @@ const CourseDetails = ({ open, close, params }) => {
                         <Typography variant="h3">{courseDetails.Course} Details</Typography>
                     </Box>
 
-                    {['Prefix', 'Title', 'Current_Enrollment', 'Max_Enrollment', 'Sections'].map(field => (
+                    {['prefix', 'title', 'currentEnrollment', 'maxEnrollment', 'sections'].map(field => (
                         <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} key={field}>
                             <Typography sx={{ textAlign: "left", fontSize: "150%", padding: "10px", width: "50%" }}>
-                                {field.replace('_', ' ')}:
+                                {titleFormat[field]}:
                             </Typography>
                             {editMode ? (
                                 <TextField
@@ -85,10 +90,10 @@ const CourseDetails = ({ open, close, params }) => {
                         </Card>
                     ))}
 
-                    {['Professors', 'Assigned_TAs'].map(field => (
+                    {['professors', 'assignedTas'].map(field => (
                         <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} key={field}>
                             <Typography sx={{ textAlign: "left", fontSize: "150%", padding: "10px", width: "50%" }}>
-                                {field.replace('_', ' ')}:
+                                {titleFormat[field]}:
                             </Typography>
                             <Box sx={{ padding: "10px", width: "50%", display: "flex", flexDirection: "column" }}>
                                 {tempDetails[field].map(item => (

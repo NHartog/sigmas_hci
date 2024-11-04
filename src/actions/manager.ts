@@ -88,14 +88,14 @@ export async function getManagerCourses(): Promise<any[]> {
 
         actualShape.id = idx + 1
         actualShape._id = each._id
-        actualShape.Prefix = each.prefix
-        actualShape.Title = each.title
-        actualShape.Professors = each.professors
-        actualShape.Assigned_TAs = each.assignedTas
-        actualShape.Current_Enrollment = each.currentEnrollment
-        actualShape.Max_Enrollment = each.maxEnrollment
-        actualShape.TA_Hours = each.numTaHours
-        actualShape.Sections = each.sections
+        actualShape.prefix = each.prefix
+        actualShape.title = each.title
+        actualShape.professors = each.professors
+        actualShape.assignedTas = each.assignedTas
+        actualShape.currentEnrollment = each.currentEnrollment
+        actualShape.maxEnrollment = each.maxEnrollment
+        actualShape.numTaHours = each.numTaHours
+        actualShape.sections = each.sections
 
         return actualShape
     })
@@ -105,10 +105,9 @@ export async function updateCourse(values: any): Promise<void> {
 
     console.log("running");
 
-    const copy = JSON.parse(JSON.stringify(values))
+    const copy = {...values};
 
     delete copy._id;
-    delete copy.id;
     const options = {
         id: values._id,
         relatesToOne: true,
@@ -127,6 +126,29 @@ export async function getTAPreferences(): Promise<any[]> {
 
     const options = {
         query: {} // No filters applied, fetching all TA preferences
+    };
+
+    const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
+
+    // Clone and transform the data to the required shape
+    const copied = JSON.parse(JSON.stringify(preferences));
+
+    return copied.map((each: any) => {
+        return {
+            id: each._id.toString(), // Use ObjectId as string
+            Prefix: each.prefix,
+            Title: each.title,
+            Student: each.student,
+            Preference: each.preference,
+        };
+    });
+}
+
+export async function getTAPreferencesbyStudent(name: string): Promise<any[]> {
+    console.log(`Fetching all TA Preferences for ${name}`);
+
+    const options = {
+        query: {student: {name}}
     };
 
     const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);

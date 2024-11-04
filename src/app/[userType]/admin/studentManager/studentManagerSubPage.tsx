@@ -7,11 +7,15 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PersonIcon from '@mui/icons-material/Person';
 import { useState } from "react";
 import AssignToCourseDialog from '@/Component/AssignToCourseDialog';
+import { getTAPreferencesbyStudent } from '@/actions/manager';
+import StudentDetails from '@/Component/studentDetails';
 
 export default function studentManagerSubPage({ rows, availableCourses, taPreferences }: { rows: any; availableCourses:any, taPreferences:any }) {
 
     const [selectedStudent, setSelectedStudent] = useState<any>(null);
     const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+    const [preferences, setPreferences] = useState<any>(null);
 
     const headCells: HeadCell[] = [
         { id: 'studentName', numeric: false, disablePadding: true, label: 'Applicant Name' },
@@ -23,15 +27,25 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
         setSelectedStudent(row); // Capture selected student
     };
 
+    const handleStudentDetails = () => {
+        setPreferences(getTAPreferencesbyStudent(selectedStudent.name))
+        setDetailsDialogOpen(true);
+    }
+
     const handleAssignCourse = () => {
-        if (selectedStudent) setAssignDialogOpen(true);
+        if(selectedStudent){
+            setAssignDialogOpen(true);
+        }
     };
 
-    const closeAssignDialog = () => setAssignDialogOpen(false);
+    const closeDialog = () => {
+        setAssignDialogOpen(false);
+        setDetailsDialogOpen(false);
+    }
 
     const button = (
         <Stack direction="row">
-            <Button sx={{ margin: 1 }} variant="contained" endIcon={<PersonIcon />}>
+            <Button sx={{ margin: 1 }} variant="contained" onClick={handleStudentDetails} endIcon={<PersonIcon />}>
                 View Student Details
             </Button>
             <Button sx={{ margin: 1 }} variant="contained" onClick={handleAssignCourse} endIcon={<AutoStoriesIcon />}>
@@ -50,10 +64,20 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
                 onRowSelect={handleRowSelect}
                 advancedTooltip
             />
-            {assignDialogOpen && selectedStudent && (
+            {detailsDialogOpen && (
+                <StudentDetails
+                    open={detailsDialogOpen}
+                    onClose={closeDialog}
+                    params = {selectedStudent}
+                    prefs = {preferences}
+                    />
+            )
+
+            }
+            {assignDialogOpen && (
                 <AssignToCourseDialog
                     open={assignDialogOpen}
-                    onClose={closeAssignDialog}
+                    onClose={closeDialog}
                     availableCourses={availableCourses}
                     studentName={selectedStudent.studentName}
                     taPreferences={taPreferences}
