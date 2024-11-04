@@ -87,6 +87,7 @@ export async function getManagerCourses(): Promise<any[]> {
         var actualShape: any = {}
 
         actualShape.id = idx + 1
+        actualShape._id = each._id
         actualShape.Prefix = each.prefix
         actualShape.Title = each.title
         actualShape.Professors = each.professors
@@ -98,6 +99,27 @@ export async function getManagerCourses(): Promise<any[]> {
 
         return actualShape
     })
+}
+
+export async function updateCourse(values: any): Promise<void> {
+
+    console.log("running");
+
+    const copy = JSON.parse(JSON.stringify(values))
+
+    delete copy._id;
+    delete copy.id;
+    const options = {
+        id: values._id,
+        relatesToOne: true,
+        recordData: copy
+    };
+    console.log(copy);
+    console.log(values._id);
+
+    const updated = await modifyDatastore(courseModel, httpType.PUSH, options);
+    console.log("UPDATED IS ", updated);
+    revalidatePath('/manager')
 }
 
 export async function getTAPreferences(): Promise<any[]> {

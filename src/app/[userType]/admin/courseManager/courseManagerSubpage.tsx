@@ -46,7 +46,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [rowPrefix, setRowPrefix] = useState('');
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
-        setSelectedCourse(professor);
+        //setSelectedCourse(professor);
         setDetailsDialogOpen(true);
     };
 
@@ -56,7 +56,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     };
 
     const handleSelectProfessorCourse = (professor: any) => {
-        setSelectedCourse(professor);
+        //setSelectedCourse(professor);
         setManageCourseProfessorsOpen(true);
     };
 

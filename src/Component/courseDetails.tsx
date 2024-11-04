@@ -11,16 +11,20 @@ import {
     IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { updateCourse } from '@/actions/manager';
 
 const CourseDetails = ({ open, close, params }) => {
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
 
-    const handleEditToggle = () => {
+    const handleEditToggle = async () => {
         if (editMode) {
             // Save changes
             setCourseDetails(tempDetails);
+            //Push new details to database
+            const result = await updateCourse(tempDetails);
+            console.log(result);
         }
         setEditMode(!editMode);
     };
