@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import mongoose from 'mongoose';
 import { modifyDatastore} from "./datastore"
-import { courseModel, httpType, professorModel, studentModel } from "./datastoreTypes"
+import {courseModel, httpType, professorModel, studentModel, TAPreferenceModel} from "./datastoreTypes"
 
 
 export async function getStudents(): Promise<any[]> {
@@ -98,6 +98,29 @@ export async function getManagerCourses(): Promise<any[]> {
 
         return actualShape
     })
+}
+
+export async function getTAPreferences(): Promise<any[]> {
+    console.log("Fetching all TA Preferences");
+
+    const options = {
+        query: {} // No filters applied, fetching all TA preferences
+    };
+
+    const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
+
+    // Clone and transform the data to the required shape
+    const copied = JSON.parse(JSON.stringify(preferences));
+
+    return copied.map((each: any) => {
+        return {
+            id: each._id.toString(), // Use ObjectId as string
+            Prefix: each.prefix,
+            Title: each.title,
+            Student: each.student,
+            Preference: each.preference,
+        };
+    });
 }
 
 export async function postCourse(formData) {

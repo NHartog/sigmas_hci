@@ -1,53 +1,23 @@
 "use server";
 
-import { Box, Button, ButtonGroup, Stack, Typography } from '@mui/material'
-import { EnhancedTable, HeadCell } from '@/Component/customTable';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import PersonIcon from '@mui/icons-material/Person';
-import { getStudents } from '@/actions/manager';
+import { Box, Typography, Button, ButtonGroup, Stack } from '@mui/material'
+import StudentSubPage from './studentManagerSubPage';
+import {getManagerCourses, getStudents, getTAPreferences} from '@/actions/manager';
+import studentManagerSubPage from "./studentManagerSubPage";
+import CourseSubPage from "@/app/[userType]/admin/courseManager/courseManagerSubpage";
 
 
 export default async function LandingPage() {
 
-    const rows = await getStudents()
+    const rows = await getStudents();
+    const availableCourses = await getManagerCourses();
+    const taPreferences = await  getTAPreferences();
 
-    const headCells: HeadCell[] = [
-        {
-            id: 'studentName',
-            numeric: false,
-            disablePadding: true,
-            label: 'Applicant Name',
-        },
-        {
-            id: 'collegeStatus',
-            numeric: false,
-            disablePadding: false,
-            label: 'College Status',
-        },
-        {
-            id: 'applicationStatus',
-            numeric: true,
-            disablePadding: false,
-            label: 'Application Status',
-        }
-    ];
-
-    const title = "Student Management"
-
-    const button = (
-        <Stack direction="row">
-            <Button sx={{ margin: 1, minWidth: 'max-content', display: "flex", flexDirection: "row" }} variant="contained" endIcon={<PersonIcon />}>
-                View Student Details
-            </Button>
-            <Button sx={{ margin: 1, minWidth: 'max-content', display: "flex", flexDirection: "row" }} variant="contained" endIcon={<AutoStoriesIcon />}>
-                Assign to Course
-            </Button>
-        </Stack>
-    );
+    console.log(availableCourses);
 
     return (
-        <Box style={{ padding: "20px" }}>
-            <EnhancedTable rows={rows} headCells={headCells} button={button} title={title} advancedTooltip />
+        <Box sx={{ padding: 2 }}>
+            <StudentSubPage rows={rows} availableCourses= {availableCourses} taPreferences={taPreferences} />
         </Box>
     );
 }
