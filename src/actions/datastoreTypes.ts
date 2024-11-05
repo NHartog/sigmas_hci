@@ -2,11 +2,26 @@ import mongoose from 'mongoose';
 
 mongoose.connect('mongodb://127.0.0.1/sigmas_hci');
 
+export const coursePreferenceSchema = new mongoose.Schema({
+    course: String,
+    preferenceLevel: Number,
+    courseTaken: Boolean
+})
+
 export const studentSchema = new mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     name: String,
     status: String,
     application: String,
+    semesterAdmitted: String,
+    gpa: Number,
+    ufid: Number,
+    email: String,
+    countryOfOriginIsUSA: Boolean,
+    toeflScore: String,
+    researchAreas: String,
+    travelPlans: String,
+    coursePreferences: [coursePreferenceSchema],
     applicationStatus: Boolean,
     applicationChangeWasASubmit: Boolean,
     applicationCompletionStatus: Boolean,

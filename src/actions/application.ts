@@ -52,6 +52,22 @@ export async function submitApplication(formData: any): Promise<void> {
         id: user._id,
         recordData: {
             application: JSON.stringify(formData),
+            semesterAdmitted: formData.selectedSemester,
+            status: formData.selectedCollegeStatus,
+            gpa: formData.ufGPA,
+            ufid: formData.ufID,
+            email: formData.ufEmail,
+            countryOfOriginIsUSA: formData.isUSA,
+            toeflScore: formData.score,
+            researchAreas: formData.responseOne,
+            travelPlans: formData.responseTwo,
+            coursePreferences: formData.coursePreferences.map((data: any) => {
+                return {
+                    course: data.course,
+                    preferenceLevel: data.preference,
+                    courseTaken: data.taken
+                }
+            }),
             applicationLastEditDate: new Date(),
             applicationCompletionStatus: true,
             applicationChangeWasASubmit: true,
