@@ -13,7 +13,7 @@ export default async function LandingPage() {
     const availableCourses = await getManagerCourses();
     const taPreferences = await  getTAPreferences();
 
-    console.log(availableCourses);
+
 
     return (
         <Box sx={{ padding: 2 }}>

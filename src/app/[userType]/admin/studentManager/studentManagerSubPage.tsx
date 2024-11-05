@@ -54,6 +54,8 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
         </Stack>
     );
 
+    console.log(taPreferences);
+
     return (
         <Box style={{ padding: "20px" }}>
             <EnhancedTable

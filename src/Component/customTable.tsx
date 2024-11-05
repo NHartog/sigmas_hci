@@ -65,7 +65,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 		(property: string) => (event: React.MouseEvent<unknown>) => {
 			onRequestSort(event, property);
 		};
-
 	return (
 		<TableHead>
 			<TableRow key={'tablehead'}>

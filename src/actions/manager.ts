@@ -24,7 +24,7 @@ export async function getStudents(): Promise<any[]> {
 
         actualShape.id = idx + 1
         actualShape.studentName = each.name
-        actualShape.applicationStatus = "Pending" // TODO: Actually handle this field
+        actualShape.applicationStatus = each.applicationStatus ? "Assigned" : "Pending";
         actualShape.collegeStatus = each.status
 
         return actualShape
@@ -140,6 +140,7 @@ export async function getTAPreferences(): Promise<any[]> {
             Title: each.title,
             Student: each.student,
             Preference: each.preference,
+            Professor: each.professor
         };
     });
 }
@@ -214,3 +215,50 @@ export async function deleteTAPreference(formData: any) {
         };
     }
 }
+
+export async function updateWithTAPreference(studentName: string, coursePrefix: string): Promise<any> {
+    // Find the student by name to update the application status
+    const studentOptions = {
+        query: { name: studentName }
+    };
+    const studentData: any = await modifyDatastore(studentModel, httpType.GET, studentOptions);
+    if (!studentData.length) {
+        return { success: false, message: "Student not found." };
+    }
+
+    // Update student's application status to true
+    const studentUpdateOptions = {
+        id: studentData[0]._id,
+        relatesToOne: true,
+        recordData: { applicationStatus: true }
+    };
+    await modifyDatastore(studentModel, httpType.PUSH, studentUpdateOptions);
+
+    // Find the course to update assigned TAs
+    const courseOptions = {
+        query: { prefix: coursePrefix }
+    };
+    const courseData: any = await modifyDatastore(courseModel, httpType.GET, courseOptions);
+    if (!courseData.length) {
+        return { success: false, message: "Course not found." };
+    }
+
+    // Check if the student is already assigned as a TA for this course
+    if (courseData[0].assignedTas.includes(studentName)) {
+        return { success: false, message: "Student is already assigned as a TA for this course." };
+    }
+
+    // Update course with new assigned TA
+    const courseUpdateOptions = {
+        id: courseData[0]._id,
+        relatesToOne: true,
+        recordData: {
+            assignedTas: [...courseData[0].assignedTas, studentName]
+        }
+    };
+    await modifyDatastore(courseModel, httpType.PUSH, courseUpdateOptions);
+
+    return { success: true, message: "Student application status and course assigned TAs updated successfully." };
+}
+
+

@@ -3,6 +3,7 @@
 import { Box, Dialog, DialogContent, Typography, Button, Card, CardContent, CardActionArea } from '@mui/material';
 import { useState } from 'react';
 import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
+import {updateWithTAPreference} from "@/actions/manager";
 
 interface Course {
     prefix: string;
@@ -18,19 +19,45 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
     taPreferences: any[],
 }) => {
     const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSelectCourse = (courseId: string) => {
         setSelectedCourse(courseId);
     };
 
+    const handleAssignCourse = async () => {
+        if (selectedCourse && studentName) {
+            setLoading(true); // Optional: Set loading state
+            try {
+                // Call server function to update student and course details
+                const result = await updateWithTAPreference(studentName, selectedCourse);
+                console.log(result.message); // Log the success or error message
+
+                if (result.success) {
+                    // Close dialog or show confirmation as needed
+                    alert(result.message);
+                    onClose();
+                } else {
+                    // Handle any errors or notify the user
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error("Failed to assign course:", error);
+                alert("An error occurred while assigning the course.");
+            } finally {
+                setLoading(false); // Reset loading state
+            }
+        }
+    };
+
     const getPreferenceForProfessor = (professor: string, course: string): number => {
-        console.log(professor);
-        console.log(taPreferences);
+        console.log(taPreferences)
         const preference = taPreferences.find(pref =>
             pref.Prefix === course &&
-            pref.Student === studentName
+            pref.Student === studentName &&
+            pref.Professor === professor
         );
-        return preference ? preference.Preference : 0;  // Return preference count or 0 if none
+        return preference ? preference.Preference : 0;
     };
 
     return (
@@ -85,11 +112,11 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
                     <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => { /* Handle assignment action here */ }}
+                        onClick={handleAssignCourse}
                         sx={{ ml: 2 }}
-                        disabled={!selectedCourse}  // Only enable if a course is selected
+                        disabled={!selectedCourse || loading} // Disable if no course selected or loading
                     >
-                        Assign Selected Course
+                        {loading ? "Assigning..." : "Assign Selected Course"}
                     </Button>
                 </Box>
             </DialogContent>

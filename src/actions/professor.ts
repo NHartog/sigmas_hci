@@ -52,7 +52,9 @@ export async function getTAs(): Promise<any[]> {
 
 export async function addTAPreference(recordData: any) {
 
-    const { prefix, title, student, preference } = recordData;
+    const { prefix, title, student, preference, professor } = recordData;
+
+    console.log(recordData.professor)
 
     if (!prefix || !title || !student || preference === null) {
         return {

@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {addTAPreference} from "@/actions/professor";
+import {getUserData} from "@/actions/application";
 
 interface Ta {
     id: number;
@@ -150,11 +151,14 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                         onClick={async () => {
 
                             try {
+                                const userData = await getUserData()
+                                console.log(userData)
                                 const response = await addTAPreference({
                                     prefix: selectedCourse,
                                     title: selectedCourseTitle,
                                     student: selectedTA,
                                     preference: preferenceValue,
+                                    professor: userData.name
                                 });
 
                                 if (response.success) {

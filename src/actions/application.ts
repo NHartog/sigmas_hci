@@ -18,7 +18,6 @@ export async function getApplicationData(): Promise<any> {
 
 export async function getUserData(): Promise<any> {
     const user = JSON.parse(cookies().get('user')?.value || '{}')
-
     if (user) {
         return user
     }
