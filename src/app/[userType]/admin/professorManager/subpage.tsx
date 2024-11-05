@@ -7,6 +7,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
+import ProfessorCourses from '@/Component/manageProfessorsCourses';
+import { getSpecificProf } from '@/actions/manager';
 
 export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
@@ -40,6 +42,8 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 	const [profDetailsDialogOpen, setProfDetailsDialogOpen] = useState(false);
 	const [addProfDialogOpen, setAddProfDialogOpen] = useState(false);
 	const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
+	const [profCourses, setProfCourses] = useState<any>(null);
+	const [manageCourseDialog, setManageCourseDialog] = useState(false);
 
 	const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
 		setSelectedProfessor(professor);
@@ -51,11 +55,12 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 	const handleCloseDialog = () => {
 		setProfDetailsDialogOpen(false);
 		setAddProfDialogOpen(false);
+		setManageCourseDialog(false);
 	};
 
 	// New function to handle row selection
 	const handleRowSelect = (row: any) => {
-		//setSelectedProfessor(row)
+		setSelectedProfessor(row)
 		myVariable.current = row; // Pass the selected row to handleViewDetails
 	};
 
@@ -66,6 +71,11 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 	const handleAddProfDialog = () => {
 		setAddProfDialogOpen(true);
 	};
+	const handleManageCourseDialog = async () => {
+		const curr_Prof = await getSpecificProf(selectedProfessor.Professor);
+        setProfCourses(curr_Prof.courses);
+		setManageCourseDialog(true);
+	}
 
 	const button = (
 		<Stack direction="row">
@@ -77,8 +87,8 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 			>
 				View Professor Details
 			</Button>
-			<Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" endIcon={<PersonAddIcon />}>
-				Add Course
+			<Button sx={{ margin: 1, minWidth: 'max-content' }} onClick={handleManageCourseDialog} variant="contained" endIcon={<PersonAddIcon />}>
+				Manage Courses
 			</Button>
 		</Stack>
 	);
@@ -112,7 +122,15 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 					all_Courses={all_Courses}
 				/>
 			)}
-
+			{manageCourseDialog && (
+				<ProfessorCourses
+					open={manageCourseDialog}
+					close={handleCloseDialog}
+					params={selectedProfessor}
+					courses = {profCourses}
+					allCourses={all_Courses}
+				/>
+			)}
 		</>
 	)
 }

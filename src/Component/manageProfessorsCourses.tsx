@@ -14,21 +14,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
-const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
-    const profsByName = allProfs.map(item => item.Professor);
-    const [tempProfs, setTempProfs] = useState(profs); 
+const ProfessorCourses = ({ open, close, params, courses, allCourses }) => {
+    const coursesByPrefix = allCourses.map(item => item.prefix);
+    const [tempCourses, setTempCourses] = useState(courses); 
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
-    const [newProf, setNewProfName] = useState("");
+    const [newCourse, setNewCourseName] = useState("");
     const [filteredItems, setFilteredItems] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
     const handleEditToggle = () => {
-        if (editMode) {
-            // Save changes
-            setCourseDetails(tempDetails);
-        }
         setEditMode(!editMode);
     };
 
@@ -50,53 +46,52 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
         }));
     };
 
-    const handleRemoveProfessor = (professor) => {
-        unassignProfessorCourse(professor, params.prefix);
-        setTempProfs(tempProfs.filter(p => p !== professor));
-        console.log(tempProfs, "ADDING")
+    const handleRemoveCourse = (course) => {
+        unassignProfessorCourse(params.Professor, course);
+        setTempCourses(tempCourses.filter(c => c !== course));
+        console.log(tempCourses, "ADDING")
         setEditMode(false);
-        alert("Professor Successfully Removed From Course!")
+        alert("Course Successfully Unassigned From Professor!")
     };
 
     const handleFilteredItems = (value: any) => {
-        if (value === '' || profsByName.includes(value)) {
+        if (value === '' || coursesByPrefix.includes(value)) {
             setFilteredItems([])
         }
         else {
-            const matches = profsByName.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
+            const matches = coursesByPrefix.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
             setFilteredItems(matches)
         }
         setShowDropdown(filteredItems.length > 0);
     };
 
     const handleItemClick = (item: any) => {
-        setNewProfName(item);
+        setNewCourseName(item);
         setFilteredItems([]);
         setShowDropdown(false);
     }
 
     const handleType = (e) => {
-        console.log(profsByName);
-        setNewProfName(e.target.value);
+        console.log(coursesByPrefix);
+        setNewCourseName(e.target.value);
         handleFilteredItems(e.target.value);
     }
 
-    const handleAddProfSubmit = () =>{
-        if (!profsByName.includes(newProf)){
-            alert('Professor given does not exist, please check your spelling')
+    const handleAddCourseSubmit = () =>{
+        if (!coursesByPrefix.includes(newCourse)){
+            alert('Course given does not exist, please check your spelling')
             return
         }
-        else if(tempProfs.includes(newProf)){
-            alert('Professor is already assigned to course')
+        else if(tempCourses.includes(newCourse)){
+            alert('Course is already assigned to professor')
             return
         }
-        assignProfessorCourse(newProf, params.prefix);
-        setTempProfs([...tempProfs, newProf])
+        assignProfessorCourse(params.Professor, newCourse);
+        setTempCourses([...tempCourses, newCourse])
         setEditMode(false);
-        alert("Professor Successfully Assigned to Course!")
+        alert("Course Successfully Assigned to Professor!")
     }
     console.log("rendered")
-    console.log(allProfs)
     return (
         <Dialog open={open} onClose={close} fullWidth>
             <DialogTitle>
@@ -109,18 +104,18 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
             <DialogContent sx={{overflow: "visible", paddingLeft: "10%", paddingRight: "10%", paddingBottom: "40%"}}>
                 <Box style={{ textAlign: "center", width: "100%" }}>
                     <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
-                        <Typography variant="h3">{courseDetails.Course} Details</Typography>
+                        <Typography variant="h3">{params.Professor} Courses</Typography>
                     </Box>
 
-                    {/* Assigned Professors Section */}
+                    {/* Assigned Courses Section */}
                     <Box sx={{ marginTop: 3 }}>
-                        <Typography variant="h5">Assigned Professors</Typography>
-                        { tempProfs.length > 0 ?
-                            tempProfs.map((prof) => (
+                        <Typography variant="h5">Assigned Courses</Typography>
+                        { tempCourses.length > 0 ?
+                            tempCourses.map((course) => (
                                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{prof}</Typography>
-                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveProfessor(prof)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
-                                        Remove from Course
+                                    <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{course}</Typography>
+                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveCourse(course)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
+                                        Remove Course
                                     </Button>
                                 </Box>
                             ))
@@ -128,21 +123,21 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                             <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>None Assigned</Typography>
                         }
                         {!editMode && <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
-                            Add a Professor
+                            Add a Course
                         </Button>}
                     </Box>
 
-                    {/* Available Professors Section */}
+                    {/* Available Courses Section */}
                     {editMode && (
                         <Box sx={{ marginTop: 3, display: "flex", flexDirection: "row" }}>
-                            {allProfs.length > 0 ? (
+                            {allCourses.length > 0 ? (
                                 <>
                                 <Box sx={{width: '100%'}}>
                                     <TextField
-                                        name="newProf"
+                                        name="newCourse"
                                         label="Search name"
                                         variant="outlined"
-                                        value={newProf}
+                                        value={newCourse}
                                         onChange={(e) => handleType(e)}
                                         sx={{ width: "90%", marginTop: "10px" }}
                                     />
@@ -170,7 +165,7 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                                         </Box>
                                     )}
                                 </Box>
-                                <Button onClick={handleAddProfSubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
+                                <Button onClick={handleAddCourseSubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
                                     Add
                                 </Button>
                                 </>
@@ -187,4 +182,4 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
     );
 };
 
-export default CourseProfessors;
+export default ProfessorCourses;

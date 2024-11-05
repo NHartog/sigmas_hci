@@ -243,6 +243,31 @@ export async function getSpecificCourse(coursePrefix: String) {
     return result[0];
 }
 
+export async function getSpecificProf(profName: String) {
+    const options = {
+        query: {name: profName}
+    }
+
+    const prof: any = await modifyDatastore(professorModel, httpType.GET, options)
+    const copied = JSON.parse(JSON.stringify(prof))
+
+
+    const result =  copied.map((each: any, idx: number) => {
+        var actualShape: any = {}
+
+        actualShape.id = idx + 1
+        actualShape._id = each._id
+        actualShape.Professor = each.name
+        actualShape.email = each.email
+        actualShape.department = each.department
+        actualShape.courses = each.courses
+
+        return actualShape
+    })
+    console.log(result, "RESULTS")
+    return result[0];
+}
+
 export async function updateCourse(values: any): Promise<void> {
 
     console.log("running");
