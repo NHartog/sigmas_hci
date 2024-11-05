@@ -12,10 +12,11 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { assignProfessorCourse } from '@/actions/manager';
+import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
 const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
     const profsByName = allProfs.map(item => item.Professor);
+    const [tempProfs, setTempProfs] = useState(profs); 
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
@@ -50,11 +51,11 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
     };
 
     const handleRemoveProfessor = (professor) => {
-        setTempDetails(prevDetails => ({
-            ...prevDetails,
-            Assigned_Professors: prevDetails.Assigned_Professors.filter(p => p !== professor),
-            Available_Professors: [...prevDetails.Available_Professors, professor]
-        }));
+        unassignProfessorCourse(professor, params.prefix);
+        setTempProfs(tempProfs.filter(p => p !== professor));
+        console.log(tempProfs, "ADDING")
+        setEditMode(false);
+        alert("Professor Successfully Removed From Course!")
     };
 
     const handleFilteredItems = (value: any) => {
@@ -85,12 +86,12 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
             alert('Professor given does not exist, please check your spelling')
             return
         }
-        else if(profs.includes(newProf)){
+        else if(tempProfs.includes(newProf)){
             alert('Professor is already assigned to course')
             return
         }
         assignProfessorCourse(newProf, params.prefix);
-        profs.push(newProf)
+        setTempProfs([...tempProfs, newProf])
         setEditMode(false);
         alert("Professor Successfully Assigned to Course!")
     }
@@ -120,10 +121,10 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                     <Box sx={{ marginTop: 3 }}>
                         <Typography variant="h5">Assigned Professors</Typography>
                         { profs.length > 0 ?
-                            profs.map((prof) => (
+                            tempProfs.map((prof) => (
                                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{prof}</Typography>
-                                    <Button variant='contained' color='secondary' sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
+                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveProfessor(prof)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
                                         Remove from Course
                                     </Button>
                                 </Box>
