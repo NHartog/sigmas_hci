@@ -4,11 +4,13 @@ import { Typography } from '@mui/material'
 import ApplicationStepper from '@/Component/application'
 import { Stack } from "@mui/system";
 import { getApplicationData } from '@/actions/application';
+import {getCourses} from "@/actions/professor";
 
 
 export default async function LandingPage() {
 
-    const applicationData = await getApplicationData()
+    const applicationData = await getApplicationData();
+    const course = await getCourses();
 
     return (
         <Stack style={{ padding: "20px", textAlign: "center", justifyContent: "center" }}>
@@ -18,7 +20,7 @@ export default async function LandingPage() {
             <Typography variant="body1" paragraph>
                 Please fill the application to the best of your ability
             </Typography>
-            <ApplicationStepper applicationData={applicationData} />
+            <ApplicationStepper applicationData={applicationData}  courses = {course}/>
         </Stack>
     );
 }
