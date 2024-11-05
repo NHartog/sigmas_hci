@@ -10,7 +10,7 @@ import AssignToCourseDialog from '@/Component/AssignToCourseDialog';
 import { getTAPreferencesbyStudent } from '@/actions/manager';
 import StudentDetails from '@/Component/studentDetails';
 
-export default function studentManagerSubPage({ rows, availableCourses, taPreferences }: { rows: any; availableCourses:any, taPreferences:any }) {
+export default function studentManagerSubPage({ rows, availableCourses, taPreferences }: { rows: any; availableCourses: any, taPreferences: any }) {
 
     const [selectedStudent, setSelectedStudent] = useState<any>(null);
     const [assignDialogOpen, setAssignDialogOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     }
 
     const handleAssignCourse = () => {
-        if(selectedStudent){
+        if (selectedStudent) {
             setAssignDialogOpen(true);
         }
     };
@@ -55,7 +55,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     );
 
     return (
-        <Box style={{ padding: "20px" }}>
+        <Box>
             <EnhancedTable
                 rows={rows}
                 headCells={headCells}
@@ -68,9 +68,9 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
                 <StudentDetails
                     open={detailsDialogOpen}
                     onClose={closeDialog}
-                    params = {selectedStudent}
-                    prefs = {preferences}
-                    />
+                    params={selectedStudent}
+                    prefs={preferences}
+                />
             )
 
             }

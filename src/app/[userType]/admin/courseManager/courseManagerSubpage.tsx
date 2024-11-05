@@ -110,9 +110,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                 onRowSelect={handleRowSelect}
             />
             <Box sx={{ textAlign: "right" }}>
-                <Button sx={{ border: "3px solid black", width: "15%", height: "120%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': { backgroundColor: "rgba(255, 127, 50, 1)" } }}
-                        onClick={handleAddCourse}
-                        endIcon={<AddCircleIcon />}>
+                <Button onClick={handleAddCourse} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
                     Add a Course
                 </Button>
             </Box>

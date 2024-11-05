@@ -34,7 +34,7 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogContent>
                 <Box textAlign="center" mb={3}>
                     <Typography variant="h5">Assign {studentName} to a Course</Typography>
