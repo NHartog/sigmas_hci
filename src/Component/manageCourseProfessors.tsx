@@ -11,11 +11,16 @@ import {
     IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-const CourseProfessors = ({ open, close, params }) => {
+const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
+    const profsByName = allProfs.map(item => item.Professor);
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
+    const [newProf, setNewProfName] = useState("");
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const handleEditToggle = () => {
         if (editMode) {
@@ -51,7 +56,31 @@ const CourseProfessors = ({ open, close, params }) => {
         }));
     };
 
+    const handleFilteredItems = (value: any) => {
+        if (value === '' || profsByName.includes(value)) {
+            setFilteredItems([])
+        }
+        else {
+            const matches = profsByName.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
+            setFilteredItems(matches)
+        }
+        setShowDropdown(filteredItems.length > 0);
+    };
+
+    const handleItemClick = (item: any) => {
+        setNewProfName(item);
+        setFilteredItems([]);
+        setShowDropdown(false);
+    }
+
+    const handleType = (e) => {
+        console.log(profsByName);
+        setNewProfName(e.target.value);
+        handleFilteredItems(e.target.value);
+    }
+
     console.log("rendered")
+    console.log(allProfs)
     return (
         <Dialog open={open} onClose={close} fullWidth>
             <DialogTitle>
@@ -66,7 +95,7 @@ const CourseProfessors = ({ open, close, params }) => {
                 )}
             </DialogTitle>
 
-            <DialogContent>
+            <DialogContent sx={{overflow: "visible"}}>
                 <Box style={{ textAlign: "center", width: "100%" }}>
                     <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
                         <Typography variant="h3">{courseDetails.Course} Details</Typography>
@@ -75,38 +104,64 @@ const CourseProfessors = ({ open, close, params }) => {
                     {/* Assigned Professors Section */}
                     <Box sx={{ marginTop: 3 }}>
                         <Typography variant="h5">Assigned Professors</Typography>
-                        {/*{tempDetails.Assigned_Professors.length ? (*/}
-                        {/*    tempDetails.Assigned_Professors.map(professor => (*/}
-                        {/*        <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center", padding: "10px", marginY: 1 }} key={professor}>*/}
-                        {/*            <Typography sx={{ fontSize: "150%", flexGrow: 1 }}>{professor}</Typography>*/}
-                        {/*            {editMode && (*/}
-                        {/*                <IconButton onClick={() => handleRemoveProfessor(professor)} size="small">*/}
-                        {/*                    <CloseIcon fontSize="small" />*/}
-                        {/*                </IconButton>*/}
-                        {/*            )}*/}
-                        {/*        </Card>*/}
-                        {/*    ))*/}
-                        {/*) : (*/}
-                            <Typography sx={{ fontSize: "150%", padding: "10px" }}>None Assigned</Typography>
-                        {/*)}*/}
+                        { profs.length > 0 ?
+                            profs.map((prof) => (
+                                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{prof}</Typography>
+                                    <Button variant='contained' color='secondary' sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
+                                        Remove from Course
+                                    </Button>
+                                </Box>
+                            ))
+                        :
+                            <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>None Assigned</Typography>
+                        }
+                        {!editMode && <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
+                            Add a Professor
+                        </Button>}
                     </Box>
 
                     {/* Available Professors Section */}
                     {editMode && (
                         <Box sx={{ marginTop: 3 }}>
-                            <Typography variant="h5">Available Professors</Typography>
-                            {/*{tempDetails.Available_Professors.length ? (*/}
-                            {/*    tempDetails.Available_Professors.map(professor => (*/}
-                            {/*        <Card sx={{ display: "flex", flexDirection: "row", alignItems: "center", padding: "10px", marginY: 1 }} key={professor}>*/}
-                            {/*            <Typography sx={{ fontSize: "150%", flexGrow: 1 }}>{professor}</Typography>*/}
-                            {/*            <Button onClick={() => handleAddProfessor(professor)} size="small" variant="contained" sx={{ marginLeft: 2 }}>*/}
-                            {/*                Add*/}
-                            {/*            </Button>*/}
-                            {/*        </Card>*/}
-                            {/*    ))*/}
-                            {/*) : (*/}
-                                <Typography sx={{ fontSize: "150%", padding: "10px" }}>No Available Professors</Typography>
-                            {/*)}*/}
+                            {allProfs.length > 0 ? (
+                                <>
+                                    <TextField
+                                        name="newProf"
+                                        label="Search name"
+                                        variant="outlined"
+                                        value={newProf}
+                                        onChange={(e) => handleType(e)}
+                                        sx={{ width: "90%", marginTop: "10px" }}
+                                    />
+                                    {showDropdown && (
+                                        <Box
+                                            style={{
+                                                border: "1px solid #ccc",
+                                                maxHeight: "150px",
+                                                overflowY: "auto",
+                                                position: "absolute",
+                                                backgroundColor: "white",
+                                                width: "100%",
+                                            }}
+                                        >
+                                            {filteredItems.map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => handleItemClick(item)}
+                                                    style={{ padding: "5px", cursor: "pointer" }}
+                                                >
+                                                    {item}
+                                                </div>
+                                            ))}
+                                        </Box>
+                                    )}
+                                </>
+                            ) : (
+                                <Typography sx={{ fontSize: "150%", padding: "10px" }}>
+                                    No Available Professors
+                                </Typography>
+                            )}
                         </Box>
                     )}
                 </Box>

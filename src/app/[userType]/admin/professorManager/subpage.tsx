@@ -43,6 +43,8 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 
 	const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
 		setSelectedProfessor(professor);
+		console.log(myVariable.current);
+		console.log(selectedProfessor);
 		setProfDetailsDialogOpen(true);
 	};
 

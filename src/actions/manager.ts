@@ -125,6 +125,36 @@ export async function getManagerCourses(): Promise<any[]> {
     })
 }
 
+export async function getSpecificCourse(coursePrefix: String) {
+    const options = {
+        query: {prefix: coursePrefix}
+    }
+
+    const course: any = await modifyDatastore(courseModel, httpType.GET, options)
+    console.log(course, "COURSE")
+    const copied = JSON.parse(JSON.stringify(course))
+
+
+    const result =  copied.map((each: any, idx: number) => {
+        var actualShape: any = {}
+
+        actualShape.id = idx + 1
+        actualShape._id = each._id
+        actualShape.prefix = each.prefix
+        actualShape.title = each.title
+        actualShape.professors = each.professors
+        actualShape.assignedTas = each.assignedTas
+        actualShape.currentEnrollment = each.currentEnrollment
+        actualShape.maxEnrollment = each.maxEnrollment
+        actualShape.numTaHours = each.numTaHours
+        actualShape.sections = each.sections
+
+        return actualShape
+    })
+    console.log(result, "RESULTS")
+    return result[0];
+}
+
 export async function updateCourse(values: any): Promise<void> {
 
     console.log("running");

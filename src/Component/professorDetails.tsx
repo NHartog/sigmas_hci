@@ -129,7 +129,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                             <Typography variant="h4">Current Courses</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {params.Courses.length > 0 ? (
+                            {params.courses.length > 0 ? (
                                 <Table>
                                     <TableHead>
                                         <TableRow>
@@ -139,7 +139,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {params.Courses.map((course: { name: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; enrolled: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; seats: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }, idx: React.Key | null | undefined) => (
+                                        {params.courses.map((course: { name: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; enrolled: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; seats: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }, idx: React.Key | null | undefined) => (
                                             <TableRow key={idx}>
                                                 <TableCell style={{ textAlign: "center" }}><strong>{course.name}</strong></TableCell>
                                                 <TableCell style={{ textAlign: "center" }}><strong>{course.enrolled}/{course.seats}</strong></TableCell>
