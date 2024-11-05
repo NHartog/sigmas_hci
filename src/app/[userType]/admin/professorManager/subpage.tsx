@@ -8,7 +8,7 @@ import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
 
-export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any , all_Courses: any}) {
+export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
 	let myVariable = useRef();
 
@@ -91,13 +91,11 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 				advancedTooltip
 				onRowSelect={handleRowSelect} // Pass the handleRowSelect function
 			/>
-			<Box sx={{textAlign: "right"}}>
-                <Button sx={{border: "3px solid black", width: "15%", height: "120%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}
-                onClick={handleAddProfDialog}
-                endIcon={<AddCircleIcon />}>
-                    Add a Professor
-                </Button>
-            </Box>
+			<Box sx={{ textAlign: "right" }}>
+				<Button onClick={handleAddProfDialog} variant={'contained'} color='secondary' endIcon={<AddCircleIcon />}>
+					Add a Professor
+				</Button>
+			</Box>
 			{profDetailsDialogOpen && (
 				<ProfessorDetailsDialog
 					open={profDetailsDialogOpen}
@@ -109,7 +107,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 				<AddProfessorForm
 					open={addProfDialogOpen}
 					onClose={handleCloseDialog}
-					all_Courses = {all_Courses}
+					all_Courses={all_Courses}
 				/>
 			)}
 

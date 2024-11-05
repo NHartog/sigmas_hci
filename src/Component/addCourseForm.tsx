@@ -4,29 +4,18 @@ import React, { useState } from 'react';
 import {
     Box,
     Button,
-    ButtonGroup,
-    Card,
-    List,
-    ListItem,
-    ListItemText,
     TextField,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Paper,
     Stack,
-    DialogContent, Dialog, DialogTitle
+    DialogContent,
+    Dialog,
+    Paper,
+    Divider,
 } from '@mui/material';
-import Link from "next/link";
 import { postCourse } from '@/actions/manager';
 
-const AddCourseForm = ({open, onClose}) => {
+const AddCourseForm = ({ open, onClose }: { open: any, onClose: any }) => {
 
-    let seats: string = '';
-    let enrolled: string = '';
 
     const [formData, setFormData] = useState({
         prefix: '',
@@ -37,140 +26,74 @@ const AddCourseForm = ({open, onClose}) => {
         assignedTAs: [],
         assignedProfessors: [],
         sections: '',
-      });
+    });
 
 
-    const handleFormData = (e) => {
-            const { name, value } = e.target;
-            setFormData((prevData) => ({
+    const handleFormData = (e: any) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
             ...prevData,
             [name]: value,  // Dynamically update based on input name
-            }));
+        }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
         console.log(formData);  // Log or send data to an API
         // Example: You could send formData to a backend here
         postCourse(formData);
         onClose();
-      };
+    };
 
-    console.log("rendered")
-    return(
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="max" scroll="paper">
-        <DialogTitle>Add Course</DialogTitle>
-        <DialogContent>
-            <Box style={{ padding: "20px", textAlign: "center", gridTemplateColumns: '1fr 1fr'}}>
-                <Box sx={{backgroundColor: "rgba(255, 127, 50, 1)",
-                        borderTopLeftRadius: "15px", borderTopRightRadius: "15px",
-                        padding: "20px"
-                    }}>
-                    <Typography variant="h3">
-                        Add Course
+    function getInput(label: string, textFieldName: string) {
+        return (
+            <Stack direction="row" justifyContent='space-between' alignItems='center' spacing={5}>
+                <Box>
+                    <Typography noWrap variant='h6' sx={{ p: 1 }}>
+                        {label}:
                     </Typography>
                 </Box>
-            </Box>
-            <form onSubmit={handleSubmit}>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Course Code:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="prefix"
-                        label="Course Code"
-                        variant="outlined"
-                        value={formData.prefix}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Full Title:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="title"
-                        label="Full Title"
-                        variant="outlined"
-                        value={formData.title}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Number of TA Hours:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="numTaHours"
-                        label="Number of TA Hours"
-                        variant="outlined"
-                        value={formData.numTaHours}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Current Enrollment:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="currentEnrollment"
-                        label="Current Enrollment"
-                        variant="outlined"
-                        value={formData.currentEnrollment}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Max Enrollment:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="maxEnrollment"
-                        label="Max Enrollment"
-                        variant="outlined"
-                        value={formData.maxEnrollment}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                <Typography sx={{textAlign: "right", fontSize: "150%", width: "50%"}}>
-                    Number of Sections:
-                </Typography>
-                <Typography sx={{textAlign: "left", marginLeft: "10%", fontSize: "150%", width: "50%"}}>
-                    <TextField
-                        name="sections"
-                        label="Sections"
-                        variant="outlined"
-                        value={formData.sections}
-                        onChange={(e) => handleFormData(e)}
-                        sx={{ width: "90%", marginTop: "10px" }}
-                    />
-                </Typography>
-            </Box>
-            <Box sx={{textAlign: "center", paddingTop: "20px"}}>
-                <Button type="submit" sx={{border: "3px solid black", textAlign: "center", width: "30%", height: "80%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}} >
-                     Submit
-                </Button>
-            </Box>
-            </form>
-        </DialogContent>
-    </Dialog>
-      )
+                <TextField
+                    name={textFieldName}
+                    label={label}
+                    variant="outlined"
+                    value={(formData as any)[textFieldName]}
+                    onChange={(e) => handleFormData(e)}
+                />
+            </Stack>
+        )
+    }
+
+    console.log("rendered")
+    return (
+        <Dialog open={open} onClose={onClose} scroll="paper">
+            <DialogContent sx={{ p: 0, width: 'max-content' }}>
+                <Box style={{ textAlign: "center", gridTemplateColumns: '1fr 1fr' }}>
+                    <Box sx={{ padding: "20px" }}>
+                        <Typography noWrap variant="h5">
+                            Add Course
+                        </Typography>
+                    </Box>
+                </Box>
+                <form onSubmit={handleSubmit}>
+                    <Stack sx={{ p: 1 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
+
+                        {getInput('Course Code', 'prefix')}
+                        {getInput('Full Title', 'title')}
+                        {getInput('Number of TA Hours', 'numTaHours')}
+                        {getInput('Current Enrollment', 'currentEnrollment')}
+                        {getInput('Max Enrollment', 'maxEnrollment')}
+                        {getInput('Number of Sections', 'sections')}
+                    </Stack>
+                    <Box sx={{ textAlign: "center", padding: "20px" }}>
+                        <Button type="submit" variant='contained' color='secondary' >
+                            Submit
+                        </Button>
+                    </Box>
+                </form>
+            </DialogContent>
+        </Dialog>
+    )
 }
 
 export default AddCourseForm;

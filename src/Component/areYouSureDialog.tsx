@@ -21,7 +21,7 @@ import {
     DialogContent, Dialog, DialogTitle
 } from '@mui/material';
 import Link from "next/link";
-import {postProf, getManagerCourses, deleteTAPreference} from '@/actions/manager';
+import { postProf, getManagerCourses, deleteTAPreference } from '@/actions/manager';
 
 interface TaPreferenceDialogProps {
     open: boolean;
@@ -29,66 +29,58 @@ interface TaPreferenceDialogProps {
     toRemove: { prefix: string | null; name: string | null; title: string | null };
 }
 
-const AreYouSureDialog = ({open, onClose, toRemove}: TaPreferenceDialogProps) => {
+const AreYouSureDialog = ({ open, onClose, toRemove }: TaPreferenceDialogProps) => {
 
     console.log(toRemove);
     console.log(open);
 
-    return(
-    <Dialog open={open} onClose={onClose} fullWidth scroll="paper">
-        <DialogContent>
-            <Box style={{textAlign: "center", gridTemplateColumns: '1fr 1fr'}}>
-                <Box sx={{backgroundColor: "rgba(255, 127, 50, 1)",
-                        borderTopLeftRadius: "15px", borderTopRightRadius: "15px",
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth scroll="paper">
+            <DialogContent sx={{p:0}}>
+                <Box style={{ textAlign: "center", gridTemplateColumns: '1fr 1fr' }}>
+                    <Box sx={{
                         padding: "20px"
                     }}>
-                    <Typography variant="h3">
-                        Are You Sure?
-                    </Typography>
+                        <Typography variant="h5">
+                            Are You Sure?
+                        </Typography>
+                    </Box>
                 </Box>
-            </Box>
-            <Box>
-                <Typography variant="h5" sx={{padding: "30px"}}>
-                    The following is a permanent deletion. Please confirm that you want to delete {toRemove.Prefix} from the system.
-                </Typography>
-                <ButtonGroup sx={{width: '100%', justifyContent: 'space-evenly', marginTop: '5%'}}>
-                    <Button sx={{border: "3px solid black", width: "25%", height: "80%", color: "white", backgroundColor: "rgba(255, 127, 50, 0.8)", '&:hover': {backgroundColor: "rgba(255, 127, 50, 1)"}}}
-                        onClick={onClose}>
-                        Cancel
-                    </Button>
-                    <Button
-                        sx={{
-                            border: "3px solid black",
-                            width: "25%",
-                            height: "80%",
-                            color: "white",
-                            backgroundColor: "rgba(255, 127, 50, 0.8)",
-                            '&:hover': { backgroundColor: "rgba(255, 127, 50, 1)" },
-                        }}
-                        onClick={async () => {
-                            try {
-                                const response = await deleteTAPreference(toRemove);
+                <Box sx={{pb:2}}>
+                    <Typography variant="h6" sx={{ paddingX: 5 }}>
+                        The following is a permanent deletion. Please confirm that you want to delete {toRemove.prefix} from the system.
+                    </Typography>
+                    <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-evenly', marginTop: '5%' }}>
+                        <Button onClick={onClose} variant='contained' color='secondary'>
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    const response = await deleteTAPreference(toRemove);
 
-                                if (response.success) {
-                                    alert(response.message);
-                                } else {
-                                    alert(response.message);
+                                    if (response.success) {
+                                        alert(response.message);
+                                    } else {
+                                        alert(response.message);
+                                    }
+                                } catch (error) {
+                                    console.error('Error deleting TA preference:', error);
+                                    alert('An unexpected error occurred. Please try again.');
+                                } finally {
+                                    onClose() // Close the dialog
                                 }
-                            } catch (error) {
-                                console.error('Error deleting TA preference:', error);
-                                alert('An unexpected error occurred. Please try again.');
-                            } finally {
-                                onClose() // Close the dialog
-                            }
-                        }}
-                    >
-                        Yes, I'm sure
-                    </Button>
-                </ButtonGroup>
-            </Box>
-        </DialogContent>
-    </Dialog>
-      )
+                            }}
+                            variant='contained'
+                            color='error'
+                        >
+                            Yes, I'm sure
+                        </Button>
+                    </Stack>
+                </Box>
+            </DialogContent>
+        </Dialog>
+    )
 }
 
 export default AreYouSureDialog;
