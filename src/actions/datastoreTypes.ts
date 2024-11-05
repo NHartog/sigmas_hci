@@ -66,6 +66,7 @@ export const TAPreferenceSchema = new mongoose.Schema({
     title: String,
     student: String,
     preference: Number,
+    professor: String,
 })
 
 function getModel(name: string, schema: any) {

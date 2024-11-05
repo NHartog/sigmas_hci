@@ -53,14 +53,14 @@ const ProfessorDetails = ({ open, onClose, params }) => {
 
     const IconRepeater = ({count}) => {
         return (
-          <div>
+          <Box>
             {Array.from({ length: count }).map((_, index) => (
                 <StarTwoToneIcon sx={{color: "rgba(255,127,50,1)"}} />
             ))}
             {Array.from({ length: 5 - count }).map((_, index) => (
                 <StarTwoToneIcon sx={{color: "gray"}} />
             ))}
-          </div>
+          </Box>
         );
       };
 

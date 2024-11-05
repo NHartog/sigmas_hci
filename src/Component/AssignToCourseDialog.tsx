@@ -2,20 +2,20 @@
 
 import { Box, Dialog, DialogContent, Typography, Button, Card, CardContent, CardActionArea } from '@mui/material';
 import { useState } from 'react';
+import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 
 interface Course {
-    Prefix: string;
-    Title: string;
-    Professors: string[];
+    prefix: string;
+    title: string;
+    professors: string[];
 }
 
-const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, taPreferences, studentId }: {
+const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, taPreferences }: {
     open: boolean,
     onClose: () => void,
     availableCourses: Course[],
     studentName: string,
     taPreferences: any[],
-    studentId: string,  // Assuming you have the student's ID passed as a prop
 }) => {
     const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
 
@@ -23,14 +23,14 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
         setSelectedCourse(courseId);
     };
 
-    const getPreferenceForProfessor = (professor: string): string => {
-        console.log(studentName);
+    const getPreferenceForProfessor = (professor: string, course: string): number => {
+        console.log(professor);
+        console.log(taPreferences);
         const preference = taPreferences.find(pref =>
-            pref.Prefix === selectedCourse &&
-            pref.Professors === professor &&
-            pref.student === studentName  // Ensure the preference is for the selected student
+            pref.Prefix === course &&
+            pref.Student === studentName
         );
-        return preference ? preference.Preference.toString() : 'None';
+        return preference ? preference.Preference : 0;  // Return preference count or 0 if none
     };
 
     return (
@@ -42,25 +42,38 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
                 <Box display="flex" flexDirection="column" gap={2}>
                     {availableCourses.map((course) => (
                         <Card
-                            key={course.Prefix}
-                            onClick={() => handleSelectCourse(course.Prefix)}
+                            key={course.prefix}
+                            onClick={() => handleSelectCourse(course.prefix)}
                             sx={{
-                                border: selectedCourse === course.Prefix ? '2px solid #3f51b5' : '1px solid #e0e0e0',
+                                border: selectedCourse === course.prefix ? '2px solid #3f51b5' : '1px solid #e0e0e0',
                                 cursor: 'pointer',
-                                backgroundColor: selectedCourse === course.Prefix ? '#f3f4fc' : '#ffffff',
+                                backgroundColor: selectedCourse === course.prefix ? '#f3f4fc' : '#ffffff',
                             }}
                         >
                             <CardActionArea>
                                 <CardContent>
-                                    <Typography variant="h6">{course.Prefix}</Typography>
-                                    <Typography variant="subtitle1" color="textSecondary">{course.Title}</Typography>
+                                    <Typography variant="h6">{course.prefix}</Typography>
+                                    <Typography variant="subtitle1" color="textSecondary">{course.title}</Typography>
                                     <Box mt={2}>
                                         <Typography variant="subtitle2" fontWeight="bold">Professor Preferences:</Typography>
-                                        {course.Professors.map((professor) => (
-                                            <Typography key={professor} variant="body2" color="textSecondary">
-                                                {professor}: {getPreferenceForProfessor(professor)}
-                                            </Typography>
-                                        ))}
+                                        {course.professors.map((professor) => {
+                                            const preference = getPreferenceForProfessor(professor, course.prefix);
+                                            return (
+                                                <Box key={professor} display="flex" alignItems="center">
+                                                    <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                                        {professor}:
+                                                    </Typography>
+                                                    <Box display="flex">
+                                                        {Array.from({ length: preference }).map((_, index) => (
+                                                            <StarTwoToneIcon key={`filled-${index}`} sx={{ color: "rgba(255,127,50,1)" }} />
+                                                        ))}
+                                                        {Array.from({ length: 5 - preference }).map((_, index) => (
+                                                            <StarTwoToneIcon key={`empty-${index}`} sx={{ color: "gray" }} />
+                                                        ))}
+                                                    </Box>
+                                                </Box>
+                                            );
+                                        })}
                                     </Box>
                                 </CardContent>
                             </CardActionArea>
