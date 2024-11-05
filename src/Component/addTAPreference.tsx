@@ -39,15 +39,14 @@ interface TaPreferenceDialogProps {
     close: () => void;
     students: Ta[];
     courses: Course[];
-    selected: { prefix: string | null; name: string | null; title: string | null };
+    selected: { prefix: string | null; name: string | null; title: string | null; pref: string | null };
 }
 
 export default function TaPreferenceDialog({ open, close, students, courses, selected }: TaPreferenceDialogProps) {
     const [selectedCourse, setSelectedCourse] = useState<string | null>(selected.prefix);
     const [selectedCourseTitle, setSelectedCourseTitle] = useState<string | null>(selected.title);
     const [selectedTA, setSelectedTA] = useState<string | null>(selected.name);
-    const [preferenceValue, setPreferenceValue] = useState<number | null>(3); // Default preference value
-
+    const [preferenceValue, setPreferenceValue] = useState<number | null>(selected.pref || 3); // Default preference value
     useEffect(() => {
         setSelectedCourse(selected.prefix);
         setSelectedCourseTitle(selected.title);
@@ -68,8 +67,8 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
     };
 
     return (
-        <Dialog open={open} onClose={close}>
-            <DialogTitle sx={{ backgroundColor: 'orange', color: 'white' }}>
+        <Dialog open={open} onClose={close} fullWidth maxWidth="lg">
+            <DialogTitle sx={{ backgroundColor: 'rgba(255, 127, 50, 1)', color: 'white' }}>
                 Add TA Preference
             </DialogTitle>
             <DialogContent>
@@ -174,7 +173,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                         }}
                         sx={{ marginTop: 2 }}
                     >
-                        Add as TA
+                        Add as TA Preference
                     </Button>
                 </Box>
             </DialogContent>

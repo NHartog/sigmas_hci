@@ -53,6 +53,12 @@ export default  function AddTASubcomponent({rows, rows2}:{rows: any, rows2: any}
             label: 'Status',
         },
         {
+            id: 'prefString',
+            numeric: false,
+            disablePadding: false,
+            label: 'Preference',
+        },
+        {
             id: 'assignedToYou',
             numeric: false,
             disablePadding: false,

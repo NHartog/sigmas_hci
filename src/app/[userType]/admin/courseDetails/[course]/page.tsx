@@ -1,5 +1,5 @@
 "use server";
-import { ReactNode } from "react";
+import React, { ReactNode. useState } from "react";
 import { Box, ButtonGroup, Button, Typography, Card } from "@mui/material";
 import Link from "next/link";
 import CourseDetails from '@/Component/courseDetails';
