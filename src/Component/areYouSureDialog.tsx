@@ -39,16 +39,15 @@ const AreYouSureDialog = ({ open, onClose, toRemove }: TaPreferenceDialogProps) 
             <DialogContent sx={{p:0}}>
                 <Box style={{ textAlign: "center", gridTemplateColumns: '1fr 1fr' }}>
                     <Box sx={{
-                        backgroundColor: "rgba(255, 127, 50, 1)",
                         padding: "20px"
                     }}>
-                        <Typography variant="h3">
+                        <Typography variant="h5">
                             Are You Sure?
                         </Typography>
                     </Box>
                 </Box>
                 <Box sx={{pb:2}}>
-                    <Typography variant="h5" sx={{ padding: "30px" }}>
+                    <Typography variant="h6" sx={{ paddingX: 5 }}>
                         The following is a permanent deletion. Please confirm that you want to delete {toRemove.prefix} from the system.
                     </Typography>
                     <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-evenly', marginTop: '5%' }}>
