@@ -14,7 +14,7 @@ import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
 import AreYouSureDialog from '@/Component/areYouSureDialog';
-import { deleteTAPreference, getSpecificCourse, getProfessors } from "@/actions/manager";
+import { deleteTAPreference, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -42,6 +42,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [rowPrefix, setRowPrefix] = useState('');
     const [selectedCourseProfs, setSelectedCourseProfs] = useState<any>(null);
     const [allProfs, setAllProfs] = useState<any>(null);
+    const [allApplicants, setAllApplicants] = useState<any>(null);
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         //setSelectedCourse(professor);
@@ -62,8 +63,12 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         setManageCourseProfessorsOpen(true);
     };
 
-    const handleSelectTACourse = (professor: any) => {
-        setSelectedCourse(professor);
+    const handleSelectTACourse = async (professor: any) => {
+        const curr_Course = await getSpecificCourse(selectedCourse.prefix);
+        setSelectedCourseProfs(curr_Course.professors);
+        const all_Applicants = await getApplicants(selectedCourse.prefix);
+        setAllApplicants(all_Applicants);
+        console.log(allApplicants);
         setManageCourseTAsOpen(true);
     };
 
@@ -123,7 +128,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {detailsDialogOpen && <CourseDetails open={detailsDialogOpen} close={handleCloseDialog} params={selectedCourse} />}
             {addCourseDialogOpen && <AddCourseForm open={addCourseDialogOpen} onClose={handleCloseDialog} />}
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
-            {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} />}
+            {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
             {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} />}
         </>
     );

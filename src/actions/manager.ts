@@ -429,3 +429,68 @@ export async function updateWithTAPreference(studentName: string, coursePrefix: 
 }
 
 
+
+export async function getApplicants(coursePrefix: String) {
+    const options = {
+        query: {coursePreferences: {$elemMatch: {course: coursePrefix}}}
+    }
+
+    const apps: any = await modifyDatastore(studentModel, httpType.GET, options)
+    const copied = JSON.parse(JSON.stringify(apps))
+
+
+    return copied.map((each: any, idx: number) => {
+        var actualShape: any = {}
+
+        actualShape.id = idx + 1
+        actualShape.studentName = each.name
+        actualShape.applicationStatus = each.applicationStatus ? "Assigned" : "Pending";
+        actualShape.collegeStatus = each.status
+
+        return actualShape
+    })
+}
+
+export async function assignTACourse(appl: String, course: String): Promise<any[]>{
+    const optionsC = {
+        query: {
+            prefix: course
+        }
+    };
+    const old_course: any = await modifyDatastore(courseModel, httpType.GET, optionsC);
+    const newCourse = old_course[0];
+    newCourse.assignedTas.push(appl);
+    const course_id = newCourse._id;
+    delete newCourse._id;
+    console.log(newCourse);
+    const optionsD = {
+        id: course_id,
+        relatesToOne: true,
+        recordData: newCourse
+    };
+    const resultB: any = await modifyDatastore(courseModel, httpType.PUSH, optionsD);
+
+    return resultB;
+}
+
+export async function unassignTACourse(appl: String, course: String): Promise<any[]>{
+    const optionsC = {
+        query: {
+            prefix: course
+        }
+    };
+    const old_course: any = await modifyDatastore(courseModel, httpType.GET, optionsC);
+    const newCourse = old_course[0];
+    newCourse.assignedTas = newCourse.assignedTas.filter(a => a !== appl);
+    const course_id = newCourse._id;
+    delete newCourse._id;
+    console.log(newCourse);
+    const optionsD = {
+        id: course_id,
+        relatesToOne: true,
+        recordData: newCourse
+    };
+    const resultB: any = await modifyDatastore(courseModel, httpType.PUSH, optionsD);
+
+    return resultB;
+}
