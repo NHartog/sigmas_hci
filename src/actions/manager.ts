@@ -31,6 +31,31 @@ export async function getStudents(): Promise<any[]> {
     })
 }
 
+export async function getStudentPreference(student: string, course: string): Promise<number> {
+    console.log(student)
+    const options = {
+        query: {
+            applicationCompletionStatus: true,
+            name: student,
+        },
+        relatesToOne: true,
+    };
+
+    const availableStudents: any = await modifyDatastore(studentModel, httpType.GET, options);
+    const copied = JSON.parse(JSON.stringify(availableStudents));
+    if (copied.length === 0) {
+        return 0; // Student not found or no preferences
+    }
+
+    const studentPreferences = copied.coursePreferences;
+    // Look for the specific course in the student's preferences
+    const preferenceEntry = studentPreferences.find((pref: any) => pref.course === course);
+
+    // Return the preference value or 0 if not found
+    return preferenceEntry ? preferenceEntry.preferenceLevel : 0;
+}
+
+
 export async function getProfessors(): Promise<any[]> {
 
     const options = {
@@ -73,7 +98,6 @@ export async function updateProfessor(values: any): Promise<void> {
 }
 
 export async function getManagerCourses(): Promise<any[]> {
-    console.log("Courses:");
     const options = {
         query: {}
     }
