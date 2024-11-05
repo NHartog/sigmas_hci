@@ -14,14 +14,14 @@ import {
     TableBody,
     TableCell,
     TableHead,
-    TableRow
+    TableRow,
+    Stack,
+    Divider
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import StarIcon from '@mui/icons-material/Star';
 import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
-import Link from "next/link";
 
-const StudentDetails = ({ open, onClose, params, prefs }) => {
+const StudentDetails = ({ open, onClose, params, prefs }: any) => {
     const [editMode, setEditMode] = useState(false);
     const [editParams, setEditParams] = useState({ ...params });
 
@@ -29,8 +29,8 @@ const StudentDetails = ({ open, onClose, params, prefs }) => {
     const handleToggleEditMode = () => setEditMode(!editMode);
 
     // Handle parameter change
-    const handleChange = (field) => (event) => {
-        setEditParams((prev) => ({
+    const handleChange = (field: any) => (event: any) => {
+        setEditParams((prev: any) => ({
             ...prev,
             [field]: event.target.value,
         }));
@@ -47,108 +47,77 @@ const StudentDetails = ({ open, onClose, params, prefs }) => {
         setEditMode(false);
     };
 
-    const IconRepeater = ({count}) => {
-        return (
-          <div>
-            {Array.from({ length: count }).map((_, index) => (
-                <StarTwoToneIcon sx={{color: "rgba(255,127,50,1)"}} />
-            ))}
-            {Array.from({ length: 5 - count }).map((_, index) => (
-                <StarTwoToneIcon sx={{color: "gray"}} />
-            ))}
-          </div>
-        );
-      };
-
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="max">
-            <DialogTitle>
-                Student Details
-                <Button onClick={handleToggleEditMode} sx={{ marginLeft: 2 }}>
-                    {editMode ? "Cancel" : "Edit"}
-                </Button>
-                {editMode && (
-                    <Button onClick={handleSave} sx={{ marginLeft: 2 }}>
-                        Save
-                    </Button>
-                )}
-            </DialogTitle>
-            <DialogContent>
-                <Box style={{ padding: "20px", textAlign: "center" }}>
+        <Dialog open={open} onClose={onClose} fullWidth>
+            <DialogContent sx={{ p: 0 }}>
+                <Box style={{ textAlign: "center" }}>
                     <Box
                         sx={{
-                            backgroundColor: "rgba(255, 127, 50, 1)",
-                            borderTopLeftRadius: "15px",
-                            borderTopRightRadius: "15px",
                             padding: "20px",
                         }}
                     >
-                        <Typography variant="h3">{editParams.name}</Typography>
+                        <Typography variant="h5">{editParams.studentName}</Typography>
                     </Box>
 
-                    <Accordion disableGutters defaultExpanded>
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                            <Typography variant="h4">Student Details</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ display: "flex", flexDirection: "column" }}>
-                            {["studentName", "collegeStatus", "applicationStatus"].map((field, index) => (
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <Typography sx={{ textAlign: "left", fontSize: "150%", width: "15%" }}>
-                                        {field.charAt(0).toUpperCase() + field.slice(1)}:
-                                    </Typography>
-                                    {editMode ? (
-                                        <TextField
-                                            value={editParams[field]}
-                                            onChange={handleChange(field)}
-                                            fullWidth
-                                            variant="outlined"
-                                        />
-                                    ) : (
-                                        <Typography sx={{ textAlign: "left", fontSize: "150%", width: "50%" }}>
-                                            {editParams[field]}
-                                        </Typography>
-                                    )}
-                                </Box>
-                            ))}
-                        </AccordionDetails>
-                    </Accordion>
+                    <Stack spacing={2} sx={{ p: 2 }} divider={<Divider orientation="horizontal" flexItem />}>
 
-                    <Accordion disableGutters defaultExpanded>
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                            <Typography variant="h4">Course Preferences</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {prefs.length > 0 ? (
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell style={{ textAlign: "center" }}><strong>Course</strong></TableCell>
-                                            <TableCell style={{ textAlign: "center" }}><strong>Preference</strong></TableCell>
-                                            <TableCell style={{ textAlign: "center" }}><strong>Assigneds</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {
-                                            prefs.map((course) => (
-                                                <TableCell style={{textAlign: "center"}}><strong>{course.prefix}</strong></TableCell>
-                                            ))
-                                        }
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <Typography variant="h4">No Courses given in their preferences</Typography>
-                            )}
-                        </AccordionDetails>
-                    </Accordion>
+                        <Typography variant='h6'>Student Details</Typography>
+
+                        {[["studentName", "Student Name"], ["collegeStatus", "College Status"], ["applicationStatus", "Application Status"]].map((fieldInfo, index) => (
+                            <Stack key={index} direction='row' alignItems='center'>
+                                <Typography variant='h6' sx={{ textAlign: "left", width: "50%" }}>
+                                    {fieldInfo[1]}:
+                                </Typography>
+                                {editMode ? (
+                                    <TextField
+                                        value={editParams[fieldInfo[0]]}
+                                        onChange={handleChange(fieldInfo[0])}
+                                        sx={{ width: '50%' }}
+                                        variant="outlined"
+                                    />
+                                ) : (
+                                    <Typography sx={{ textAlign: "left", width: "50%", paddingY: 1 }}>
+                                        {editParams[fieldInfo[0]]}
+                                    </Typography>
+                                )}
+                            </Stack>
+                        ))}
+
+                        <Typography variant='h6'>Course Preferences</Typography>
+
+                        {prefs.length > 0 ? (
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell style={{ textAlign: "center" }}><strong>Course</strong></TableCell>
+                                        <TableCell style={{ textAlign: "center" }}><strong>Preference</strong></TableCell>
+                                        <TableCell style={{ textAlign: "center" }}><strong>Assigneds</strong></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {
+                                        prefs.map((course: any) => (
+                                            <TableCell style={{ textAlign: "center" }}><strong>{course.prefix}</strong></TableCell>
+                                        ))
+                                    }
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <Typography variant="h6">No Courses given in their preferences</Typography>
+                        )}
+                    </Stack>
                 </Box>
             </DialogContent>
+            <Stack direction='row' spacing={2} sx={{ width: 1, p: 2 }} justifyContent='center' alignItems='center'>
+                <Button onClick={handleToggleEditMode} variant='contained' color='secondary'>
+                    {editMode ? "Cancel" : "Edit"}
+                </Button>
+                {editMode && (
+                    <Button onClick={handleSave} variant='contained' color='error'>
+                        Save
+                    </Button>
+                )}
+            </Stack>
         </Dialog>
     );
 };
