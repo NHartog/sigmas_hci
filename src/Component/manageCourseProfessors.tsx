@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { assignProfessorCourse } from '@/actions/manager';
 
 const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
     const profsByName = allProfs.map(item => item.Professor);
@@ -79,6 +80,20 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
         handleFilteredItems(e.target.value);
     }
 
+    const handleAddProfSubmit = () =>{
+        if (!profsByName.includes(newProf)){
+            alert('Professor given does not exist, please check your spelling')
+            return
+        }
+        else if(profs.includes(newProf)){
+            alert('Professor is already assigned to course')
+            return
+        }
+        assignProfessorCourse(newProf, params.prefix);
+        profs.push(newProf)
+        setEditMode(false);
+        alert("Professor Successfully Assigned to Course!")
+    }
     console.log("rendered")
     console.log(allProfs)
     return (
@@ -95,7 +110,7 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                 )}
             </DialogTitle>
 
-            <DialogContent sx={{overflow: "visible"}}>
+            <DialogContent sx={{overflow: "visible", paddingLeft: "10%", paddingRight: "10%", paddingBottom: "40%"}}>
                 <Box style={{ textAlign: "center", width: "100%" }}>
                     <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
                         <Typography variant="h3">{courseDetails.Course} Details</Typography>
@@ -123,9 +138,10 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
 
                     {/* Available Professors Section */}
                     {editMode && (
-                        <Box sx={{ marginTop: 3 }}>
+                        <Box sx={{ marginTop: 3, display: "flex", flexDirection: "row" }}>
                             {allProfs.length > 0 ? (
                                 <>
+                                <Box sx={{width: '100%'}}>
                                     <TextField
                                         name="newProf"
                                         label="Search name"
@@ -142,20 +158,25 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                                                 overflowY: "auto",
                                                 position: "absolute",
                                                 backgroundColor: "white",
-                                                width: "100%",
+                                                width: "50%",
+                                                marginLeft: "20px"
                                             }}
                                         >
                                             {filteredItems.map((item, index) => (
                                                 <div
                                                     key={index}
                                                     onClick={() => handleItemClick(item)}
-                                                    style={{ padding: "5px", cursor: "pointer" }}
+                                                    style={{padding: "5px", cursor: "pointer",border: "1px solid #ccc" }}
                                                 >
                                                     {item}
                                                 </div>
                                             ))}
                                         </Box>
                                     )}
+                                </Box>
+                                <Button onClick={handleAddProfSubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
+                                    Add
+                                </Button>
                                 </>
                             ) : (
                                 <Typography sx={{ fontSize: "150%", padding: "10px" }}>

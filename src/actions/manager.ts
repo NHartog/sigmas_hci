@@ -97,6 +97,50 @@ export async function updateProfessor(values: any): Promise<void> {
     revalidatePath('/manager')
 }
 
+export async function assignProfessorCourse(prof: String, course: String): Promise<any[]>{
+    const optionsA = {
+        query: {
+            name: prof
+        }
+    };
+    const professor: any = await modifyDatastore(professorModel, httpType.GET, optionsA);
+    console.log(professor);
+    console.log(professor[0]);
+    const newProfessor = professor[0];
+    console.log(newProfessor);
+    newProfessor.courses.push(course);
+    const prof_id = newProfessor._id;
+    delete newProfessor._id;
+    const optionsB = {
+        id: prof_id,
+        relatesToOne: true,
+        recordData: newProfessor
+    };
+    
+    const resultA: any = await modifyDatastore(professorModel, httpType.PUSH, optionsB);
+    console.log(resultA);
+    //Now update course
+    const optionsC = {
+        query: {
+            prefix: course
+        }
+    };
+    const old_course: any = await modifyDatastore(courseModel, httpType.GET, optionsC);
+    const newCourse = old_course[0];
+    newCourse.professors.push(prof);
+    const course_id = newCourse._id;
+    delete newCourse._id;
+    console.log(newCourse);
+    const optionsD = {
+        id: course_id,
+        relatesToOne: true,
+        recordData: newCourse
+    };
+    const resultB: any = await modifyDatastore(courseModel, httpType.PUSH, optionsD);
+
+    return resultB;
+}
+
 export async function getManagerCourses(): Promise<any[]> {
     const options = {
         query: {}
