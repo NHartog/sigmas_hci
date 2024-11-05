@@ -144,7 +144,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
                                                 <TableCell style={{ textAlign: "center" }}><strong>{course.name}</strong></TableCell>
                                                 <TableCell style={{ textAlign: "center" }}><strong>{course.enrolled}/{course.seats}</strong></TableCell>
                                                 <TableCell style={{ textAlign: "center" }}>
-                                                    <Link href={`/manager/admin/courseDetails/${course.name}`}>
+                                                    <Link href={`/manager/admin/courseManager`}>
                                                         <strong style={{ color: "blue" }}><u>Course Details</u></strong>
                                                     </Link>
                                                 </TableCell>
