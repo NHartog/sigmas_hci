@@ -45,10 +45,10 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
 
     const button = (
         <Stack direction="row">
-            <Button sx={{ margin: 1 }} variant="contained" onClick={handleStudentDetails} endIcon={<PersonIcon />}>
+            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleStudentDetails} endIcon={<PersonIcon />}>
                 View Student Details
             </Button>
-            <Button sx={{ margin: 1 }} variant="contained" onClick={handleAssignCourse} endIcon={<AutoStoriesIcon />}>
+            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleAssignCourse} endIcon={<AutoStoriesIcon />}>
                 Assign to Course
             </Button>
         </Stack>
