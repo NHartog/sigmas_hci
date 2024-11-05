@@ -23,7 +23,6 @@ const steps = ['Student Information', 'Course Preferences', 'Confirm and Submit'
 const semesters = ['Fall 2023', 'Spring 2024', 'Summer 2024'];
 const collegeStatus = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate'];
 
-const courses = ['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5'];
 
 const defaultApplication = {
     selectedSemester: '',
@@ -38,7 +37,7 @@ const defaultApplication = {
     coursePreferences: [{ course: '', preference: 1, taken: false }]
 }
 
-export default function ApplicationStepper({ applicationData }: { applicationData?: typeof defaultApplication }) {
+export default function ApplicationStepper({ applicationData, courses }: { applicationData?: typeof defaultApplication, courses: any}) {
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState<typeof defaultApplication>(applicationData || defaultApplication);
 
@@ -111,6 +110,7 @@ export default function ApplicationStepper({ applicationData }: { applicationDat
         // Allow navigation to the next step
         setActiveStep((prev) => prev + 1);
     };
+
 
     const renderStepContent = (step: number) => {
         switch (step) {
@@ -318,8 +318,8 @@ export default function ApplicationStepper({ applicationData }: { applicationDat
                                                 variant="outlined"
                                             >
                                                 {courses.map((course) => (
-                                                    <MenuItem key={course} value={course}>
-                                                        {course}
+                                                    <MenuItem key={course.prefix} value={course.prefix}>
+                                                        {course.prefix}
                                                     </MenuItem>
                                                 ))}
                                             </Select>
