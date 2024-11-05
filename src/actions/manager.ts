@@ -125,7 +125,7 @@ export async function getTAPreferences(): Promise<any[]> {
     console.log("Fetching all TA Preferences");
 
     const options = {
-        query: {} // No filters applied, fetching all TA preferences
+        query: {}, // No filters applied, fetching all TA preferences
     };
 
     const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
@@ -148,7 +148,7 @@ export async function getTAPreferencesbyStudent(name: string): Promise<any[]> {
     console.log(`Fetching all TA Preferences for ${name}`);
 
     const options = {
-        query: {student: {name}}
+        query: {student: {name}},
     };
 
     const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
