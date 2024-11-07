@@ -79,7 +79,7 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
 
     const handlePreferenceChange = (index: number, field: string, value: unknown) => {
         const updatedPreferences = [...formData.coursePreferences];
-        updatedPreferences[index][field] = value;
+        (updatedPreferences as any)[index][field] = value;
         setFormData({ ...formData, coursePreferences: updatedPreferences });
     };
 
@@ -136,7 +136,7 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                                 <InputLabel>Semester Admitted</InputLabel>
                                 <Select
                                     value={formData.selectedSemester}
-                                    onChange={handleSemesterChange}
+                                    onChange={handleSemesterChange as any}
                                     label="Semester Admitted"
                                     variant="outlined"
                                 >
@@ -153,7 +153,7 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                                 <InputLabel>College Status</InputLabel>
                                 <Select
                                     value={formData.selectedCollegeStatus}
-                                    onChange={handleCollegeStatusChange}
+                                    onChange={handleCollegeStatusChange as any}
                                     label="College Status"
                                     variant="outlined"
                                 >
@@ -239,7 +239,6 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                                     value={formData.score}
                                     onChange={handleScoreChange}
                                     sx={{ mt: 2 }}
-                                    disabled={formData.isUSA === 'yes'}
                                 />
                             )}
                         </Box>
@@ -317,7 +316,7 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                                                 label="Course"
                                                 variant="outlined"
                                             >
-                                                {courses.map((course) => (
+                                                {courses.map((course: any) => (
                                                     <MenuItem key={course.prefix} value={course.prefix}>
                                                         {course.prefix}
                                                     </MenuItem>

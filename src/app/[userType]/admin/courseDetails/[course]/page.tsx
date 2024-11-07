@@ -1,13 +1,13 @@
 "use server";
-import React, { ReactNode. useState } from "react";
 import { Box, ButtonGroup, Button, Typography, Card } from "@mui/material";
 import Link from "next/link";
 import CourseDetails from '@/Component/courseDetails';
+import { ReactNode } from "react";
 
 
 const existingCourses = ['CAP5100', 'CNT5106C', 'CAP5900']
 
-export default async function LandingPage({ children, params }: { children: ReactNode, params: {course: string}} ) {
+export default async function LandingPage({ params }: { params: {course: string}} ) {
     if(!existingCourses.includes(params.course)){
         return (
             <Box style={{ padding: "20px", textAlign: "center" }}>
@@ -29,6 +29,6 @@ export default async function LandingPage({ children, params }: { children: Reac
     //AT this step we'll look up real details in the backend, but for the current moment everyone gets the same other details
     const courseDetails = {course: `${params.course}`, enrolled: 81, seats: 144, professor: "Jaime Ruiz", linked_courses: "N/A", tas: [], prosp_tas: [{name: "John Adams", status: "Undergraduate"}]}
     return (
-        <CourseDetails params={courseDetails} />
+        <CourseDetails params={courseDetails} open={undefined} close={undefined} />
     );
 }

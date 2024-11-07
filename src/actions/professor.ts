@@ -90,15 +90,14 @@ export async function getPrefs(){
 }
 
 export async function getProfTAs(): Promise<any[]> {
-    //const user = await getUserData();
+    const user = await getUserData();
     const courses = await getCourses();
-    const course_ids = courses.map(c => c._id);
 
     const options = {
         query: {
             applicationCompletionStatus: true,
             coursePreferences:{
-                $elemMatch: {_id: {$in: course_ids}}
+                $elemMatch: {course: {$in: user.courses}}
             }
         }
     }

@@ -46,7 +46,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
     const [selectedCourse, setSelectedCourse] = useState<string | null>(selected.prefix);
     const [selectedCourseTitle, setSelectedCourseTitle] = useState<string | null>(selected.title);
     const [selectedTA, setSelectedTA] = useState<string | null>(selected.name);
-    const [preferenceValue, setPreferenceValue] = useState<number | null>(selected.pref || 3); // Default preference value
+    const [preferenceValue, setPreferenceValue] = useState<number | null>(selected.pref as any || 3); // Default preference value
     useEffect(() => {
         setSelectedCourse(selected.prefix);
         setSelectedCourseTitle(selected.title);
@@ -83,7 +83,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                                 <InputLabel>Select Course</InputLabel>
                                 <Select
                                     value={selectedCourse || ''}
-                                    onChange={handleCourseChange}  // Updated to use handleCourseChange
+                                    onChange={handleCourseChange as any}  // Updated to use handleCourseChange
                                     label="Select Course"
                                 >
                                     {courses.map((course) => (

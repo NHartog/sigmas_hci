@@ -14,12 +14,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
-const ProfessorCourses = ({ open, close, params, courses, allCourses }) => {
-    const coursesByPrefix = allCourses.map(item => item.prefix);
+const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => {
+    const coursesByPrefix = allCourses.map((item: any) => item.prefix);
     const [tempCourses, setTempCourses] = useState(courses); 
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
-    const [tempDetails, setTempDetails] = useState(params);
     const [newCourse, setNewCourseName] = useState("");
     const [filteredItems, setFilteredItems] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -28,27 +27,9 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }) => {
         setEditMode(!editMode);
     };
 
-    const handleCancel = () => {
-        // Reset to original details
-        setTempDetails(courseDetails);
-        setEditMode(false);
-    };
-
-    const handleChange = (field, value) => {
-        setTempDetails(prevDetails => ({ ...prevDetails, [field]: value }));
-    };
-
-    const handleAddProfessor = (professor) => {
-        setTempDetails(prevDetails => ({
-            ...prevDetails,
-            Assigned_Professors: [...prevDetails.Assigned_Professors, professor],
-            Available_Professors: prevDetails.Available_Professors.filter(p => p !== professor)
-        }));
-    };
-
-    const handleRemoveCourse = (course) => {
+    const handleRemoveCourse = (course: any) => {
         unassignProfessorCourse(params.Professor, course);
-        setTempCourses(tempCourses.filter(c => c !== course));
+        setTempCourses(tempCourses.filter((c: any) => c !== course));
         console.log(tempCourses, "ADDING")
         setEditMode(false);
         alert("Course Successfully Unassigned From Professor!")
@@ -71,7 +52,7 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }) => {
         setShowDropdown(false);
     }
 
-    const handleType = (e) => {
+    const handleType = (e: any) => {
         console.log(coursesByPrefix);
         setNewCourseName(e.target.value);
         handleFilteredItems(e.target.value);
@@ -111,7 +92,7 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }) => {
                     <Box sx={{ marginTop: 3 }}>
                         <Typography variant="h5">Assigned Courses</Typography>
                         { tempCourses.length > 0 ?
-                            tempCourses.map((course) => (
+                            tempCourses.map((course: any) => (
                                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{course}</Typography>
                                     <Button variant='contained' color='secondary' onClick={() => {handleRemoveCourse(course)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>

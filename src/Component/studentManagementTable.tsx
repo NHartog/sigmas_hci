@@ -68,7 +68,7 @@ const StudentManagementTable = () => {
                             ))}
                         </ButtonGroup>
                     </div>
-                        
+
                     <TextField
                         label="Search by Last Name"
                         variant="outlined"

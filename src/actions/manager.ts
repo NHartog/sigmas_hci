@@ -152,7 +152,7 @@ export async function unassignProfessorCourse(prof: String, course: String): Pro
     console.log(professor[0]);
     const newProfessor = professor[0];
     console.log(newProfessor);
-    newProfessor.courses = newProfessor.courses.filter(c => c !== course);
+    newProfessor.courses = newProfessor.courses.filter((c: any) => c !== course);
     const prof_id = newProfessor._id;
     delete newProfessor._id;
     const optionsB = {
@@ -171,7 +171,7 @@ export async function unassignProfessorCourse(prof: String, course: String): Pro
     };
     const old_course: any = await modifyDatastore(courseModel, httpType.GET, optionsC);
     const newCourse = old_course[0];
-    newCourse.professors = newCourse.professors.filter(p => p !== prof);
+    newCourse.professors = newCourse.professors.filter((p: any) => p !== prof);
     const course_id = newCourse._id;
     delete newCourse._id;
     console.log(newCourse);
@@ -335,7 +335,7 @@ export async function getTAPreferencesbyStudent(name: string): Promise<any[]> {
     });
 }
 
-export async function postCourse(formData) {
+export async function postCourse(formData: any) {
     const actualForm = {...formData, _id: new mongoose.Types.ObjectId()}
     const options = {
         recordData: actualForm
@@ -344,7 +344,7 @@ export async function postCourse(formData) {
     console.log(newCourse);
 }
 
-export async function postProf(formData) {
+export async function postProf(formData: any) {
     const actualForm = {...formData, _id: new mongoose.Types.ObjectId()}
     const options = {
         recordData: actualForm
@@ -370,7 +370,7 @@ export async function deleteTAPreference(formData: any) {
     console.log(result)
 
     // Check if a record was actually deleted
-    if (result && result.deletedCount > 0) {
+    if (result && (result as any).deletedCount > 0) {
         return {
             success: true,
             message: 'TA preference deleted successfully!',
@@ -481,7 +481,7 @@ export async function unassignTACourse(appl: String, course: String): Promise<an
     };
     const old_course: any = await modifyDatastore(courseModel, httpType.GET, optionsC);
     const newCourse = old_course[0];
-    newCourse.assignedTas = newCourse.assignedTas.filter(a => a !== appl);
+    newCourse.assignedTas = newCourse.assignedTas.filter((a: any) => a !== appl);
     const course_id = newCourse._id;
     delete newCourse._id;
     console.log(newCourse);

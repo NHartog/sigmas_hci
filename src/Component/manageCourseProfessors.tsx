@@ -14,8 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
-const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
-    const profsByName = allProfs.map(item => item.Professor);
+const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
+    const profsByName = allProfs.map((item: any) => item.Professor);
     const [tempProfs, setTempProfs] = useState(profs); 
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
@@ -38,21 +38,21 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
         setEditMode(false);
     };
 
-    const handleChange = (field, value) => {
-        setTempDetails(prevDetails => ({ ...prevDetails, [field]: value }));
+    const handleChange = (field: any, value: any) => {
+        setTempDetails((prevDetails: any) => ({ ...prevDetails, [field]: value }));
     };
 
-    const handleAddProfessor = (professor) => {
-        setTempDetails(prevDetails => ({
+    const handleAddProfessor = (professor: any) => {
+        setTempDetails((prevDetails: any) => ({
             ...prevDetails,
             Assigned_Professors: [...prevDetails.Assigned_Professors, professor],
-            Available_Professors: prevDetails.Available_Professors.filter(p => p !== professor)
+            Available_Professors: prevDetails.Available_Professors.filter((p: any) => p !== professor)
         }));
     };
 
-    const handleRemoveProfessor = (professor) => {
+    const handleRemoveProfessor = (professor: any) => {
         unassignProfessorCourse(professor, params.prefix);
-        setTempProfs(tempProfs.filter(p => p !== professor));
+        setTempProfs(tempProfs.filter((p: any) => p !== professor));
         console.log(tempProfs, "ADDING")
         setEditMode(false);
         alert("Professor Successfully Removed From Course!")
@@ -75,7 +75,7 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
         setShowDropdown(false);
     }
 
-    const handleType = (e) => {
+    const handleType = (e: any) => {
         console.log(profsByName);
         setNewProfName(e.target.value);
         handleFilteredItems(e.target.value);
@@ -116,7 +116,7 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }) => {
                     <Box sx={{ marginTop: 3 }}>
                         <Typography variant="h5">Assigned Professors</Typography>
                         { tempProfs.length > 0 ?
-                            tempProfs.map((prof) => (
+                            tempProfs.map((prof: any) => (
                                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{prof}</Typography>
                                     <Button variant='contained' color='secondary' onClick={() => {handleRemoveProfessor(prof)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>

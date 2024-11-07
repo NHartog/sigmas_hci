@@ -13,8 +13,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { assignTACourse, unassignTACourse } from '@/actions/manager';
 
-const CourseTAs = ({ open, close, params, allTAs }) => {
-    const tasByName = allTAs.map(item => item.studentName);
+const CourseTAs = ({ open, close, params, allTAs }: any) => {
+    const tasByName = allTAs.map((item: any) => item.studentName);
     const [tempTAs, setTempTAs] = useState(params.assignedTas);
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
@@ -54,7 +54,7 @@ const CourseTAs = ({ open, close, params, allTAs }) => {
         setShowDropdown(false);
     }
 
-    const handleType = (e) => {
+    const handleType = (e: any) => {
         console.log(tasByName);
         setNewTAName(e.target.value);
         handleFilteredItems(e.target.value);
@@ -75,9 +75,9 @@ const CourseTAs = ({ open, close, params, allTAs }) => {
         alert("TA Successfully Assigned to Course!")
     }
 
-    const handleRemoveTA = (ta) => {
+    const handleRemoveTA = (ta: any) => {
         unassignTACourse(ta, params.prefix);
-        setTempTAs(tempTAs.filter(t => t !== ta));
+        setTempTAs(tempTAs.filter((t: any) => t !== ta));
         setEditMode(false);
         alert("TA Successfully Removed From Course!")
     };
@@ -102,7 +102,7 @@ const CourseTAs = ({ open, close, params, allTAs }) => {
                     <Box sx={{ marginTop: 3 }}>
                         <Typography variant="h5">Assigned TAs</Typography>
                         { tempTAs.length > 0 ?
-                            tempTAs.map((ta) => (
+                            tempTAs.map((ta: any) => (
                                 <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{ta}</Typography>
                                     <Button variant='contained' color='secondary' onClick={() => {handleRemoveTA(ta)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>

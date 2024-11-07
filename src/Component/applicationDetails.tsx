@@ -8,7 +8,7 @@ import Link from "next/link";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
-const ApplicationDetails = ({params}) => {
+const ApplicationDetails = ({params}: any) => {
 
     //Will eventually get from backend
     const coursesRows = [
@@ -129,7 +129,9 @@ const ApplicationDetails = ({params}) => {
                 <Typography variant="h4">Course Requests and Preferences</Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{display: "flex", flexDirection: "column"}}>
-                <EnhancedTable rows={coursesRows} headCells={coursesHeadCells} title="Course Preferences" button={button} advancedTooltip/>
+                <EnhancedTable rows={coursesRows} headCells={coursesHeadCells} title="Course Preferences" button={button} advancedTooltip onRowSelect={function(row: any): void {
+                        throw new Error('Function not implemented.');
+                    } }/>
                 </AccordionDetails>
             </Accordion>
         </Box>

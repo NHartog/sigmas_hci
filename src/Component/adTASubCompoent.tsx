@@ -72,24 +72,12 @@ export default  function AddTASubcomponent({rows, rows2}:{rows: any, rows2: any}
     const title2 = "Current TA Applied"
 
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [manageCourseProfessorsOpen, setManageCourseProfessorsOpen] = useState(false);
-    const [manageCourseTAsOpen, setManageCourseTAsOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
-        setSelectedCourse(professor);
+        setSelectedCourse(professor as any);
         setDialogOpen(true);
         console.log(rowSelected);
-    };
-
-    const handleSelectProfessorCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
-        setSelectedCourse(professor);
-        setManageCourseProfessorsOpen(true);
-    };
-
-    const handleSelectTACourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
-        setSelectedCourse(professor);
-        setManageCourseTAsOpen(true);
     };
 
     const handleCloseDialog = () => {
@@ -97,26 +85,8 @@ export default  function AddTASubcomponent({rows, rows2}:{rows: any, rows2: any}
         setSelectedCourse(null);
     };
 
-    const handleCloseManageCourseProfessors = () => {
-        setManageCourseProfessorsOpen(false);
-        setSelectedCourse(null);
-    };
-
-    const handleCloseManageCourseTAs = () => {
-        setManageCourseTAsOpen(false);
-        setSelectedCourse(null);
-    };
-
     const handleClickViewCourseDetails =() => {
         handleSelectCourse(rowSelected);
-    }
-
-    const handleClickManageCourseProfessors =() => {
-        handleSelectProfessorCourse(rowSelected);
-    }
-
-    const handleClickManageCourseTAs =() => {
-        handleSelectTACourse(rowSelected);
     }
 
     const handleRowSelect = (row: any) => {
@@ -136,9 +106,6 @@ export default  function AddTASubcomponent({rows, rows2}:{rows: any, rows2: any}
     return (
         <Box style={{ padding: "20px" }}>
             <EnhancedTable rows={rows} headCells={headCells} title={title} button={button} onRowSelect={handleRowSelect} />
-            {dialogOpen && (
-                <TaPreferenceDialog open={dialogOpen} close={handleCloseDialog} students={rows2} courses={rows} selected = {rowSelected}/>
-            )}
             <EnhancedTable rows={rows2} headCells={headCells2} title={title2} button={button2} onRowSelect={handleRowSelect}/>
             {dialogOpen && (
                 <TaPreferenceDialog open={dialogOpen} close={handleCloseDialog} students={rows2} courses={rows} selected = {rowSelected}/>

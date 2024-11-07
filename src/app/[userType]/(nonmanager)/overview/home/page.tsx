@@ -1,9 +1,6 @@
 "use server";
 
-import { Box, Button, Typography } from '@mui/material'
-import { EnhancedTable, HeadCell } from '@/Component/customTable'
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import { getCourses, getTAs, getProfCourses, getPrefs, getProfTAs } from '@/actions/professor';
+import { getProfCourses, getPrefs, getProfTAs } from '@/actions/professor';
 import AddTASubcomponent from '@/Component/adTASubCompoent';
 
 export default async function LandingPage() {
@@ -13,7 +10,7 @@ export default async function LandingPage() {
     const prefs = await getPrefs();
     const rows2 = await getProfTAs();
     for(const applicant of rows2){
-        const pref = prefs.find(p => p.name == applicant.name);
+        const pref = prefs.find((p: any) => p.name == applicant.name);
         if(pref){
             applicant.prefString = `${pref.preference}/5`;
             applicant.pref = pref.preference;

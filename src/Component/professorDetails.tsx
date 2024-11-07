@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from 'react';
 import {
     Accordion,
@@ -22,7 +23,7 @@ import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 import Link from "next/link";
 import { updateProfessor } from '@/actions/manager';
 
-const ProfessorDetails = ({ open, onClose, params }) => {
+const ProfessorDetails = ({ open, onClose, params }: any) => {
     const [editMode, setEditMode] = useState(false);
     const [editParams, setEditParams] = useState({ ...params });
     const applicants = [{name: "Maggie Simpson", status: "PhD", course: "CAP5100", preference: 5},
@@ -33,8 +34,8 @@ const ProfessorDetails = ({ open, onClose, params }) => {
     const handleToggleEditMode = () => setEditMode(!editMode);
 
     // Handle parameter change
-    const handleChange = (field) => (event) => {
-        setEditParams((prev) => ({
+    const handleChange = (field: any) => (event: any) => {
+        setEditParams((prev: any) => ({
             ...prev,
             [field]: event.target.value,
         }));
@@ -51,7 +52,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
         setEditMode(false);
     };
 
-    const IconRepeater = ({count}) => {
+    const IconRepeater = ({count}: any) => {
         return (
           <Box>
             {Array.from({ length: count }).map((_, index) => (
@@ -65,7 +66,7 @@ const ProfessorDetails = ({ open, onClose, params }) => {
       };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="max">
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth='md'>
             <DialogTitle>
                 Professor Details
                 <Button onClick={handleToggleEditMode} sx={{ marginLeft: 2 }}>

@@ -6,7 +6,7 @@ import ProfessorDetails from "@/Component/professorDetails";
 
 const existingProfessors = ['Jaime Ruiz', 'Ye Xia']
 
-export default async function LandingPage({ children, params }: { children: ReactNode, params: {name: string}} ) {
+export default async function LandingPage({ params }: { params: {name: string}} ) {
     const last_name = params.name.substring(0, params.name.indexOf('_'))
     const first_name = params.name.substring(params.name.indexOf('_')+1)
     const full_name = `${first_name} ${last_name}`
@@ -33,6 +33,6 @@ export default async function LandingPage({ children, params }: { children: Reac
     //At this step we'll look up real details in the backend, but for the current moment everyone gets the same other details
     const professorDetails = {name: full_name, email: "prof@ufl.edu", department: "CISE", courses: [{name: "CAP5100", enrolled: 81, seats: 144}], assigned_tas: [{name: "Dustin Samuels", status: "Graduate", assigned_course: "CAP5100"}, {name: "Ed Chambers", status: "Undergraduate", assigned_course: "CNT5106C", preference: 5}], prosp_tas: [], prev_courses: [{course:'CAP5100', semester: "Spring 2023"}]}
     return (
-        <ProfessorDetails params={professorDetails} />
+        <ProfessorDetails params={professorDetails} open={undefined} onClose={undefined} />
     );
 }
