@@ -66,7 +66,7 @@ const AddProfessorForm = ({ open, onClose, all_Courses }: any) => {
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        console.log(formData);  // Log or send data to an API
+        console.log(formData);
         const sentData = { ...formData, courses: [formData.course] };
         postProf(sentData);
         onClose();

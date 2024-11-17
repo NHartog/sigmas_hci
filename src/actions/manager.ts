@@ -1,8 +1,8 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import {revalidatePath} from "next/cache"
 import mongoose from 'mongoose';
-import { modifyDatastore} from "./datastore"
+import {modifyDatastore} from "./datastore"
 import {courseModel, httpType, professorModel, studentModel, TAPreferenceModel} from "./datastoreTypes"
 
 
@@ -494,4 +494,55 @@ export async function unassignTACourse(appl: String, course: String): Promise<an
     const resultB: any = await modifyDatastore(courseModel, httpType.PUSH, optionsD);
 
     return resultB;
+}
+
+export async function addStudent(studentData: any){
+
+    const existingStudent = await studentModel.findOne({
+        $or: [
+            { username: studentData.username },
+            { name: studentData.name }
+        ]
+    });
+
+    console.log("hello")
+    console.log(existingStudent);
+    // If a student with the same username or name exists, return an error
+    if (existingStudent) {
+        console.log("in here")
+        return { success: false, message: "A student with this username or name already exists." };
+    }
+
+    const actualForm = {
+        _id: new mongoose.Types.ObjectId(),
+        ...studentData,
+        username: studentData.username || '',
+        password: studentData.password || '',
+        application: studentData.application || '',
+        applicationCompletionStatus: studentData.applicationCompletionStatus || false,
+        applicationStatus: studentData.applicationStatus || false,
+        applicationChangeWasASubmit: studentData.applicationChangeWasASubmit || false,
+        applicationLastEditDate: studentData.applicationLastEditDate || '',
+        countryOfOriginIsUSA: studentData.countryOfOriginIsUSA || false,
+        coursePreferences: studentData.coursePreferences || [], // Default to empty array
+        email: studentData.email || '',
+        gpa: studentData.gpa || null,
+        researchAreas: studentData.researchAreas || '',
+        semesterAdmitted: studentData.semesterAdmitted || '',
+        toeflScore: studentData.toeflScore || '',
+        travelPlans: studentData.travelPlans || '',
+        ufid: studentData.ufid || null,
+        status: studentData.status || '',
+    };
+
+    // Define the options for the datastore modification
+    const options = {
+        recordData: actualForm,
+    };
+
+    // Call modifyDatastore to save the student data
+    const newStudent = await modifyDatastore(studentModel, httpType.POST, options);
+    console.log(newStudent);
+
+    return { success: true, message: "Student successfully added" };
 }

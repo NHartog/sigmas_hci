@@ -1,4 +1,3 @@
-// studentManagerSubPage.tsx
 "use client";
 
 import { Box, Button, Stack, Typography } from '@mui/material';
@@ -7,8 +6,9 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PersonIcon from '@mui/icons-material/Person';
 import { useState } from "react";
 import AssignToCourseDialog from '@/Component/AssignToCourseDialog';
-import { getTAPreferencesbyStudent } from '@/actions/manager';
+import {getTAPreferencesbyStudent, addStudent, postProf} from '@/actions/manager';
 import StudentDetails from '@/Component/studentDetails';
+import AddStudentDialog from '@/Component/AddStudentDialog';  // Assuming you've created this component
 
 export default function studentManagerSubPage({ rows, availableCourses, taPreferences }: { rows: any; availableCourses: any, taPreferences: any }) {
 
@@ -16,6 +16,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     const [assignDialogOpen, setAssignDialogOpen] = useState(false);
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [preferences, setPreferences] = useState<any>(null);
+    const [addStudentDialogOpen, setAddStudentDialogOpen] = useState(false);  // state for dialog
 
     const headCells: HeadCell[] = [
         { id: 'studentName', numeric: false, disablePadding: true, label: 'Applicant Name' },
@@ -33,7 +34,6 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     }
 
     const handleAssignCourse = () => {
-        console.log(taPreferences)
         if (selectedStudent) {
             setAssignDialogOpen(true);
         }
@@ -42,20 +42,22 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     const closeDialog = () => {
         setAssignDialogOpen(false);
         setDetailsDialogOpen(false);
+        setAddStudentDialogOpen(false);  // Close Add Student Dialog
     }
 
+    const handleAddStudentDialogOpen = () => {
+        setAddStudentDialogOpen(true);  // Open Add Student Dialog
+    }
     const button = (
         <Stack direction="row">
-            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleStudentDetails} endIcon={<PersonIcon />}>
+            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleStudentDetails} endIcon={<PersonIcon />} >
                 View Student Details
             </Button>
-            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleAssignCourse} endIcon={<AutoStoriesIcon />}>
+            <Button sx={{ margin: 1, minWidth: 'max-content' }} variant="contained" onClick={handleAssignCourse} endIcon={<AutoStoriesIcon />} >
                 Assign to Course
             </Button>
         </Stack>
     );
-
-    console.log(taPreferences);
 
     return (
         <Box>
@@ -67,6 +69,26 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
                 onRowSelect={handleRowSelect}
                 advancedTooltip
             />
+            {/* Add the "Add New Student" button below the table */}
+            <Box sx={{ textAlign: "right", mt: 2 }}>
+                <Button
+                    onClick={handleAddStudentDialogOpen}
+                    variant="contained"
+                    color="secondary"
+                >
+                    Add New Student
+                </Button>
+            </Box>
+
+            {/* Add Student Dialog Component */}
+            {addStudentDialogOpen && (
+                <AddStudentDialog
+                    open={addStudentDialogOpen}
+                    onClose={closeDialog} // Close the dialog
+                />
+            )}
+
+            {/* Details and Assign Dialogs */}
             {detailsDialogOpen && (
                 <StudentDetails
                     open={detailsDialogOpen}
@@ -74,9 +96,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
                     params={selectedStudent}
                     prefs={preferences}
                 />
-            )
-
-            }
+            )}
             {assignDialogOpen && (
                 <AssignToCourseDialog
                     open={assignDialogOpen}
