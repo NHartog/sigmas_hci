@@ -51,6 +51,7 @@ export async function getStudentPreference(student: string, course: string): Pro
     // Look for the specific course in the student's preferences
     const preferenceEntry = studentPreferences.find((pref: any) => pref.course === course);
 
+    console.log(preferenceEntry)
     // Return the preference value or 0 if not found
     return preferenceEntry ? preferenceEntry.preferenceLevel : 0;
 }

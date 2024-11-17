@@ -81,6 +81,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         window.location.reload(); // Reload the entire page
     };
 
+
     const handleClickViewCourseDetails = () => handleSelectCourse(rowSelected);
     const handleClickManageCourseProfessors = () => handleSelectProfessorCourse(rowSelected);
     const handleClickManageCourseTAs = () => handleSelectTACourse(rowSelected);

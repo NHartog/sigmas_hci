@@ -37,11 +37,13 @@ const AddCourseForm = ({ open, onClose }: { open: any, onClose: any }) => {
         }));
     };
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
+        console.log("submited")
+        console.log(e)
         e.preventDefault();
-        console.log(formData);  // Log or send data to an API
+        console.log(formData);
         // Example: You could send formData to a backend here
-        postCourse(formData);
+        await postCourse(formData);
         onClose();
     };
 

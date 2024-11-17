@@ -55,7 +55,6 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
     };
 
     const getPreferenceForProfessor = (professor: string, course: string): number => {
-        console.log(taPreferences)
         const preference = taPreferences.find(pref =>
             pref.Prefix === course &&
             pref.Student === studentName &&
@@ -65,23 +64,25 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
     };
 
     const getPreferenceForStudent = async (course: string) => {
-        return await getStudentPreference(studentName, course);
+        const preference =  await getStudentPreference(studentName, course);
+        console.log(preference);
+        return(preference);
     };
 
 
 
-    useEffect(() =>
-    {
-        for(const course of availableCourses) {
-            getPreferenceForStudent(course.prefix).then((preference: any) => {
-                var temp = JSON.parse(JSON.stringify(studentPreference));
-                temp[course.prefix] = preference;
-                setStudentPreference(temp);
-                console.log(preference);
-            });
+    useEffect(() => {
+        const fetchStudentPreferences = async () => {
+            const prefs: any = {};
+            for (const course of availableCourses) {
+                const preference = await getPreferenceForStudent(course.prefix);
+                prefs[course.prefix] = preference;
+            }
+            setStudentPreference(prefs);
+        };
 
-        }
-    },[])
+        fetchStudentPreferences();
+    }, []);
 
 
     return (
@@ -107,9 +108,9 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
                                     <Typography variant="subtitle1" color="textSecondary">{course.title}</Typography>
                                     <Box mt={2}>
                                         <Typography variant="subtitle2" fontWeight="bold">Professor Preferences:</Typography>
-                                        {course.professors.map((professor) => {
+                                        {course.professors.length > 0 ? (
+                                            course.professors.map((professor) => {
                                             const preference = getPreferenceForProfessor(professor, course.prefix);
-
                                             return (
                                                     <Box key={professor} display="flex" alignItems="center">
                                                         <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
@@ -125,17 +126,19 @@ const AssignToCourseDialog = ({ open, onClose, availableCourses, studentName, ta
                                                         </Box>
                                                     </Box>
                                             );
-                                        })}
+                                        })
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">
+                                                No professor assigned to course.
+                                            </Typography>
+                                        )}
                                         <Typography variant="subtitle2" fontWeight="bold">Student Preferences:</Typography>
                                         <Box key={studentName} display="flex" alignItems="center">
-                                            <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
-                                                {studentName}:
-                                            </Typography>
                                             <Box display="flex">
-                                                {Array.from({ length: studentPreference[course.prefix] }).map((_, index) => (
+                                                {Array.from({ length: studentPreference[course.prefix] || 0 }).map((_, index) => (
                                                     <StarTwoToneIcon key={`filled-${index}`} sx={{ color: "rgba(255,127,50,1)" }} />
                                                 ))}
-                                                {Array.from({ length: 5 - studentPreference[course.prefix] }).map((_, index) => (
+                                                {Array.from({ length: 5 - (studentPreference[course.prefix] || 0) }).map((_, index) => (
                                                     <StarTwoToneIcon key={`empty-${index}`} sx={{ color: "gray" }} />
                                                 ))}
                                             </Box>

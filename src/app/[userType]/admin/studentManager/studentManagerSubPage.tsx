@@ -33,6 +33,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     }
 
     const handleAssignCourse = () => {
+        console.log(taPreferences)
         if (selectedStudent) {
             setAssignDialogOpen(true);
         }
