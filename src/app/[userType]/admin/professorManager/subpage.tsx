@@ -8,7 +8,7 @@ import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
 import ProfessorCourses from '@/Component/manageProfessorsCourses';
-import { getSpecificProf } from '@/actions/manager';
+import { getSpecificProf, getApplicants } from '@/actions/manager';
 
 export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
@@ -44,6 +44,8 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 	const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
 	const [profCourses, setProfCourses] = useState<any>(null);
 	const [manageCourseDialog, setManageCourseDialog] = useState(false);
+	const [specificProfApplicants, setSpecificProfApplicants] = useState<any[]>([]);
+	let someTAs: any = [];
 
 	const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
 		setSelectedProfessor(professor);
@@ -64,7 +66,14 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		myVariable.current = row; // Pass the selected row to handleViewDetails
 	};
 
-	const handleButtonOneClick = () => {
+	const handleButtonOneClick = async () => {
+		setSelectedProfessor(myVariable.current);
+		setSpecificProfApplicants([]);
+		for(let i = 0; i < selectedProfessor.courses.length; i++){
+				someTAs = await getApplicants(selectedProfessor.courses[i]);
+				setSpecificProfApplicants(prev => [...prev, ...someTAs]);
+		}
+		console.log(specificProfApplicants);
 		handleViewDetails(myVariable.current as any);
 	};
 
@@ -113,6 +122,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 					open={profDetailsDialogOpen}
 					onClose={handleCloseDialog}
 					params={selectedProfessor}
+					applicants={specificProfApplicants}
 				/>
 			)}
 			{addProfDialogOpen && (

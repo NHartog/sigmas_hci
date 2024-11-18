@@ -86,8 +86,9 @@ export async function updateProfessor(values: any): Promise<void> {
 
 
     const copy = JSON.parse(JSON.stringify(values))
-
+    copy.name = copy.Professor;
     delete copy._id
+    delete copy.Professor;
     const options = {
         id: values._id,
         relatesToOne: true,

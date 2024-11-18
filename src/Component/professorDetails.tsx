@@ -9,6 +9,8 @@ import {
     DialogContent,
     Dialog,
     DialogTitle,
+    Divider,
+    Stack,
     Typography,
     TextField,
     Table,
@@ -23,15 +25,19 @@ import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 import Link from "next/link";
 import { updateProfessor } from '@/actions/manager';
 
-const ProfessorDetails = ({ open, onClose, params }: any) => {
+const ProfessorDetails = ({ open, onClose, params, applicants }: any) => {
     const [editMode, setEditMode] = useState(false);
     const [editParams, setEditParams] = useState({ ...params });
-    const applicants = [{name: "Maggie Simpson", status: "PhD", course: "CAP5100", preference: 5},
-        {name: "John Adams", status: "Undergraduate", course: "CAP5100", preference: 3}
-    ]
 
     // Toggle edit mode
-    const handleToggleEditMode = () => setEditMode(!editMode);
+    const handleToggleEditMode = () => {
+        if(editMode){
+            updateProfessor(editParams);
+            console.log(editParams);
+        }
+        setEditMode(!editMode)
+
+    };
 
     // Handle parameter change
     const handleChange = (field: any) => (event: any) => {
@@ -46,9 +52,13 @@ const ProfessorDetails = ({ open, onClose, params }: any) => {
         // Call a function to save changes to the backend or update state
         // You could pass editParams to a parent component here if needed.
 
-        updateProfessor(editParams)
+        updateProfessor(editParams);
+        console.log(editParams);
+        setEditMode(false);
+    };
 
-        console.log(editParams)
+    const handleCancel = () => {
+        setEditParams(params);
         setEditMode(false);
     };
 
@@ -65,132 +75,133 @@ const ProfessorDetails = ({ open, onClose, params }: any) => {
         );
       };
 
+      
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth='md'>
-            <DialogTitle>
-                Professor Details
-                <Button onClick={handleToggleEditMode} sx={{ marginLeft: 2 }}>
-                    {editMode ? "Cancel" : "Edit"}
-                </Button>
-                {editMode && (
-                    <Button onClick={handleSave} sx={{ marginLeft: 2 }}>
-                        Save
-                    </Button>
-                )}
-            </DialogTitle>
-            <DialogContent>
-                <Box style={{ padding: "20px", textAlign: "center" }}>
-                    <Box
-                        sx={{
-                            backgroundColor: "rgba(255, 127, 50, 1)",
-                            borderTopLeftRadius: "15px",
-                            borderTopRightRadius: "15px",
-                            padding: "20px",
-                        }}
-                    >
-                        <Typography variant="h3">{editParams.Professor}: Professor</Typography>
+        <Dialog open={open} onClose={onClose} fullWidth>
+            <DialogContent sx={{ p: 0 }}>
+                <Box style={{ textAlign: "center", width: "100%" }}>
+                    <Box sx={{ padding: "20px" }}>
+                        <Typography variant="h5">{editParams.Professor} Details</Typography>
                     </Box>
-
-                    <Accordion disableGutters defaultExpanded>
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                            <Typography variant="h4">Professor Details</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ display: "flex", flexDirection: "column" }}>
-                            {["Professor", "email", "department"].map((field, index) => (
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <Typography sx={{ textAlign: "left", fontSize: "150%", width: "15%" }}>
-                                        {field.charAt(0).toUpperCase() + field.slice(1)}:
+                    <Stack sx={{ p: 2 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
+                        {["Professor", "email", "department"].map((field, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "row"
+                                }}
+                            >
+                                <Typography variant="h5" sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>
+                                    {field.charAt(0).toUpperCase() + field.slice(1)}:
+                                </Typography>
+                                {editMode ? (
+                                    <TextField
+                                        value={editParams[field]}
+                                        onChange={handleChange(field)}
+                                        fullWidth
+                                        variant="outlined"
+                                    />
+                                ) : (
+                                    <Typography variant="h6" sx={{ textAlign: "right", width: "50%" }}>
+                                        {editParams[field]}
                                     </Typography>
-                                    {editMode ? (
-                                        <TextField
-                                            value={editParams[field]}
-                                            onChange={handleChange(field)}
-                                            fullWidth
-                                            variant="outlined"
-                                        />
-                                    ) : (
-                                        <Typography sx={{ textAlign: "left", fontSize: "150%", width: "50%" }}>
-                                            {editParams[field]}
-                                        </Typography>
-                                    )}
-                                </Box>
-                            ))}
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion disableGutters defaultExpanded>
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                            <Typography variant="h4">Current Courses</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {params.courses.length > 0 ? (
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell style={{ textAlign: "center" }}><strong>Course</strong></TableCell>
-                                            <TableCell style={{ textAlign: "center" }}><strong>Current Enrollment</strong></TableCell>
-                                            <TableCell style={{ textAlign: "center" }}><strong>More Details</strong></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {params.courses.map((course: { name: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; enrolled: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; seats: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }, idx: React.Key | null | undefined) => (
-                                            <TableRow key={idx}>
-                                                <TableCell style={{ textAlign: "center" }}><strong>{course.name}</strong></TableCell>
-                                                <TableCell style={{ textAlign: "center" }}><strong>{course.enrolled}/{course.seats}</strong></TableCell>
-                                                <TableCell style={{ textAlign: "center" }}>
-                                                    <Link href={`/manager/admin/courseManager`}>
-                                                        <strong style={{ color: "blue" }}><u>Course Details</u></strong>
-                                                    </Link>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <Typography variant="h4">No Courses Assigned yet for this semester</Typography>
+                                )}
+                            </Box>
+                        ))}
+                        {/*Courses*/}
+                        <Box>
+                        <Box sx={{ display: "flex", flexDirection: "row" }} key="courses">
+                            {( params.courses.length > 0 ?
+                            (<><Typography variant='h5' sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>Courses:</Typography>
+                                <Box display="flex" flexDirection="column" sx={{ textAlign: "right", width: "50%"}}>
+                                {params.courses.map((course: any) => (
+                                            <Typography variant='h6' >{course}</Typography>
+                                    ))
+                                    
+                                }</Box></>)
+                            :
+                                (<><Typography variant='h5' sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>Courses:</Typography>
+                                <Typography variant="h6" sx={{ textAlign: "right", width: "50%"}}>No Courses Assigned Yet For This Semester</Typography></>
+                                )
                             )}
-                        </AccordionDetails>
-                    </Accordion>
-                    <Accordion disableGutters defaultExpanded>
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                            <Typography variant="h4">Professor Preferences</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Applicant</TableCell>
-                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Status</TableCell>
-                                    <TableCell style={{textAlign: 'center', width: "20%"}}>Course</TableCell>
-                                    <TableCell style={{textAlign: 'center', width: "40%"}}>Preference Level</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {applicants.map((applicant) => (
-                                    <TableRow>
-                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.name}</strong></TableCell>
-                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.status}</strong></TableCell>
-                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>{applicant.course}</strong></TableCell>
-                                        <TableCell style={{textAlign: 'center', width: "20%"}}><strong>
-                                            <IconRepeater count={applicant.preference} />
-                                            </strong></TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                        </AccordionDetails>
-                    </Accordion>
+                        </Box>
+                        {editMode && <Typography variant="subtitle1" sx={{marginTop: "10px"}}>To modify courses, choose the manage courses option.</Typography>}
+                        </Box>
+                        {/*Applicants*/}
+                        <Box>
+                        <Box sx={{ display: "flex", flexDirection: "row" }} key="applicants">
+                            {( applicants.length > 0 ?
+                            (<><Typography variant='h5' sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>Assigned TAs:</Typography>
+                                <Box display="flex" flexDirection="column" sx={{ textAlign: "right", width: "50%"}}>
+                                {applicants.map((app: any) => (
+                                            <Typography variant='h6' >{app.studentName}</Typography>
+                                    ))
+                                    
+                                }</Box></>)
+                            :
+                                (<><Typography variant='h5' sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>Applicants:</Typography>
+                                <Typography variant="h6" sx={{ textAlign: "right", width: "50%"}}>No Applicants Assigned Yet</Typography></>
+                                )
+                            )}
+                        </Box>
+                        {editMode && <Typography variant="subtitle1" sx={{marginTop: "10px"}}>To modify TAs, choose the manage TAs option.</Typography>}
+                        </Box>
+                    </Stack>
                 </Box>
+                <Stack justifyContent='center' alignItems='center' direction='row' spacing={2} sx={{ width: 1, p: 2 }}>
+                    <Button onClick={handleToggleEditMode} variant='contained' color='secondary'>
+                        {editMode ? "Save" : "Edit"}
+                    </Button>
+                    {editMode && (
+                        <Button onClick={handleCancel} variant='contained' color='error'>
+                            Cancel
+                        </Button>
+                    )}
+                </Stack>
             </DialogContent>
         </Dialog>
     );
 };
 
 export default ProfessorDetails;
+
+/*
+{['professors', 'assignedTas'].map(field => (
+                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} key={field}>
+                                <Typography variant='h6' sx={{ textAlign: "left", width: "50%" }}>
+                                    {(titleFormat as any)[field]}:
+                                </Typography>
+                                <Box sx={{ width: "50%", display: "flex", flexDirection: "column" }}>
+                                    {
+                                        !editMode
+                                            ?
+                                            tempDetails[field].map((item: string) => (
+                                                <Box key={item} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                                    <Typography>{item}</Typography>
+                                                </Box>
+                                            ))
+                                            :
+                                            <Autocomplete
+                                                multiple
+                                                id="tags-standard"
+                                                options={tempDetails[field]}
+                                                fullWidth
+                                                getOptionLabel={(option: any) => option}
+                                                defaultValue={tempDetails[field]}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="standard"
+                                                        label="Multiple values"
+                                                    />
+                                                )}
+                                            />
+                                    }
+                                    {!tempDetails[field].length && (
+                                        <Typography sx={{ fontSize: "150%" }}>None Assigned</Typography>
+                                    )}
+                                </Box>
+                            </Box>
+                        ))}
+    */
