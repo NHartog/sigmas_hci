@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+    Autocomplete,
     Box,
     Button,
     Card,
@@ -8,20 +9,21 @@ import {
     DialogContent,
     Dialog,
     DialogTitle,
-    IconButton
+    Divider,
+    IconButton,
+    Stack
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
 const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => {
-    const coursesByPrefix = allCourses.map((item: any) => item.prefix);
     const [tempCourses, setTempCourses] = useState(courses); 
+    let coursesByPrefix = allCourses.map((item: any) => item.prefix).filter((item: any) => !tempCourses.includes(item));
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [newCourse, setNewCourseName] = useState("");
-    const [filteredItems, setFilteredItems] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [filteredItems, setFilteredItems] = useState(coursesByPrefix);
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
@@ -32,30 +34,25 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
         setTempCourses(tempCourses.filter((c: any) => c !== course));
         console.log(tempCourses, "ADDING")
         setEditMode(false);
+        coursesByPrefix = allCourses.map((item: any) => item.prefix).filter((item: any) => !tempCourses.includes(item));
+        handleFilteredItems("");
         alert("Course Successfully Unassigned From Professor!")
     };
 
-    const handleFilteredItems = (value: any) => {
-        if (value === '' || coursesByPrefix.includes(value)) {
+    const handleFilteredItems = (value: string) => {
+        if (coursesByPrefix.includes(value)) {
             setFilteredItems([])
         }
         else {
             const matches = coursesByPrefix.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
             setFilteredItems(matches)
         }
-        setShowDropdown(filteredItems.length > 0);
     };
 
-    const handleItemClick = (item: any) => {
-        setNewCourseName(item);
-        setFilteredItems([]);
-        setShowDropdown(false);
-    }
 
-    const handleType = (e: any) => {
-        console.log(coursesByPrefix);
-        setNewCourseName(e.target.value);
-        handleFilteredItems(e.target.value);
+    const handleChange = (newValue: string | null) => {
+        setNewCourseName(newValue !== null ? newValue : "");
+        handleFilteredItems(newValue !== null ? newValue : "");
     }
 
     const handleAddCourseSubmit = () =>{
@@ -70,32 +67,27 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
         assignProfessorCourse(params.Professor, newCourse);
         setTempCourses([...tempCourses, newCourse])
         setEditMode(false);
+        coursesByPrefix = allCourses.map((item: any) => item.prefix).filter((item: any) => !tempCourses.includes(item));
+        handleFilteredItems("");
         alert("Course Successfully Assigned to Professor!")
     }
     console.log("rendered")
     return (
         <Dialog open={open} onClose={close} fullWidth>
-            <DialogTitle>
-                {courseDetails.Course} Details
-                <Button onClick={handleEditToggle} sx={{ marginLeft: 2 }}>
-                    {editMode ? "Save" : "Edit"}
-                </Button>
-            </DialogTitle>
-
-            <DialogContent sx={{overflow: "visible", paddingLeft: "10%", paddingRight: "10%", paddingBottom: "40%"}}>
+            <DialogContent sx={{ p: 0 }}>
                 <Box style={{ textAlign: "center", width: "100%" }}>
-                    <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
-                        <Typography variant="h3">{params.Professor} Courses</Typography>
+                    <Box sx={{ padding: "20px" }}>
+                        <Typography variant="h5">Professor's Courses</Typography>
                     </Box>
 
                     {/* Assigned Courses Section */}
-                    <Box sx={{ marginTop: 3 }}>
+                    <Stack sx={{ p: 2 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
                         <Typography variant="h5">Assigned Courses</Typography>
                         { tempCourses.length > 0 ?
                             tempCourses.map((course: any) => (
-                                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{course}</Typography>
-                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveCourse(course)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
+                                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} key={course}>
+                                    <Typography variant='h6' sx={{ textAlign: "left", width: "50%" }}>{course}</Typography>
+                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveCourse(course)}} sx={{height: "75%", verticalAlign: "middle", width: "30%", textAlign: "left"}}>
                                         Remove Course
                                     </Button>
                                 </Box>
@@ -103,59 +95,49 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
                         :
                             <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>None Assigned</Typography>
                         }
-                        {!editMode && <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
+                        {!editMode && <Box display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+                            <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{textAlign: "center"}}>
                             Add a Course
-                        </Button>}
-                    </Box>
+                            </Button>
+                            </Box>}
+                    </Stack>
 
                     {/* Available Courses Section */}
                     {editMode && (
-                        <Box sx={{ marginTop: 3, display: "flex", flexDirection: "row" }}>
+                        <Stack sx={{ p: 2 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
                             {allCourses.length > 0 ? (
-                                <>
-                                <Box sx={{width: '100%'}}>
-                                    <TextField
-                                        name="newCourse"
-                                        label="Search name"
-                                        variant="outlined"
-                                        value={newCourse}
-                                        onChange={(e) => handleType(e)}
-                                        sx={{ width: "90%", marginTop: "10px" }}
-                                    />
-                                    {showDropdown && (
-                                        <Box
-                                            style={{
-                                                border: "1px solid #ccc",
-                                                maxHeight: "150px",
-                                                overflowY: "auto",
-                                                position: "absolute",
-                                                backgroundColor: "white",
-                                                width: "50%",
-                                                marginLeft: "20px"
-                                            }}
-                                        >
-                                            {filteredItems.map((item, index) => (
-                                                <div
-                                                    key={index}
-                                                    onClick={() => handleItemClick(item)}
-                                                    style={{padding: "5px", cursor: "pointer",border: "1px solid #ccc" }}
-                                                >
-                                                    {item}
-                                                </div>
-                                            ))}
-                                        </Box>
-                                    )}
+                                <><Box>
+                                    <Autocomplete
+                                                id="tags-standard"
+                                                options={filteredItems}
+                                                fullWidth
+                                                getOptionLabel={(option: any) => option}
+                                                defaultValue={""}
+                                                onInputChange={(event, newValue) => handleChange(newValue)}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="standard"
+                                                        label="Course to Add"
+                                                    />
+                                                )}
+                                            />
                                 </Box>
-                                <Button onClick={handleAddCourseSubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
-                                    Add
-                                </Button>
+                                <Stack justifyContent='center' alignItems='center' direction='row' spacing={2} sx={{ width: 1, p: 2 }}>
+                                    <Button onClick={handleAddCourseSubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
+                                        Add
+                                    </Button>
+                                    <Button onClick={handleEditToggle} variant='contained' color='error'>
+                                        Cancel
+                                    </Button>
+                                </Stack>
                                 </>
                             ) : (
                                 <Typography sx={{ fontSize: "150%", padding: "10px" }}>
-                                    No Available Professors
+                                    No Courses to Assign
                                 </Typography>
                             )}
-                        </Box>
+                        </Stack>
                     )}
                 </Box>
             </DialogContent>
