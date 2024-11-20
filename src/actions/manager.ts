@@ -143,7 +143,13 @@ export async function assignProfessorCourse(prof: String, course: String): Promi
     return resultB;
 }
 
-export async function unassignProfessorCourse(prof: String, course: String): Promise<any[]>{
+export async function unassignProfessorCourse(prof: string | null, course: string | null){
+    if(!prof || !course){
+        return {
+            success: false,
+            message: 'Either professor or course is missing',
+        };
+    }
     const optionsA = {
         query: {
             name: prof
@@ -165,6 +171,12 @@ export async function unassignProfessorCourse(prof: String, course: String): Pro
     
     const resultA: any = await modifyDatastore(professorModel, httpType.PUSH, optionsB);
     console.log(resultA);
+    if (!resultA) {
+        return {
+            success: false,
+            message: 'An issue arose with this action (professor side).',
+        };
+    }
     //Now update course
     const optionsC = {
         query: {
@@ -184,7 +196,18 @@ export async function unassignProfessorCourse(prof: String, course: String): Pro
     };
     const resultB: any = await modifyDatastore(courseModel, httpType.PUSH, optionsD);
 
-    return resultB;
+     // Check if a record was actually deleted
+     if (resultB) {
+        return {
+            success: true,
+            message: 'Professor and Course unassigned successfully!',
+        };
+    } else {
+        return {
+            success: false,
+            message: 'An issue arose with this action (course side).',
+        };
+    }
 }
 
 export async function getManagerCourses(): Promise<any[]> {
@@ -344,6 +367,35 @@ export async function postCourse(formData: any) {
     }
     const newCourse = await modifyDatastore(courseModel, httpType.POST, options);
     console.log(newCourse);
+}
+
+export async function deleteCourse(formData: any) {
+    // Check if required fields are provided in formData
+    console.log("Data:")
+    console.log(formData)
+
+    // Perform the deletion based on provided formData
+    const result = await modifyDatastore(courseModel, httpType.DELETE, {
+        filter: {
+            prefix: formData.prefix
+        },
+        relatesToOne: true,  // Set to true to ensure only one record is deleted, if desired
+    });
+
+    console.log(result)
+
+    // Check if a record was actually deleted
+    if (result && (result as any).deletedCount > 0) {
+        return {
+            success: true,
+            message: 'Course deleted successfully!',
+        };
+    } else {
+        return {
+            success: false,
+            message: 'No matching course found to delete.',
+        };
+    }
 }
 
 export async function postProf(formData: any) {

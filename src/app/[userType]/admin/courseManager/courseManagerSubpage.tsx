@@ -14,7 +14,7 @@ import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
 import AreYouSureDialog from '@/Component/areYouSureDialog';
-import { deleteTAPreference, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
+import { deleteTAPreference, deleteCourse, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -36,6 +36,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [addCourseDialogOpen, setAddCourseDialogOpen] = useState(false);
     const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
+    const [areYouSureDialogCourseOpen, setAreYouSureDialogCourseOpen] = useState(false);
     const [manageCourseProfessorsOpen, setManageCourseProfessorsOpen] = useState(false);
     const [manageCourseTAsOpen, setManageCourseTAsOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -43,6 +44,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [selectedCourseProfs, setSelectedCourseProfs] = useState<any>(null);
     const [allProfs, setAllProfs] = useState<any>(null);
     const [allApplicants, setAllApplicants] = useState<any>(null);
+    const [areYouSureType, setAreYouSureType] = useState("");
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         //setSelectedCourse(professor);
@@ -50,7 +52,9 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     };
 
     const handleSelectCourseForRemoval = (course: any) => {
+        console.log("HERE TO DUMB IT DOWN", course)
         setSelectedCourse(course);
+        setAreYouSureType("course");
         setAreYouSureDialogOpen(true);
     };
 
@@ -130,7 +134,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {addCourseDialogOpen && <AddCourseForm open={addCourseDialogOpen} onClose={handleCloseDialog} />}
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
             {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
-            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} />}
+            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} deletionType={areYouSureType} />}
         </>
     );
 }

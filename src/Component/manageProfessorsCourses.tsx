@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AreYouSureDialog from './areYouSureDialog';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
 const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => {
@@ -24,19 +25,30 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
     const [courseDetails, setCourseDetails] = useState(params);
     const [newCourse, setNewCourseName] = useState("");
     const [filteredItems, setFilteredItems] = useState(coursesByPrefix);
+    const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
+    const [deleteData, setDeleteData] = useState<any>();
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
     };
 
+
+    const openingAreYouSure = (course: string) => {
+        setDeleteData({prefix: course, name: params.Professor, title: ""});
+        console.log(deleteData);
+        setAreYouSureDialogOpen(true);
+    };
+
+    const closingAreYouSure = () => {
+        setAreYouSureDialogOpen(false);
+    };
+
     const handleRemoveCourse = (course: any) => {
-        unassignProfessorCourse(params.Professor, course);
         setTempCourses(tempCourses.filter((c: any) => c !== course));
         console.log(tempCourses, "ADDING")
         setEditMode(false);
         coursesByPrefix = allCourses.map((item: any) => item.prefix).filter((item: any) => !tempCourses.includes(item));
         handleFilteredItems("");
-        alert("Course Successfully Unassigned From Professor!")
     };
 
     const handleFilteredItems = (value: string) => {
@@ -87,7 +99,7 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
                             tempCourses.map((course: any) => (
                                 <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} key={course}>
                                     <Typography variant='h6' sx={{ textAlign: "left", width: "50%" }}>{course}</Typography>
-                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveCourse(course)}} sx={{height: "75%", verticalAlign: "middle", width: "30%", textAlign: "left"}}>
+                                    <Button variant='contained' color='secondary' onClick={() => {openingAreYouSure(course)}} sx={{height: "75%", verticalAlign: "middle", width: "30%", textAlign: "left"}}>
                                         Remove Course
                                     </Button>
                                 </Box>
@@ -139,6 +151,11 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
                             )}
                         </Stack>
                     )}
+                    {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen}
+                    onClose={closingAreYouSure}
+                    toRemove={deleteData}
+                    deletionType="ProfCourse"
+                    onProfCourseSuccess={handleRemoveCourse} />}
                 </Box>
             </DialogContent>
         </Dialog>
