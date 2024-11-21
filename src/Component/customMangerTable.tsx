@@ -209,10 +209,16 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip,
 
 
     const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-        const selectedRow = rows.find(row => row.id === id);
-        setSelected(selected == id ? undefined : id);
-        if (selectedRow) {
-            onRowSelect(selectedRow);
+        const isSelected = selected === id;
+        if (isSelected) {
+            setSelected(undefined);
+            onRowSelect(null);
+        } else {
+            setSelected(id);
+            const selectedRow = rows.find((row) => row.id === id);
+            if (selectedRow) {
+                onRowSelect(selectedRow);
+            }
         }
     };
 

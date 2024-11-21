@@ -204,12 +204,12 @@ function AdvancedTooltip(): JSX.Element {
 	)
 }
 
-export function EnhancedTable({ rows, headCells, title, button, advancedTooltip, onRowSelect }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean, onRowSelect: (row: any) => void; }) {
+export function EnhancedTable({ rows, headCells, title, button, advancedTooltip, onRowSelect, selectionKey }: { rows: any[], headCells: HeadCell[], title: string, button?: JSX.Element, advancedTooltip?: boolean, onRowSelect: (row: any) => void, selectionKey:any }) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<string>('id');
-	const [selected, setSelected] = React.useState<number>();
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [selected, setSelected] = React.useState<number | undefined>(undefined);
 
 	const handleRequestSort = (
 		event: React.MouseEvent<unknown>,
@@ -220,12 +220,21 @@ export function EnhancedTable({ rows, headCells, title, button, advancedTooltip,
 		setOrderBy(property);
 	};
 
+	React.useEffect(() => {
+		setSelected(undefined);
+	}, [selectionKey]);
 
 	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-		const selectedRow = rows.find(row => row.id === id);
-		setSelected(selected == id ? undefined : id)
-		if (selectedRow) {
-			onRowSelect(selectedRow);
+		const isSelected = selected === id;
+		if (isSelected) {
+			setSelected(undefined);
+			onRowSelect(null);
+		} else {
+			setSelected(id);
+			const selectedRow = rows.find((row) => row.id === id);
+			if (selectedRow) {
+				onRowSelect(selectedRow);
+			}
 		}
 	};
 

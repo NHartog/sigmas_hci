@@ -14,6 +14,7 @@ import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
 import AreYouSureDialog from '@/Component/areYouSureDialog';
+import ExplanationCard from "@/Component/explanationCard";
 import { deleteTAPreference, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
@@ -21,6 +22,9 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
 
     // State to force re-render
     const [reload, setReload] = useState(false);
+
+    const courseTitle = "Welcome to Course Manager"
+    const courseDescription = 'Manage your courses efficiently using the options below. Select a course to perform various actions.';
 
 
     const coursesHeadCells: HeadCell[] = [
@@ -111,8 +115,51 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         </Stack>
     );
 
+    const courseOptions = [
+        {
+            label: 'View Course Details',
+            description: 'View all important details for a course',
+            icon: <ReadMoreIcon />
+        },
+        {
+            label: 'Manage Course Professors',
+            description: 'Add or remove professors to selected course',
+            icon: <PersonAddIcon />
+        },
+        {
+            label: 'Manage Course TAs',
+            description: 'Add or remove potential TAs to selected course',
+            icon: <PersonAddIcon />
+        },
+        {
+            label: 'Remove Course',
+            description: 'Delete course from TAAS System',
+            icon: <DeleteOutlineIcon />
+        },
+    ];
+
     return (
-        <>
+        <Box>
+            <ExplanationCard title={courseTitle} description={courseDescription}>
+                {courseOptions.map((option) => (
+                    <Box
+                        key={option.label}
+                        sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                        <Button
+                            variant="contained"
+                            startIcon={option.icon}
+                            sx={{ mr: 2, width: '200px' }} // Set a fixed width
+                            disabled={!selectedCourse}
+                        >
+                            {option.label}
+                        </Button>
+                        <Typography variant="body1">{option.description}</Typography>
+                    </Box>
+                ))}
+            </ExplanationCard>
+
+
             <EnhancedTable
                 rows={coursesRows}
                 headCells={coursesHeadCells}
@@ -131,6 +178,6 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
             {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
             {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} />}
-        </>
+        </Box>
     );
 }

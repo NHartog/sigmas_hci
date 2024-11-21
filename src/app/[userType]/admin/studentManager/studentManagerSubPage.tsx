@@ -8,7 +8,8 @@ import { useState } from "react";
 import AssignToCourseDialog from '@/Component/AssignToCourseDialog';
 import {getTAPreferencesbyStudent, addStudent, postProf} from '@/actions/manager';
 import StudentDetails from '@/Component/studentDetails';
-import AddStudentDialog from '@/Component/AddStudentDialog';  // Assuming you've created this component
+import AddStudentDialog from '@/Component/AddStudentDialog';
+import ExplanationCard from "@/Component/explanationCard";  // Assuming you've created this component
 
 export default function studentManagerSubPage({ rows, availableCourses, taPreferences }: { rows: any; availableCourses: any, taPreferences: any }) {
 
@@ -17,6 +18,10 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [preferences, setPreferences] = useState<any>(null);
     const [addStudentDialogOpen, setAddStudentDialogOpen] = useState(false);  // state for dialog
+
+    const cardTitle = 'Welcome to Student Manager';
+    const cardDescription = 'Manage your students efficiently using the options below. Select a student to perform various actions.';
+
 
     const headCells: HeadCell[] = [
         { id: 'studentName', numeric: false, disablePadding: true, label: 'Applicant Name' },
@@ -59,8 +64,46 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
         </Stack>
     );
 
+    const studentOptions = [
+        {
+            label: 'View Student Details',
+            description: 'View all important details for a student',
+            icon: <PersonIcon />,
+        },
+        {
+            label: 'Assign to Course',
+            description: 'Assign the selected student to a course',
+            icon: <AutoStoriesIcon />,
+        }
+    ];
+
     return (
         <Box>
+
+            <ExplanationCard title={cardTitle} description={cardDescription}>
+                {studentOptions.map((option) => (
+                    <Box
+                        key={option.label}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 1,
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            startIcon={option.icon}
+                            sx={{ mr: 2, width: '220px' }}
+                            disabled={!selectedStudent}
+                        >
+                            {option.label}
+                        </Button>
+                        <Typography variant="body1">{option.description}</Typography>
+                    </Box>
+                ))}
+            </ExplanationCard>
+
             <EnhancedTable
                 rows={rows}
                 headCells={headCells}

@@ -17,8 +17,8 @@ import {
     Slider,
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import {addTAPreference} from "@/actions/professor";
-import {getUserData} from "@/actions/application";
+import { addTAPreference } from "@/actions/professor";
+import { getUserData } from "@/actions/application";
 
 interface Ta {
     id: number;
@@ -39,27 +39,46 @@ interface TaPreferenceDialogProps {
     close: () => void;
     students: Ta[];
     courses: Course[];
-    selected: { prefix: string | null; name: string | null; title: string | null; pref: string | null };
+    selectedCourse: Course | null;
+    selectedTA: Ta | null;
 }
 
-export default function TaPreferenceDialog({ open, close, students, courses, selected }: TaPreferenceDialogProps) {
-    const [selectedCourse, setSelectedCourse] = useState<string | null>(selected.prefix);
-    const [selectedCourseTitle, setSelectedCourseTitle] = useState<string | null>(selected.title);
-    const [selectedTA, setSelectedTA] = useState<string | null>(selected.name);
-    const [preferenceValue, setPreferenceValue] = useState<number | null>(selected.pref as any || 3); // Default preference value
+export default function TaPreferenceDialog({ open, close, students, courses, selectedCourse, selectedTA }: TaPreferenceDialogProps) {
+    const [selectedCoursePrefix, setSelectedCoursePrefix] = useState<string>(selectedCourse ? selectedCourse.prefix : '');
+    const [selectedCourseTitle, setSelectedCourseTitle] = useState<string>(selectedCourse ? selectedCourse.title : '');
+    const [selectedTAName, setSelectedTAName] = useState<string>(selectedTA ? selectedTA.name : '');
+    const [preferenceValue, setPreferenceValue] = useState<number>(3); // Default preference value
+
     useEffect(() => {
-        setSelectedCourse(selected.prefix);
-        setSelectedCourseTitle(selected.title);
-        setSelectedTA(selected.name);
-    }, [open, selected]);
+        if (selectedCourse) {
+            setSelectedCoursePrefix(selectedCourse.prefix);
+            setSelectedCourseTitle(selectedCourse.title);
+        } else {
+            setSelectedCoursePrefix('');
+            setSelectedCourseTitle('');
+        }
+    }, [selectedCourse]);
+
+    useEffect(() => {
+        if (selectedTA) {
+            setSelectedTAName(selectedTA.name);
+        } else {
+            setSelectedTAName('');
+        }
+    }, [selectedTA]);
 
     const handleCourseChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const coursePrefix = event.target.value as string;
-        setSelectedCourse(coursePrefix);
+        setSelectedCoursePrefix(coursePrefix);
 
         // Find and set the title associated with the selected prefix
         const selectedCourseData = courses.find((course) => course.prefix === coursePrefix);
-        setSelectedCourseTitle(selectedCourseData ? selectedCourseData.title : null);
+        setSelectedCourseTitle(selectedCourseData ? selectedCourseData.title : '');
+    };
+
+    const handleTAChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        const taName = event.target.value as string;
+        setSelectedTAName(taName);
     };
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
@@ -82,8 +101,8 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Select Course</InputLabel>
                                 <Select
-                                    value={selectedCourse || ''}
-                                    onChange={handleCourseChange as any}  // Updated to use handleCourseChange
+                                    value={selectedCoursePrefix}
+                                    onChange={handleCourseChange as any}
                                     label="Select Course"
                                 >
                                     {courses.map((course) => (
@@ -105,8 +124,8 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Select TA</InputLabel>
                                 <Select
-                                    value={selectedTA || ''}
-                                    onChange={(e) => setSelectedTA(e.target.value)}
+                                    value={selectedTAName}
+                                    onChange={handleTAChange as any}
                                     label="Select TA"
                                 >
                                     {students.map((ta) => (
@@ -136,7 +155,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                                     step={1}
                                     min={1}
                                     max={5}
-                                    value={preferenceValue || 3}
+                                    value={preferenceValue}
                                     sx={{ width: '100%' }}
                                 />
                             </Box>
@@ -148,16 +167,14 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                         variant="contained"
                         endIcon={<PersonAddIcon />}
                         onClick={async () => {
-
                             try {
-                                const userData = await getUserData()
-                                console.log(userData)
+                                const userData = await getUserData();
                                 const response = await addTAPreference({
-                                    prefix: selectedCourse,
+                                    prefix: selectedCoursePrefix,
                                     title: selectedCourseTitle,
-                                    student: selectedTA,
+                                    student: selectedTAName,
                                     preference: preferenceValue,
-                                    professor: userData.name
+                                    professor: userData.name,
                                 });
 
                                 if (response.success) {
@@ -172,6 +189,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                             }
                         }}
                         sx={{ marginTop: 2 }}
+                        disabled={!selectedCoursePrefix || !selectedTAName} // Disable if either is not selected
                     >
                         Add as TA Preference
                     </Button>

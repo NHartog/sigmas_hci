@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react';
-import { Box, Button, ButtonGroup, Stack } from '@mui/material';
+import {Box, Button, ButtonGroup, Stack, Typography} from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
@@ -9,35 +9,19 @@ import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
 import ProfessorCourses from '@/Component/manageProfessorsCourses';
 import { getSpecificProf } from '@/actions/manager';
+import ExplanationCard from "@/Component/explanationCard";
 
 export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
 	let myVariable = useRef();
 
-
-
-	//const assignedCoursesRows = [
-	//	{
-	//		id: 1,
-	//		Professor: 'Jamie Ruiz',
-	//		numTaHours: 0,
-	//		email: "jamie.ruiz@ufl.edu",
-	//		courses: ['CAP 5100']
-	//	},
-	//	{
-	//		id: 2,
-	//		Professor: 'Professor Prefessorson',
-	//		courses: ['YAP 9999'],
-	//		numTaHours: 0,
-	//		email: "jyap@ufl.edu"
-	//	},
-	//];
-
-
 	const assignedCoursesHeadCells: HeadCell[] = [
 		{ id: 'Professor', numeric: false, disablePadding: true, label: 'Professor' },
 		{ id: 'courses', numeric: false, disablePadding: false, label: 'Assigned Course' }
 	];
+
+	const cardTitle = 'Welcome to Professor Manager';
+	const cardDescription = 'Manage your professors efficiently using the options below. Select a professor to perform various actions.';
 
 	const [profDetailsDialogOpen, setProfDetailsDialogOpen] = useState(false);
 	const [addProfDialogOpen, setAddProfDialogOpen] = useState(false);
@@ -93,8 +77,45 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		</Stack>
 	);
 
+	const professorOptions = [
+		{
+			label: 'View Professor Details',
+			description: 'View all important details for a professor',
+			icon: <PersonAddIcon />
+		},
+		{
+			label: 'Manage Courses',
+			description: 'Assign or remove courses from the selected professor',
+			icon: <PersonAddIcon />
+		},
+	];
+
 	return (
-		<>
+		<Box>
+			<ExplanationCard title={cardTitle} description={cardDescription}>
+				{professorOptions.map((option) => (
+					<Box
+						key={option.label}
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							mb: 1,
+							flexWrap: 'wrap',
+						}}
+					>
+						<Button
+							variant="contained"
+							startIcon={option.icon}
+							sx={{ mr: 2, width: '220px' }}
+							disabled={!selectedProfessor}
+						>
+							{option.label}
+						</Button>
+						<Typography variant="body1">{option.description}</Typography>
+					</Box>
+				))}
+			</ExplanationCard>
+
 			<EnhancedTable
 				rows={assignedCoursesRows}
 				headCells={assignedCoursesHeadCells}
@@ -131,6 +152,6 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 					allCourses={all_Courses}
 				/>
 			)}
-		</>
+		</Box>
 	)
 }
