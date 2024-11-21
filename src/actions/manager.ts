@@ -446,10 +446,8 @@ export async function cleanUpPreferencesOnCourse(oldCourse: string, newCourse: s
         }
     };
 
-    const allStudents: any = await modifyDatastore(studentModel, httpType.GET, options);
-    console.log(allStudents);
+    const allStudents: any = JSON.parse(JSON.stringify(await modifyDatastore(studentModel, httpType.GET, options)));
     const selectedStudents: any = allStudents.filter((student: any) => student.coursePreferences.some((c: any) => c.course === oldCourse));
-    console.log("SEL", selectedStudents);
     for(let i = 0; i < selectedStudents.length; i++){
         //selectedStudents[i].coursePreferences = selectedStudents[i].coursePreferences.map((c: any) => c !== oldCourse ? c : newCourse);
         const id_to_use = selectedStudents[i]._id.toString();
@@ -570,19 +568,46 @@ export async function deleteCourse(formData: any) {
     // Check if required fields are provided in formData
     console.log("Data:")
     console.log(formData)
+    //Next "unassign" professors
+    for(let i = 0; i < formData.professors.length; i++){
+        const profToModify = await getSpecificProf(formData.professors[i]);
+        if (!profToModify){
+            continue;
+        }
+        const val_id = profToModify._id;
+        delete profToModify._id;
+        profToModify.name = profToModify.Professor;
+        delete profToModify.Professor;
+        profToModify.courses = profToModify.courses.filter((pre: any) => pre !== formData.prefix);
+        console.log(profToModify);
+        const options = {
+            id: val_id,
+            relatesToOne: true,
+            recordData: profToModify
+        };
 
+        const newProf = await modifyDatastore(professorModel, httpType.PUSH, options);
+    }
     // Perform the deletion based on provided formData
-    const result = await modifyDatastore(courseModel, httpType.DELETE, {
+    const resultA = await modifyDatastore(courseModel, httpType.DELETE, {
         filter: {
             prefix: formData.prefix
         },
         relatesToOne: true,  // Set to true to ensure only one record is deleted, if desired
     });
-
-    console.log(result)
+    
+    //Next remove all related TA Preferences
+    const resultB = await modifyDatastore(TAPreferenceModel, httpType.DELETE, {
+        filter: {
+            prefix: formData.prefix
+        },
+        relatesToOne: false,  // Set to true to ensure only one record is deleted, if desired
+    });
+    
+    console.log(resultA, resultB)
 
     // Check if a record was actually deleted
-    if (result && (result as any).deletedCount > 0) {
+    if (resultA && (resultA as any).deletedCount > 0 && resultB) {
         return {
             success: true,
             message: 'Course deleted successfully!',
