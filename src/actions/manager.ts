@@ -57,6 +57,59 @@ export async function getStudentPreference(student: string, course: string): Pro
 }
 
 
+
+export async function updateStudent(values: any): Promise<void> {
+
+
+    const copy = JSON.parse(JSON.stringify(values))
+    copy.name = copy.studentName;
+    copy.applicationStatus = copy.applicationStatus === "Assigned";
+    copy.status = copy.collegeStatus;
+    delete copy.id;
+    delete copy.collegeStatus;
+    const old_name = copy.oldName;
+    delete copy.oldName;
+    const options = {
+        relatesToOne: true,
+        recordData: copy,
+        filter: {name: old_name}
+    }
+
+    const updated = await modifyDatastore(studentModel, httpType.PUSH, options);
+    console.log("UPD, ", updated)
+    if(copy.name !== old_name){
+        //First fix assugned courses
+        //Since that's not stored in TA it must be done filtering all of them
+        const allCourses: any[] = await getManagerCourses();
+        const focusCourses = allCourses.filter((course) => course.assignedTas.includes(old_name));
+        for(let i = 0; i < focusCourses.length; i++){
+            const updatedData = {...focusCourses[i], assignedTas: focusCourses[i].assignedTas.map((ta: any) => ta !== old_name ? ta : copy.name)};
+            const options = {
+                    id: focusCourses[i]._id,
+                    relatesToOne: true,
+                    recordData: updatedData
+                };
+                const newPref = await modifyDatastore(courseModel, httpType.PUSH, options);
+        }
+        //Handle TA Preferences
+        //Have to grab them all and filter since professor doesnt hold info on all applicants
+        const focusPrefs = await getTAPreferencesbyStudent(old_name);
+        console.log("FOCUS", focusPrefs);
+        for(let j = 0; j < focusPrefs.length; j++){
+            const updatedData = {prefix: focusPrefs[j].Prefix, title: focusPrefs[j].Title, student: copy.name,
+                preference: focusPrefs[j].Preference, professor: focusPrefs[j].Professor};
+                const options = {
+                    id: focusPrefs[j].id,
+                    relatesToOne: true,
+                    recordData: updatedData
+                };
+                const newPref = await modifyDatastore(TAPreferenceModel, httpType.PUSH, options);
+        }
+    }
+    revalidatePath('/manager')
+}
+
+
 export async function getProfessors(): Promise<any[]> {
 
     const options = {
@@ -82,6 +135,31 @@ export async function getProfessors(): Promise<any[]> {
     })
 }
 
+export async function getSpecificProf(profName: string) {
+    const options = {
+        query: {name: profName}
+    }
+
+    const prof: any = await modifyDatastore(professorModel, httpType.GET, options)
+    const copied = JSON.parse(JSON.stringify(prof))
+
+
+    const result =  copied.map((each: any, idx: number) => {
+        var actualShape: any = {}
+
+        actualShape.id = idx + 1
+        actualShape._id = each._id
+        actualShape.Professor = each.name
+        actualShape.email = each.email
+        actualShape.department = each.department
+        actualShape.courses = each.courses
+
+        return actualShape
+    })
+    console.log(result, "RESULTS")
+    return result[0];
+}
+
 export async function updateProfessor(values: any): Promise<void> {
 
 
@@ -89,13 +167,47 @@ export async function updateProfessor(values: any): Promise<void> {
     copy.name = copy.Professor;
     delete copy._id
     delete copy.Professor;
+    const old_name = copy.oldName;
+    delete copy.oldName;
     const options = {
         id: values._id,
         relatesToOne: true,
         recordData: copy
     }
 
-    modifyDatastore(professorModel, httpType.PUSH, options)
+    const updated = await modifyDatastore(professorModel, httpType.PUSH, options);
+    if(copy.name !== old_name){
+        //Name has been changed, must make fixes to courses and preferences
+        for(let i = 0; i < copy.courses.length; i++){
+            const courseToModify = await getSpecificCourse(copy.courses[i]);
+            if (!courseToModify){
+                continue;
+            }
+            const val_id = courseToModify._id;
+            delete courseToModify._id;
+            courseToModify.professors = courseToModify.professors.map((prof: any) => prof !== old_name ? prof : copy.name);
+            console.log(courseToModify);
+            const options = {
+                id: val_id,
+                relatesToOne: true,
+                recordData: courseToModify
+            };
+
+            const newCourse = await modifyDatastore(courseModel, httpType.PUSH, options);
+        }
+        //Handle TA Preferences
+        const focus = await getTAPreferencesbyProfessor(old_name);
+        for(let j = 0; j < focus.length; j++){
+            const updatedData = {prefix: focus[j].Prefix, title: focus[j].Title, student: focus[j].Student,
+                preference: focus[j].Preference, professor: copy.name};
+                const options = {
+                    id: focus[j].id,
+                    relatesToOne: true,
+                    recordData: updatedData
+                };
+                const newPref = await modifyDatastore(TAPreferenceModel, httpType.PUSH, options);
+        }
+    }
     revalidatePath('/manager')
 }
 
@@ -238,11 +350,11 @@ export async function getManagerCourses(): Promise<any[]> {
     })
 }
 
-export async function getSpecificCourse(coursePrefix: String) {
+export async function getSpecificCourse(coursePrefix: string) {
     const options = {
         query: {prefix: coursePrefix}
     }
-
+    console.log(coursePrefix);
     const course: any = await modifyDatastore(courseModel, httpType.GET, options)
     console.log(course, "COURSE")
     const copied = JSON.parse(JSON.stringify(course))
@@ -268,38 +380,13 @@ export async function getSpecificCourse(coursePrefix: String) {
     return result[0];
 }
 
-export async function getSpecificProf(profName: String) {
-    const options = {
-        query: {name: profName}
-    }
 
-    const prof: any = await modifyDatastore(professorModel, httpType.GET, options)
-    const copied = JSON.parse(JSON.stringify(prof))
-
-
-    const result =  copied.map((each: any, idx: number) => {
-        var actualShape: any = {}
-
-        actualShape.id = idx + 1
-        actualShape._id = each._id
-        actualShape.Professor = each.name
-        actualShape.email = each.email
-        actualShape.department = each.department
-        actualShape.courses = each.courses
-
-        return actualShape
-    })
-    console.log(result, "RESULTS")
-    return result[0];
-}
 
 export async function updateCourse(values: any): Promise<void> {
-
-    console.log("running");
-
     const copy = {...values};
-
+    const old_pre = copy.oldPrefix;
     delete copy._id;
+    delete copy.oldPrefix;
     const options = {
         id: values._id,
         relatesToOne: true,
@@ -309,8 +396,72 @@ export async function updateCourse(values: any): Promise<void> {
     console.log(values._id);
 
     const updated = await modifyDatastore(courseModel, httpType.PUSH, options);
+    if(copy.prefix !== old_pre){
+        //Prefix changed, have to fix all changes
+        for(let i = 0; i < copy.professors.length; i++){
+            const profToModify = await getSpecificProf(copy.professors[i]);
+            if (!profToModify){
+                continue;
+            }
+            const val_id = profToModify._id;
+            delete profToModify._id;
+            profToModify.name = profToModify.Professor;
+            delete profToModify.Professor;
+            profToModify.courses = profToModify.courses.map((pre: any) => pre !== old_pre ? pre : copy.prefix);
+            console.log(profToModify);
+            const options = {
+                id: val_id,
+                relatesToOne: true,
+                recordData: profToModify
+            };
+
+            const newProf = await modifyDatastore(professorModel, httpType.PUSH, options);
+        }
+        //Next handle TA Preferences
+        const focus = await getTAPreferencesbyCourse(old_pre);
+        for(let j = 0; j < focus.length; j++){
+            const updatedData = {prefix: copy.prefix, title: focus[j].Title, student: focus[j].Student,
+                preference: focus[j].Preference, professor: focus[j].Professor};
+                const options = {
+                    id: focus[j].id,
+                    relatesToOne: true,
+                    recordData: updatedData
+                };
+                const newPref = await modifyDatastore(TAPreferenceModel, httpType.PUSH, options);
+        }
+        //Then handle TAs themselves
+        //Wrote specific function for this
+        cleanUpPreferencesOnCourse(old_pre, copy.prefix);
+        
+    }
     console.log("UPDATED IS ", updated);
     revalidatePath('/manager')
+}
+
+export async function cleanUpPreferencesOnCourse(oldCourse: string, newCourse: string): Promise<any> {
+    console.log(oldCourse)
+    const options = {
+        query: {
+            applicationCompletionStatus: true,
+        }
+    };
+
+    const allStudents: any = await modifyDatastore(studentModel, httpType.GET, options);
+    console.log(allStudents);
+    const selectedStudents: any = allStudents.filter((student: any) => student.coursePreferences.some((c: any) => c.course === oldCourse));
+    console.log("SEL", selectedStudents);
+    for(let i = 0; i < selectedStudents.length; i++){
+        //selectedStudents[i].coursePreferences = selectedStudents[i].coursePreferences.map((c: any) => c !== oldCourse ? c : newCourse);
+        const id_to_use = selectedStudents[i]._id.toString();
+        const updatedData = {...selectedStudents[i], coursePreferences: selectedStudents[i].coursePreferences.map((c: any) => c.course !== oldCourse ? c : {...c, course: newCourse})}
+        console.log(i, updatedData, id_to_use, oldCourse, newCourse)
+        const options = {
+            id: id_to_use,
+            relatesToOne: true,
+            recordData: updatedData
+        };
+        const updateStudent = await modifyDatastore(studentModel, httpType.PUSH, options);
+    }
 }
 
 export async function getTAPreferences(): Promise<any[]> {
@@ -341,7 +492,53 @@ export async function getTAPreferencesbyStudent(name: string): Promise<any[]> {
     console.log(`Fetching all TA Preferences for ${name}`);
 
     const options = {
-        query: {student: {name}},
+        query: {student: name},
+    };
+
+    const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
+
+    // Clone and transform the data to the required shape
+    const copied = JSON.parse(JSON.stringify(preferences));
+
+    return copied.map((each: any) => {
+        return {
+            id: each._id.toString(), // Use ObjectId as string
+            Prefix: each.prefix,
+            Title: each.title,
+            Student: each.student,
+            Preference: each.preference,
+        };
+    });
+}
+
+export async function getTAPreferencesbyProfessor(name: string): Promise<any[]> {
+    console.log(`Fetching all TA Preferences for ${name}`);
+
+    const options = {
+        query: {professor: name},
+    };
+
+    const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
+
+    // Clone and transform the data to the required shape
+    const copied = JSON.parse(JSON.stringify(preferences));
+
+    return copied.map((each: any) => {
+        return {
+            id: each._id.toString(), // Use ObjectId as string
+            Prefix: each.prefix,
+            Title: each.title,
+            Student: each.student,
+            Preference: each.preference,
+        };
+    });
+}
+
+export async function getTAPreferencesbyCourse(course: string): Promise<any[]> {
+    console.log(`Fetching all TA Preferences for ${course}`);
+
+    const options = {
+        query: {prefix: course},
     };
 
     const preferences: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);

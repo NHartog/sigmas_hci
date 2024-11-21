@@ -20,7 +20,7 @@ import { updateCourse } from '@/actions/manager';
 const CourseDetails = ({ open, close, params }: { open: any, close: any, params: any }) => {
     const [editMode, setEditMode] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
-    const [tempDetails, setTempDetails] = useState(params);
+    const [tempDetails, setTempDetails] = useState({...params, oldPrefix: params.prefix});
     const numericFields = ['currentEnrollment', 'maxEnrollment', 'numTaHours', 'sections'];
     //I know this is lazy but rather than make a function to translate each field this just feels easier
     const titleFormat = { prefix: 'Prefix', title: 'Title', professors: 'Professors', assignedTas: 'Assigned TAs', currentEnrollment: 'Current Enrollment', maxEnrollment: 'Max Enrollment', numTaHours: 'TA Hours', sections: 'Sections' };
@@ -31,6 +31,7 @@ const CourseDetails = ({ open, close, params }: { open: any, close: any, params:
             setCourseDetails(tempDetails);
             //Push new details to database
             updateCourse(tempDetails);
+            setTempDetails(() => ({...tempDetails, oldPrefix: tempDetails.prefix}))
         }
         setEditMode(!editMode);
     };

@@ -27,13 +27,15 @@ import { updateProfessor } from '@/actions/manager';
 
 const ProfessorDetails = ({ open, onClose, params, applicants }: any) => {
     const [editMode, setEditMode] = useState(false);
-    const [editParams, setEditParams] = useState({ ...params });
+    const [editParams, setEditParams] = useState(() => ({ ...params , oldName: params.Professor}));
 
     // Toggle edit mode
     const handleToggleEditMode = () => {
         if(editMode){
             updateProfessor(editParams);
             console.log(editParams);
+            //old name is used for updateProfessor to ensure course and preferences are modified correctly
+            setEditParams(() => ({...editParams, oldName: editParams.Professor}))
         }
         setEditMode(!editMode)
 
@@ -141,7 +143,7 @@ const ProfessorDetails = ({ open, onClose, params, applicants }: any) => {
                                 }</Box></>)
                             :
                                 (<><Typography variant='h5' sx={{ textAlign: "left", width: "40%", paddingLeft: "10%", marginRight: "20px" }}>Applicants:</Typography>
-                                <Typography variant="h6" sx={{ textAlign: "right", width: "50%"}}>No Applicants Assigned Yet</Typography></>
+                                <Typography variant="h6" sx={{ textAlign: "right", width: "50%"}}>No TAs Assigned Yet</Typography></>
                                 )
                             )}
                         </Box>
