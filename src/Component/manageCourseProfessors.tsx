@@ -63,13 +63,12 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
         }
         else {
             const matches = profsByName.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
-            setFilteredItems(matches)
+            setFilteredItems(matches.slice(0,5))
         }
     };
 
 
     const handleChange = (newValue: string | null) => {
-        console.log(profsByName);
         setNewProfName(newValue !== null ? newValue : "");
         handleFilteredItems(newValue !== null ? newValue : "");
     }

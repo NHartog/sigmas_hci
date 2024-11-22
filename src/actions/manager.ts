@@ -31,6 +31,27 @@ export async function getStudents(): Promise<any[]> {
     })
 }
 
+export async function getStudentsByCourse(coursePrefix: String) {
+    const options = {
+        query: {coursePreferences: {$elemMatch: {course: coursePrefix}}}
+    }
+
+    const apps: any = await modifyDatastore(studentModel, httpType.GET, options)
+    const copied = JSON.parse(JSON.stringify(apps))
+
+
+    return copied.map((each: any, idx: number) => {
+        var actualShape: any = {}
+
+        actualShape.id = idx + 1
+        actualShape.studentName = each.name
+        actualShape.applicationStatus = each.applicationStatus ? "Assigned" : "Pending";
+        actualShape.collegeStatus = each.status
+
+        return actualShape
+    })
+}
+
 export async function getStudentPreference(student: string, course: string): Promise<number> {
     console.log(student)
     const options = {
@@ -555,6 +576,19 @@ export async function getTAPreferencesbyCourse(course: string): Promise<any[]> {
     });
 }
 
+export async function getTAPreferencesbyStudentCourseCombo(studentName: string, course: string): Promise<any[]> {
+
+    const options = {
+        query: {prefix: course, student: studentName},
+    };
+
+    const preference: any = await modifyDatastore(TAPreferenceModel, httpType.GET, options);
+
+    // Clone and transform the data to the required shape
+    const copied = JSON.parse(JSON.stringify(preference));
+    return copied;
+}
+
 export async function postCourse(formData: any) {
     const actualForm = {...formData, _id: new mongoose.Types.ObjectId()}
     const options = {
@@ -702,29 +736,6 @@ export async function updateWithTAPreference(studentName: string, coursePrefix: 
     await modifyDatastore(courseModel, httpType.PUSH, courseUpdateOptions);
 
     return { success: true, message: "Student application status and course assigned TAs updated successfully." };
-}
-
-
-
-export async function getApplicants(coursePrefix: String) {
-    const options = {
-        query: {coursePreferences: {$elemMatch: {course: coursePrefix}}}
-    }
-
-    const apps: any = await modifyDatastore(studentModel, httpType.GET, options)
-    const copied = JSON.parse(JSON.stringify(apps))
-
-
-    return copied.map((each: any, idx: number) => {
-        var actualShape: any = {}
-
-        actualShape.id = idx + 1
-        actualShape.studentName = each.name
-        actualShape.applicationStatus = each.applicationStatus ? "Assigned" : "Pending";
-        actualShape.collegeStatus = each.status
-
-        return actualShape
-    })
 }
 
 export async function assignTACourse(appl: String, course: String): Promise<any[]>{

@@ -57,7 +57,7 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
         }
         else {
             const matches = coursesByPrefix.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
-            setFilteredItems(matches)
+            setFilteredItems(matches.slice(0,5))
         }
     };
 

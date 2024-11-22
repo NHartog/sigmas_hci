@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+    Autocomplete,
     Box,
     Button,
+    Card,
+    CardActionArea,
+    CardContent,
+    Divider,
     Typography,
     DialogContent,
     Dialog,
     DialogTitle,
     IconButton,
-    TextField
+    TextField,
+    Stack
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { assignTACourse, unassignTACourse } from '@/actions/manager';
+import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
+import { assignTACourse, getStudentPreference, unassignTACourse, getTAPreferencesbyStudentCourseCombo } from '@/actions/manager';
+import AreYouSureDialog from './areYouSureDialog';
 
 const CourseTAs = ({ open, close, params, allTAs }: any) => {
     const tasByName = allTAs.map((item: any) => item.studentName);
@@ -21,7 +29,10 @@ const CourseTAs = ({ open, close, params, allTAs }: any) => {
     const [tempDetails, setTempDetails] = useState(params);
     const [newTA, setNewTAName] = useState("");
     const [filteredItems, setFilteredItems] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [filteredCards, setFilteredCards] = useState<any>([]);
+    const [allCards, setAllCards] = useState<any>({});
+    const [savedStudentPreferences, setSavedStudentPreferences] = useState<any>({});
+    const [savedProfPreferences, setSavedProfPreferences] = useState<any>({});
 
     const handleEditToggle = () => {
         if (editMode) {
@@ -31,6 +42,17 @@ const CourseTAs = ({ open, close, params, allTAs }: any) => {
         setEditMode(!editMode);
     };
 
+    const handleChange = (newValue: string | null) => {
+        setNewTAName(newValue !== null ? newValue : "");
+        handleFilteredItems(newValue !== null ? newValue : "");
+    }
+
+    const handleSelection = (student: string) => {
+        setNewTAName(student);
+        handleFilteredItems(student);
+
+    }
+
     const handleCancel = () => {
         // Reset to original details
         setTempDetails(courseDetails);
@@ -38,26 +60,93 @@ const CourseTAs = ({ open, close, params, allTAs }: any) => {
     };
 
     const handleFilteredItems = (value: any) => {
-        if (value === '' || tasByName.includes(value)) {
-            setFilteredItems([])
+        if (value === '') {
+            setFilteredItems(tasByName.slice(0,3))
         }
         else {
             const matches = tasByName.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
-            setFilteredItems(matches)
+            setFilteredItems(matches.slice(0,3))
         }
-        setShowDropdown(filteredItems.length > 0);
     };
 
-    const handleItemClick = (item: any) => {
-        setNewTAName(item);
-        setFilteredItems([]);
-        setShowDropdown(false);
+    useEffect(() => {
+        const generation = async (student: string) => {
+            const newCard = await GenerateCard(student);
+            setAllCards({...allCards, [student]: newCard});
+        }
+        for(let i = 0; i < filteredItems.length; i++){
+            generation(filteredItems[i]);
+        }
+    }, [filteredItems]);
+
+
+    const getCard = (student: string) => {
+        console.log(student);
+            
+        return allCards[student];
     }
 
-    const handleType = (e: any) => {
-        console.log(tasByName);
-        setNewTAName(e.target.value);
-        handleFilteredItems(e.target.value);
+    const GenerateCard = async (student: string) => {
+        if(!(student in savedStudentPreferences)){
+            setSavedStudentPreferences({...savedStudentPreferences, [student]: await getStudentPreference(student, params.prefix)});
+        }
+        if(!(student in savedProfPreferences)){
+            const newValue = await getTAPreferencesbyStudentCourseCombo(student, params.prefix);
+            setSavedProfPreferences({...savedProfPreferences, [student]: (newValue ? newValue : [])});
+        }
+        console.log(savedStudentPreferences);
+        console.log(savedProfPreferences);
+        return(
+                    <Card
+                        key={student}
+                        onClick={() => handleSelection(student)}
+                        sx={{
+                            border: '1px solid #e0e0e0',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff',
+                        }}
+                    >
+                        <CardActionArea>
+                            <CardContent>
+                                <Typography variant="h6">{student}</Typography>
+                                <Box mt={2}>
+                                    <Typography variant="subtitle2" fontWeight="bold">Professor Preferences:</Typography>
+                                    {(savedProfPreferences[student]).map((professor: any) => (
+                                                <Box key={professor.professor} display="flex" alignItems="center">
+                                                    <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                                        {professor.professor}:
+                                                    </Typography>
+                                                    <Box display="flex">
+                                                        {Array.from({ length: professor.preference }).map((_, index) => (
+                                                            <StarTwoToneIcon key={`filled-${index}`} sx={{ color: "rgba(255,127,50,1)" }} />
+                                                        ))}
+                                                        {Array.from({ length: 5 - professor.preference }).map((_, index) => (
+                                                            <StarTwoToneIcon key={`empty-${index}`} sx={{ color: "gray" }} />
+                                                        ))}
+                                                    </Box>
+                                                </Box>
+                                    ))}
+                                    {(savedProfPreferences[student]).length === 0 &&
+                                        <Typography variant="body2" color="textSecondary">
+                                            No professor preferences found.
+                                        </Typography>}
+
+                                    <Typography variant="subtitle2" fontWeight="bold">Student Preferences:</Typography>
+                                    <Box key={`${student}Box`} display="flex" alignItems="center">
+                                        <Box display="flex">
+                                            {Array.from({ length: (savedStudentPreferences[student]) || 0 }).map((_, index) => (
+                                                <StarTwoToneIcon key={`filled-${index}`} sx={{ color: "rgba(255,127,50,1)" }} />
+                                            ))}
+                                            {Array.from({ length: 5 - ((savedStudentPreferences[student]) || 0) }).map((_, index) => (
+                                            <StarTwoToneIcon key={`empty-${index}`} sx={{ color: "gray" }} />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+        )
     }
 
     const handleAddTASubmit = () =>{
@@ -85,87 +174,73 @@ const CourseTAs = ({ open, close, params, allTAs }: any) => {
 
     return (
         <Dialog open={open} onClose={close} fullWidth>
-            <DialogTitle>
-                {courseDetails.Course} Details
-                <Button onClick={handleEditToggle} sx={{ marginLeft: 2 }}>
-                    {editMode ? "Save" : "Edit"}
-                </Button>
-            </DialogTitle>
-
-            <DialogContent>
+            <DialogContent sx={{ p: 0 }}>
                 <Box style={{ textAlign: "center", width: "100%" }}>
-                    <Box sx={{ backgroundColor: "rgba(255, 127, 50, 1)", borderTopRadius: "15px", padding: "20px" }}>
-                        <Typography variant="h3">{courseDetails.Course} Details</Typography>
+                    <Box sx={{ padding: "20px" }}>
+                        <Typography variant="h5">Course's TAs</Typography>
                     </Box>
 
                     {/* Assigned TAs Section */}
-                    <Box sx={{ marginTop: 3 }}>
+                    <Stack sx={{ p: 2 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
                         <Typography variant="h5">Assigned TAs</Typography>
                         { tempTAs.length > 0 ?
                             tempTAs.map((ta: any) => (
-                                <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>{ta}</Typography>
-                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveTA(ta)}} sx={{fontSize: "80%", height: "75%", marginTop: "20px", verticalAlign: "middle"}}>
-                                        Remove from Course
+                                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} key={ta}>
+                                    <Typography sx={{ textAlign: "left", width: "50%" }}>{ta}</Typography>
+                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveTA(ta)}} sx={{ height: "75%", verticalAlign: "middle", width: "35%", textAlign: "left"}}>
+                                        Remove Professor
                                     </Button>
                                 </Box>
                             ))
                         :
                             <Typography sx={{ fontSize: "150%", padding: "10px", margin: "10px" }}>None Assigned</Typography>
                         }
-                        {!editMode && <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
-                            Add a TA
-                        </Button>}
-                    </Box>
+                        {!editMode && <Box display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+                            <Button onClick={handleEditToggle} variant='contained' color='secondary' endIcon={<AddCircleIcon />}>
+                                Add a TA
+                            </Button>
+                        </Box>}
+                    </Stack>
 
                     {/* Available TAs Section */}
                     {editMode && (
-                        <Box sx={{ marginTop: 3, display: "flex", flexDirection: "row" }}>
-                            {tasByName.length > 0 ? (
-                                <>
-                                <Box sx={{width: '100%'}}>
-                                    <TextField
-                                        name="newTA"
-                                        label="Search name"
-                                        variant="outlined"
-                                        value={newTA}
-                                        onChange={(e) => handleType(e)}
-                                        sx={{ width: "90%", marginTop: "10px" }}
-                                    />
-                                    {showDropdown && (
-                                        <Box
-                                            style={{
-                                                border: "1px solid #ccc",
-                                                maxHeight: "150px",
-                                                overflowY: "auto",
-                                                position: "absolute",
-                                                backgroundColor: "white",
-                                                width: "50%",
-                                                marginLeft: "20px"
-                                            }}
-                                        >
-                                            {filteredItems.map((item, index) => (
-                                                <div
-                                                    key={index}
-                                                    onClick={() => handleItemClick(item)}
-                                                    style={{padding: "5px", cursor: "pointer",border: "1px solid #ccc" }}
-                                                >
-                                                    {item}
-                                                </div>
-                                            ))}
-                                        </Box>
-                                    )}
-                                </Box>
-                                <Button onClick={handleAddTASubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
-                                    Add
-                                </Button>
-                                </>
+                        <Stack sx={{ p: 2 }} spacing={2} divider={<Divider orientation="horizontal" flexItem />}>
+                            {allTAs.length > 0 ? 
+                        (<><Box>
+                            <Autocomplete
+                                        id="tags-standard"
+                                        options={filteredItems}
+                                        fullWidth
+                                        getOptionLabel={(option: any) => option}
+                                        defaultValue={""}
+                                        onInputChange={(event, newValue) => handleChange(newValue)}
+                                        renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant="standard"
+                                            label="TA to Add"
+                                        />
+                                        )}
+                                        renderOption={(props, option: string)=>(
+                                            <li {...props} key={option}>{getCard(option)}</li>
+                                        )}
+                                />
+                        </Box>
+                        <Stack justifyContent='center' alignItems='center' direction='row' spacing={2} sx={{ width: 1, p: 2 }}>
+                        <Button onClick={handleAddTASubmit} variant='contained' color='secondary' endIcon={<AddCircleIcon />} sx={{ height: "80%", margin: "5px", marginTop: "3.5%"}}>
+                            Add
+                        </Button>
+                        <Button onClick={handleCancel} variant='contained' color='error'>
+                            Cancel
+                        </Button>
+                        </Stack>
+                        </>
                             ) : (
                                 <Typography sx={{ fontSize: "150%", padding: "10px" }}>
                                     No Available TAs
                                 </Typography>
                             )}
-                        </Box>
+                        </Stack>
                     )}
                 </Box>
             </DialogContent>
