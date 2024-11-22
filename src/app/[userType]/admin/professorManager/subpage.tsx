@@ -8,7 +8,7 @@ import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
 import ProfessorCourses from '@/Component/manageProfessorsCourses';
-import { getSpecificProf, getApplicants } from '@/actions/manager';
+import { getSpecificProf, getStudentsByCourse } from '@/actions/manager';
 
 export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
@@ -70,7 +70,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		setSelectedProfessor(myVariable.current);
 		setSpecificProfApplicants([]);
 		for(let i = 0; i < selectedProfessor.courses.length; i++){
-				someTAs = await getApplicants(selectedProfessor.courses[i]);
+				someTAs = await getStudentsByCourse(selectedProfessor.courses[i]);
 				setSpecificProfApplicants(prev => [...prev, ...someTAs]);
 		}
 		console.log(specificProfApplicants);

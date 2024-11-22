@@ -14,7 +14,7 @@ import CourseProfessors from "@/Component/manageCourseProfessors";
 import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
 import AreYouSureDialog from '@/Component/areYouSureDialog';
-import { deleteTAPreference, deleteCourse, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
+import { deleteTAPreference, deleteCourse, getSpecificCourse, getProfessors, getStudentsByCourse } from "@/actions/manager";
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -70,7 +70,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const handleSelectTACourse = async (professor: any) => {
         const curr_Course = await getSpecificCourse(selectedCourse.prefix);
         setSelectedCourseProfs(curr_Course.professors);
-        const all_Applicants = await getApplicants(selectedCourse.prefix);
+        const all_Applicants = await getStudentsByCourse(selectedCourse.prefix);
         setAllApplicants(all_Applicants);
         console.log(allApplicants);
         setManageCourseTAsOpen(true);
