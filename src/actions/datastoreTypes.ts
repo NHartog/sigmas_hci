@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-mongoose.connect('mongodb://127.0.0.1/sigmas_hci');
-
 export const coursePreferenceSchema = new mongoose.Schema({
     course: String,
     preferenceLevel: Number,
