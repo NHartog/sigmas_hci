@@ -7,7 +7,9 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import TaPreferenceDialog from '@/Component/addTAPreference';
 import ExplanationCard from "@/Component/explanationCard";
 
-export default function AddTASubcomponent(rows : any, rows2: any) {
+export default function AddTASubcomponent({rows1, rows2}: {rows1 : any, rows2: any}) {
+
+
     const headCells: HeadCell[] = [
         { id: 'prefix', numeric: false, disablePadding: true, label: 'Prefix' },
         { id: 'title', numeric: false, disablePadding: false, label: 'Title' },
@@ -92,7 +94,7 @@ export default function AddTASubcomponent(rows : any, rows2: any) {
             icon: <PersonAddIcon />
         },
     ];
-
+    console.log("rows guy :",rows1)
     return (
         <Box style={{ padding: "20px" }}>
             <ExplanationCard title={cardTitle} description={cardDescription}>
@@ -119,7 +121,7 @@ export default function AddTASubcomponent(rows : any, rows2: any) {
                 ))}
             </ExplanationCard>
             <EnhancedTable
-                rows={rows}
+                rows={rows1}
                 headCells={headCells}
                 title={title}
                 button={courseButton}
@@ -141,7 +143,7 @@ export default function AddTASubcomponent(rows : any, rows2: any) {
                     open={dialogOpen}
                     close={handleCloseDialog}
                     students={rows2}
-                    courses={rows}
+                    courses={rows1}
                     selectedCourse={selectedCourse}
                     selectedTA={selectedTA}
                 />

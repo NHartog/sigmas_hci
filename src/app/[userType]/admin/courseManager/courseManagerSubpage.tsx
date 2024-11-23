@@ -115,6 +115,21 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         </Stack>
     );
 
+    const deleteCourse = async () => {
+        try {
+            const response = await deleteTAPreference(selectedCourse);
+
+            if (response.success) {
+                alert(response.message);
+            } else {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error('Error deleting TA preference:', error);
+            alert('An unexpected error occurred. Please try again.');
+        }
+    }
+
     const courseOptions = [
         {
             label: 'View Course Details',
@@ -177,7 +192,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {addCourseDialogOpen && <AddCourseForm open={addCourseDialogOpen} onClose={handleCloseDialog} />}
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
             {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
-            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} />}
+            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} onConfirm={deleteCourse} />}
         </Box>
     );
 }
