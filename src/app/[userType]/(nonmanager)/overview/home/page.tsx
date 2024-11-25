@@ -20,7 +20,9 @@ export default async function LandingPage() {
     }
     console.log(prefs)
     console.log(rows2)
+    console.log("here 2")
+    console.log(rows)
     return (
-        <AddTASubcomponent rows = {rows} rows2={rows2}/>
+        <AddTASubcomponent rows1 = {rows} rows2={rows2}/>
     );
 }

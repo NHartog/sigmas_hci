@@ -4,6 +4,8 @@ import {revalidatePath} from "next/cache"
 import mongoose from 'mongoose';
 import {modifyDatastore} from "./datastore"
 import {courseModel, httpType, professorModel, studentModel, TAPreferenceModel} from "./datastoreTypes"
+import {ObjectId} from "bson";
+import {string} from "prop-types";
 
 
 export async function getStudents(): Promise<any[]> {
@@ -23,6 +25,7 @@ export async function getStudents(): Promise<any[]> {
         var actualShape: any = {}
 
         actualShape.id = idx + 1
+        actualShape.ufID = each.ufid
         actualShape.studentName = each.name
         actualShape.applicationStatus = each.applicationStatus ? "Assigned" : "Pending";
         actualShape.collegeStatus = each.status
@@ -254,7 +257,6 @@ export async function assignProfessorCourse(prof: String, course: String): Promi
     
     const resultA: any = await modifyDatastore(professorModel, httpType.PUSH, optionsB);
     console.log(resultA);
-    //Now update course
     const optionsC = {
         query: {
             prefix: course
@@ -672,7 +674,7 @@ export async function deleteTAPreference(formData: any) {
     // Perform the deletion based on provided formData
     const result = await modifyDatastore(courseModel, httpType.DELETE, {
         filter: {
-            prefix: formData.Prefix
+            prefix: formData.prefix
         },
         relatesToOne: true,  // Set to true to ensure only one record is deleted, if desired
     });
@@ -828,7 +830,69 @@ export async function addStudent(studentData: any){
 
     // Call modifyDatastore to save the student data
     const newStudent = await modifyDatastore(studentModel, httpType.POST, options);
-    console.log(newStudent);
-
     return { success: true, message: "Student successfully added" };
+}
+
+export async function deleteStudent(studentId: any) {
+    try {
+        const options = {
+            filter: {
+                ufid: studentId.ufID
+            },
+            relatesToOne: true,
+        };
+
+        console.log(options)
+        const result = await modifyDatastore(studentModel, httpType.DELETE, options);
+
+        const tapReferenceOptions = {
+            filter: { student: studentId.studentName },
+        };
+
+        const taPrefResult = await modifyDatastore(TAPreferenceModel, httpType.DELETE, tapReferenceOptions);
+        console.log('TAPreference deletion result:', taPrefResult);
+
+        const courseOptions = {
+            query: {}
+        };
+        const courseData: any = await modifyDatastore(courseModel, httpType.GET, courseOptions);
+
+        const coursesToUpdate = courseData.filter((course: { assignedTas: string | any[]; }) =>
+            course.assignedTas.includes(studentId.studentName)
+        );
+
+        console.log(coursesToUpdate)
+
+        for (const course of coursesToUpdate) {
+            // Remove the student's name from assignedTas
+            const updatedAssignedTas = course.assignedTas.filter((ta: string) => ta !== studentId.studentName);
+            console.log(updatedAssignedTas);
+            const updateOptions = {
+                id: course._id,
+                relatesToOne: true,
+                recordData: {
+                    assignedTas: updatedAssignedTas,
+                },
+            };
+
+            // Update the course using modifyDatastore with httpType.PUSH
+            const updateResult = await modifyDatastore(courseModel, httpType.PUSH, updateOptions);
+            console.log(`Updated course ${course.prefix}:`, updateResult);
+        }
+
+        if (result && (result as any).deletedCount > 0) {
+            return {
+                success: true,
+                message: 'Student removed successfully.',
+            };
+        } else {
+            return {
+                success: false,
+                message: 'No matching student found to delete.',
+            };
+        }
+    } catch (error) {
+        console.error('Error removing student:', error);
+        throw error;
+    }
 }
