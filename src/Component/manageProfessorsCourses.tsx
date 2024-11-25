@@ -83,6 +83,23 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
         handleFilteredItems("");
         alert("Course Successfully Assigned to Professor!")
     }
+
+    const unAssigning = async () => {
+        try {
+            const response = await unassignProfessorCourse(deleteData.name, deleteData.prefix);
+
+            if (response.success) {
+                alert(response.message);
+                handleRemoveCourse(deleteData.prefix);
+            } else {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error('Error unassigning course:', error);
+            alert('An unexpected error occurred. Please try again.');
+        }
+    }
+
     console.log("rendered")
     return (
         <Dialog open={open} onClose={close} fullWidth>
@@ -154,8 +171,7 @@ const ProfessorCourses = ({ open, close, params, courses, allCourses }: any) => 
                     {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen}
                     onClose={closingAreYouSure}
                     toRemove={deleteData}
-                    deletionType="ProfCourse"
-                    onProfCourseSuccess={handleRemoveCourse} />}
+                    onConfirm={unAssigning} />}
                 </Box>
             </DialogContent>
         </Dialog>

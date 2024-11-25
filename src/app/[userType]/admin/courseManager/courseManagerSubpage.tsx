@@ -48,7 +48,6 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [selectedCourseProfs, setSelectedCourseProfs] = useState<any>(null);
     const [allProfs, setAllProfs] = useState<any>(null);
     const [allApplicants, setAllApplicants] = useState<any>(null);
-    const [areYouSureType, setAreYouSureType] = useState("");
 
     const handleSelectCourse = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
         //setSelectedCourse(professor);
@@ -56,9 +55,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     };
 
     const handleSelectCourseForRemoval = (course: any) => {
-        console.log("HERE TO DUMB IT DOWN", course)
         setSelectedCourse(course);
-        setAreYouSureType("course");
         setAreYouSureDialogOpen(true);
     };
 
@@ -119,9 +116,9 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         </Stack>
     );
 
-    const deleteCourse = async () => {
+    const deleteCourseInternal = async () => {
         try {
-            const response = await deleteTAPreference(selectedCourse);
+            const response = await deleteCourse(selectedCourse);
 
             if (response.success) {
                 alert(response.message);
@@ -129,7 +126,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                 alert(response.message);
             }
         } catch (error) {
-            console.error('Error deleting TA preference:', error);
+            console.error('Error deleting Course:', error);
             alert('An unexpected error occurred. Please try again.');
         }
     }
@@ -196,7 +193,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {addCourseDialogOpen && <AddCourseForm open={addCourseDialogOpen} onClose={handleCloseDialog} />}
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
             {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
-            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} onConfirm={deleteCourse} />}
+            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} onConfirm={deleteCourseInternal} />}
         </Box>
     );
 }
