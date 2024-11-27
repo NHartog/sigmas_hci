@@ -15,16 +15,19 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AreYouSureDialog from './areYouSureDialog';
 import { assignProfessorCourse, unassignProfessorCourse } from '@/actions/manager';
 
 const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
     const [tempProfs, setTempProfs] = useState(profs);
     let profsByName = allProfs.map((item: any) => item.Professor).filter((item: any) => !tempProfs.includes(item));
     const [editMode, setEditMode] = useState(false);
+    const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
     const [courseDetails, setCourseDetails] = useState(params);
     const [tempDetails, setTempDetails] = useState(params);
     const [newProf, setNewProfName] = useState("");
     const [filteredItems, setFilteredItems] = useState(profsByName);
+    const [deleteData, setDeleteData] = useState<any>();
 
     const handleEditToggle = () => {
         if (editMode) {
@@ -38,14 +41,20 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
         setEditMode(false);
     }
 
+    const closingAreYouSure = () => {
+        setAreYouSureDialogOpen(false);
+    }
+
+    const openingAreYouSure = (professor: string) => {
+        setDeleteData({prefix: params.prefix, name: professor, title: ""});
+        setAreYouSureDialogOpen(true);
+    }
+
     const handleRemoveProfessor = (professor: any) => {
-        unassignProfessorCourse(professor, params.prefix);
         setTempProfs(tempProfs.filter((p: any) => p !== professor));
-        console.log(tempProfs, "ADDING");
         setEditMode(false);
         profsByName = allProfs.map((item: any) => item.Professor).filter((item: any) => !tempProfs.includes(item));
         handleFilteredItems("");
-        alert("Professor Successfully Removed From Course!")
     };
 
     const handleFilteredItems = (value: any) => {
@@ -54,13 +63,12 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
         }
         else {
             const matches = profsByName.filter((item: any) => item.toLowerCase().includes(value.toLowerCase()))
-            setFilteredItems(matches)
+            setFilteredItems(matches.slice(0,5))
         }
     };
 
 
     const handleChange = (newValue: string | null) => {
-        console.log(profsByName);
         setNewProfName(newValue !== null ? newValue : "");
         handleFilteredItems(newValue !== null ? newValue : "");
     }
@@ -81,6 +89,23 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
         handleFilteredItems("");
         alert("Professor Successfully Assigned to Course!");
     }
+
+    const unAssigning = async () => {
+        try {
+            const response = await unassignProfessorCourse(deleteData.name, deleteData.prefix);
+
+            if (response.success) {
+                alert(response.message);
+                handleRemoveProfessor(deleteData.name);
+            } else {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error('Error unassigning professor:', error);
+            alert('An unexpected error occurred. Please try again.');
+        }
+    }
+
     console.log("rendered")
     console.log(allProfs)
     return (
@@ -98,7 +123,7 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
                             tempProfs.map((prof: any) => (
                                 <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} key={prof}>
                                     <Typography sx={{ textAlign: "left", width: "50%" }}>{prof}</Typography>
-                                    <Button variant='contained' color='secondary' onClick={() => {handleRemoveProfessor(prof)}} sx={{ height: "75%", verticalAlign: "middle", width: "35%", textAlign: "left"}}>
+                                    <Button variant='contained' color='secondary' onClick={() => {openingAreYouSure(prof)}} sx={{ height: "75%", verticalAlign: "middle", width: "35%", textAlign: "left"}}>
                                         Remove Professor
                                     </Button>
                                 </Box>
@@ -150,6 +175,11 @@ const CourseProfessors = ({ open, close, params, profs, allProfs }: any) => {
                             )}
                         </Stack>
                     )}
+                    {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen}
+                    onClose={closingAreYouSure}
+                    toRemove={deleteData}
+                    onConfirm = {unAssigning}
+                     />}
                 </Box>
             </DialogContent>
         </Dialog>

@@ -15,7 +15,7 @@ import CourseTAs from "@/Component/manageCourseTAs";
 import AddCourseForm from '@/Component/addCourseForm';
 import AreYouSureDialog from '@/Component/areYouSureDialog';
 import ExplanationCard from "@/Component/explanationCard";
-import { deleteTAPreference, getSpecificCourse, getProfessors, getApplicants } from "@/actions/manager";
+import { deleteTAPreference, deleteCourse, getSpecificCourse, getProfessors, getStudentsByCourse } from "@/actions/manager";
 
 export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     let rowSelected: any;
@@ -40,6 +40,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
     const [addCourseDialogOpen, setAddCourseDialogOpen] = useState(false);
     const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
+    const [areYouSureDialogCourseOpen, setAreYouSureDialogCourseOpen] = useState(false);
     const [manageCourseProfessorsOpen, setManageCourseProfessorsOpen] = useState(false);
     const [manageCourseTAsOpen, setManageCourseTAsOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -70,7 +71,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
     const handleSelectTACourse = async (professor: any) => {
         const curr_Course = await getSpecificCourse(selectedCourse.prefix);
         setSelectedCourseProfs(curr_Course.professors);
-        const all_Applicants = await getApplicants(selectedCourse.prefix);
+        const all_Applicants = await getStudentsByCourse(selectedCourse.prefix);
         setAllApplicants(all_Applicants);
         console.log(allApplicants);
         setManageCourseTAsOpen(true);
@@ -115,9 +116,9 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         </Stack>
     );
 
-    const deleteCourse = async () => {
+    const deleteCourseInternal = async () => {
         try {
-            const response = await deleteTAPreference(selectedCourse);
+            const response = await deleteCourse(selectedCourse);
 
             if (response.success) {
                 alert(response.message);
@@ -125,7 +126,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                 alert(response.message);
             }
         } catch (error) {
-            console.error('Error deleting TA preference:', error);
+            console.error('Error deleting Course:', error);
             alert('An unexpected error occurred. Please try again.');
         }
     }
@@ -192,7 +193,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
             {addCourseDialogOpen && <AddCourseForm open={addCourseDialogOpen} onClose={handleCloseDialog} />}
             {manageCourseProfessorsOpen && <CourseProfessors open={manageCourseProfessorsOpen} close={handleCloseDialog} params={selectedCourse} profs={selectedCourseProfs} allProfs={allProfs} />}
             {manageCourseTAsOpen && <CourseTAs open={manageCourseTAsOpen} close={handleCloseDialog} params={selectedCourse} allTAs={allApplicants}/>}
-            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} onConfirm={deleteCourse} />}
+            {areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedCourse} onConfirm={deleteCourseInternal} />}
         </Box>
     );
 }

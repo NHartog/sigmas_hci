@@ -20,13 +20,22 @@ import {
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
+import { updateStudent } from '@/actions/manager';
 
 const StudentDetails = ({ open, onClose, params, prefs }: any) => {
     const [editMode, setEditMode] = useState(false);
-    const [editParams, setEditParams] = useState({ ...params });
+    const [editParams, setEditParams] = useState({ ...params, oldName: params.studentName });
 
     // Toggle edit mode
-    const handleToggleEditMode = () => setEditMode(!editMode);
+    const handleToggleEditMode = () => {
+        if(editMode){
+            //New form of saving
+            updateStudent(editParams)
+            console.log(editParams)
+            setEditParams({ ...editParams, oldName: editParams.studentName })
+        }
+        setEditMode(!editMode)
+    };
 
     // Handle parameter change
     const handleChange = (field: any) => (event: any) => {
@@ -46,6 +55,10 @@ const StudentDetails = ({ open, onClose, params, prefs }: any) => {
         console.log(editParams)
         setEditMode(false);
     };
+
+    const handleCancel =() => {
+        setEditMode(false);
+    }
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth>
@@ -110,11 +123,11 @@ const StudentDetails = ({ open, onClose, params, prefs }: any) => {
             </DialogContent>
             <Stack direction='row' spacing={2} sx={{ width: 1, p: 2 }} justifyContent='center' alignItems='center'>
                 <Button onClick={handleToggleEditMode} variant='contained' color='secondary'>
-                    {editMode ? "Cancel" : "Edit"}
+                    {editMode ? "Save" : "Edit"}
                 </Button>
                 {editMode && (
-                    <Button onClick={handleSave} variant='contained' color='error'>
-                        Save
+                    <Button onClick={handleCancel} variant='contained' color='error'>
+                        Cancel
                     </Button>
                 )}
             </Stack>
