@@ -24,7 +24,6 @@ const AddProfessorForm = ({ open, onClose, all_Courses }: any) => {
         name: '',
         email: '',
         department: '',
-        course: '',
         username: '',
         password: '',
     });
@@ -67,7 +66,7 @@ const AddProfessorForm = ({ open, onClose, all_Courses }: any) => {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         console.log(formData);
-        const sentData = { ...formData, courses: [formData.course] };
+        const sentData = { ...formData};
         postProf(sentData);
         onClose();
     };
@@ -109,7 +108,6 @@ const AddProfessorForm = ({ open, onClose, all_Courses }: any) => {
                         {getInput('Department', 'department')}
                         {getInput('Username', 'username')}
                         {getInput('Password', 'password')}
-                        {getInput('Course', 'courses')}
                     </Stack>
                     <Box sx={{ textAlign: "center", padding: "20px" }}>
                         <Button type="submit" variant='contained' color='secondary'>

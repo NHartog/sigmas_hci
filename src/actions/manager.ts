@@ -665,6 +665,60 @@ export async function postProf(formData: any) {
     console.log(newProf);
 }
 
+export async function deleteProf(formData: any) {
+    // Check if required fields are provided in formData
+    console.log("Data:")
+    console.log(formData)
+    //Next "unassign" professors
+    for(let i = 0; i < formData.courses.length; i++){
+        const courseToModify = await getSpecificCourse(formData.courses[i]);
+        if (!courseToModify){
+            continue;
+        }
+        const val_id = courseToModify._id;
+        delete courseToModify._id;
+        courseToModify.professors = courseToModify.professors.filter((pre: any) => pre !== formData.Professor);
+        console.log(courseToModify);
+        const options = {
+            id: val_id,
+            relatesToOne: true,
+            recordData: courseToModify
+        };
+
+        const newProf = await modifyDatastore(courseModel, httpType.PUSH, options);
+    }
+    // Perform the deletion based on provided formData
+    const resultA = await modifyDatastore(professorModel, httpType.DELETE, {
+        filter: {
+            name: formData.Professor
+        },
+        relatesToOne: true,  // Set to true to ensure only one record is deleted, if desired
+    });
+    
+    //Next remove all related TA Preferences
+    const resultB = await modifyDatastore(TAPreferenceModel, httpType.DELETE, {
+        filter: {
+            name: formData.Professor
+        },
+        relatesToOne: false,  // Set to true to ensure only one record is deleted, if desired
+    });
+    
+    console.log(resultA, resultB)
+
+    // Check if a record was actually deleted
+    if (resultA && (resultA as any).deletedCount > 0 && resultB) {
+        return {
+            success: true,
+            message: 'Professor deleted successfully!',
+        };
+    } else {
+        return {
+            success: false,
+            message: 'No matching professor found to delete.',
+        };
+    }
+}
+
 
 export async function deleteTAPreference(formData: any) {
     // Check if required fields are provided in formData
