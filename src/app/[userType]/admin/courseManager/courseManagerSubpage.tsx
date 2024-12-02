@@ -135,22 +135,26 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
         {
             label: 'View Course Details',
             description: 'View all important details for a course',
-            icon: <ReadMoreIcon />
+            icon: <ReadMoreIcon />,
+            onClick: handleClickViewCourseDetails
         },
         {
             label: 'Manage Course Professors',
             description: 'Add or remove professors to selected course',
-            icon: <PersonAddIcon />
+            icon: <PersonAddIcon />,
+            onClick: handleClickManageCourseProfessors
         },
         {
             label: 'Manage Course TAs',
             description: 'Add or remove potential TAs to selected course',
-            icon: <PersonAddIcon />
+            icon: <PersonAddIcon />,
+            onClick: handleClickManageCourseTAs
         },
         {
             label: 'Remove Course',
             description: 'Delete course from TAAS System',
-            icon: <DeleteOutlineIcon />
+            icon: <DeleteOutlineIcon />,
+            onClick: handleAreYouSure
         },
     ];
 
@@ -167,6 +171,7 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                             startIcon={option.icon}
                             sx={{ mr: 2, width: '200px' }} // Set a fixed width
                             disabled={!selectedCourse}
+                            onClick={option.onClick}
                         >
                             {option.label}
                         </Button>

@@ -46,6 +46,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		setAddProfDialogOpen(false);
 		setManageCourseDialog(false);
 		setAreYouSureDialogOpen(false);
+		window.location.reload(); // Reload the entire page
 	};
 
 	// New function to handle row selection
@@ -119,17 +120,20 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		{
 			label: 'View Professor Details',
 			description: 'View all important details for a professor',
-			icon: <PersonAddIcon />
+			icon: <PersonAddIcon />,
+			onClick: handleButtonOneClick
 		},
 		{
 			label: 'Manage Courses',
 			description: 'Assign or remove courses from the selected professor',
-			icon: <PersonAddIcon />
+			icon: <PersonAddIcon />,
+			onClick: handleManageCourseDialog
 		},
 		{
 			label: 'Remove Professor',
 			description: 'Remove the professor from the TAAS system',
-			icon: <PersonRemoveIcon />
+			icon: <PersonRemoveIcon />,
+			onClick: handleAreYouSure
 		},
 	];
 
@@ -151,6 +155,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 							startIcon={option.icon}
 							sx={{ mr: 2, width: '220px' }}
 							disabled={!selectedProfessor}
+							onClick={option.onClick}
 						>
 							{option.label}
 						</Button>
