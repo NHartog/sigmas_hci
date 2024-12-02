@@ -168,7 +168,6 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 				rows={assignedCoursesRows}
 				headCells={assignedCoursesHeadCells}
 				title="Professors"
-				button={button}
 				advancedTooltip
 				onRowSelect={handleRowSelect} // Pass the handleRowSelect function
 			/>

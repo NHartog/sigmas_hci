@@ -91,9 +91,11 @@ export default function AddTASubcomponent({rows1, rows2}: {rows1 : any, rows2: a
         {
             label: 'Add TA Preference',
             description: 'When a course is selected, assign a TA for that course. When a TA is selected, assign the TA to a course',
-            icon: <PersonAddIcon />
+            icon: <PersonAddIcon />,
+            onClick: handleAddTAPreference
         },
     ];
+
     console.log("rows guy :",rows1)
     return (
         <Box style={{ padding: "20px" }}>
@@ -112,7 +114,8 @@ export default function AddTASubcomponent({rows1, rows2}: {rows1 : any, rows2: a
                             variant="contained"
                             startIcon={option.icon}
                             sx={{ mr: 2, width: '220px' }}
-                            disabled={!selectedCourse}
+                            disabled={!selectedCourse && !selectedTA}
+                            onClick={option.onClick}
                         >
                             {option.label}
                         </Button>
@@ -124,7 +127,6 @@ export default function AddTASubcomponent({rows1, rows2}: {rows1 : any, rows2: a
                 rows={rows1}
                 headCells={headCells}
                 title={title}
-                button={courseButton}
                 onRowSelect={handleCourseRowSelect}
                 selectionKey={courseSelectionKey}
             />
@@ -133,7 +135,6 @@ export default function AddTASubcomponent({rows1, rows2}: {rows1 : any, rows2: a
                 rows={rows2}
                 headCells={headCells2}
                 title={title2}
-                button={taButton}
                 onRowSelect={handleTARowSelect}
                 selectionKey={taSelectionKey}
             />

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
 import Header from "@/Component/Header";
 import { Box } from "@mui/material";
+import {usePathname} from "next/navigation";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -29,12 +30,13 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
+
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100vh' }}>
                 <AppRouterCacheProvider>
                     <ThemeProvider theme={theme}>
-                        <Header />
+                        <Header  />
                         <Box sx={{ width: '100vw', height: 'calc(100% - 64px)' }}>
                             {children}
                         </Box>

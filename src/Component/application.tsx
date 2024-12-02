@@ -14,6 +14,7 @@ import { Checkbox, FormControlLabel, IconButton, Slider, Divider, Container, Rad
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomizedSteppers from './customStepper'
 import { saveForLater, submitApplication } from '@/actions/application';
+import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 
 
 // Steps array containing titles for the stepper
@@ -325,23 +326,20 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                                         </FormControl>
                                         {/* Preference Level Slider */}
                                         <Typography>Preference Level: {preference.preference}</Typography>
-                                        <Slider
-                                            valueLabelDisplay="auto"
-                                            marks={[
-                                                { value: 1, label: '1' },
-                                                { value: 2, label: '2' },
-                                                { value: 3, label: '3' },
-                                                { value: 4, label: '4' },
-                                                { value: 5, label: '5' }
-                                            ]}
-                                            onChange={(event, newValue) => handlePreferenceChange(index, 'preference', newValue)}
-                                            aria-labelledby="preference-slider"
-                                            step={1}
-                                            min={1}
-                                            max={5}
-                                            value={formData.coursePreferences[index].preference}
-                                            sx={{ width: '40%' }}
-                                        />
+                                        <Box display="flex" alignItems="center">
+                                            {Array.from({ length: 5 }).map((_, starIndex) => (
+                                                <StarTwoToneIcon
+                                                    key={starIndex}
+                                                    onMouseEnter={() => handlePreferenceChange(index, 'preference', starIndex + 1)}
+                                                    onClick={() => handlePreferenceChange(index, 'preference', starIndex + 1)}
+                                                    sx={{
+                                                        color: starIndex < formData.coursePreferences[index].preference ? "rgba(255,127,50,1)" : "gray",
+                                                        cursor: "pointer",
+                                                        fontSize: "2rem",
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
 
                                         {/* Course Taken Checkbox */}
                                         <FormControlLabel

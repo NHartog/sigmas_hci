@@ -56,7 +56,7 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
         setDetailsDialogOpen(false);
         setAddStudentDialogOpen(false);
         setAreYouSureDialogOpen(false);
-        window.location.reload(); 
+        window.location.reload();
     };
 
     const handleAddStudentDialogOpen = () => {
@@ -146,7 +146,6 @@ export default function studentManagerSubPage({ rows, availableCourses, taPrefer
             <EnhancedTable
                 rows={studentRows}
                 headCells={headCells}
-                button={button}
                 title="Student Management"
                 onRowSelect={handleRowSelect}
                 advancedTooltip
