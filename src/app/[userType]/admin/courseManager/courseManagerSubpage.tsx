@@ -185,7 +185,6 @@ export default function CourseSubPage({ coursesRows }: { coursesRows: any }) {
                 rows={coursesRows}
                 headCells={coursesHeadCells}
                 title="Courses"
-                button={button}
                 advancedTooltip
                 onRowSelect={handleRowSelect}
             />

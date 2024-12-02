@@ -19,6 +19,7 @@ import {
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { addTAPreference } from "@/actions/professor";
 import { getUserData } from "@/actions/application";
+import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 
 interface Ta {
     id: number;
@@ -47,7 +48,9 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
     const [selectedCoursePrefix, setSelectedCoursePrefix] = useState<string>(selectedCourse ? selectedCourse.prefix : '');
     const [selectedCourseTitle, setSelectedCourseTitle] = useState<string>(selectedCourse ? selectedCourse.title : '');
     const [selectedTAName, setSelectedTAName] = useState<string>(selectedTA ? selectedTA.name : '');
-    const [preferenceValue, setPreferenceValue] = useState<number>(3); // Default preference value
+
+    const [hoveredValue, setHoveredValue] = useState<number | null>(null); // For hover effect
+    const [preferenceValue, setPreferenceValue] = useState<number>(0); // Default preference
 
     useEffect(() => {
         if (selectedCourse) {
@@ -86,7 +89,7 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
     };
 
     return (
-        <Dialog open={open} onClose={close} fullWidth maxWidth="lg">
+        <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
             <DialogTitle sx={{ backgroundColor: 'rgba(255, 127, 50, 1)', color: 'white' }}>
                 Add TA Preference
             </DialogTitle>
@@ -140,24 +143,20 @@ export default function TaPreferenceDialog({ open, close, students, courses, sel
                             <Typography variant="subtitle1" gutterBottom sx={{ marginTop: 2 }}>
                                 Preference Level
                             </Typography>
-                            <Box sx={{ p: 1 }}>
-                                <Slider
-                                    valueLabelDisplay="auto"
-                                    marks={[
-                                        { value: 1, label: '1' },
-                                        { value: 2, label: '2' },
-                                        { value: 3, label: '3' },
-                                        { value: 4, label: '4' },
-                                        { value: 5, label: '5' },
-                                    ]}
-                                    onChange={handleSliderChange}
-                                    aria-labelledby="preference-slider"
-                                    step={1}
-                                    min={1}
-                                    max={5}
-                                    value={preferenceValue}
-                                    sx={{ width: '100%' }}
-                                />
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <StarTwoToneIcon
+                                        key={`star-${index}`}
+                                        onMouseEnter={() => setHoveredValue(index + 1)} // Highlight stars up to the hovered value
+                                        onMouseLeave={() => setHoveredValue(null)} // Remove highlight when not hovering
+                                        onClick={() => setPreferenceValue(index + 1)} // Set preference value on click
+                                        sx={{
+                                            color: index < (hoveredValue || preferenceValue) ? 'rgba(255,127,50,1)' : 'gray',
+                                            cursor: 'pointer',
+                                            fontSize: '2rem', // Optional: Adjust size as needed
+                                        }}
+                                    />
+                                ))}
                             </Box>
                         </CardContent>
                     </Card>
