@@ -258,7 +258,7 @@ export default function ApplicationStepper({ applicationData, courses }: { appli
                             }}
                         >
                             <Typography>
-                                What are your reasearch areas and teaching intrests?
+                                What are your reasearch areas and teaching interests?
                             </Typography>
                             <TextField
                                 value={formData.responseOne}

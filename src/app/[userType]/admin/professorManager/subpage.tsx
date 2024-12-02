@@ -4,12 +4,14 @@ import React, { useRef, useState } from 'react';
 import {Box, Button, ButtonGroup, Stack, Typography} from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { EnhancedTable, HeadCell } from '@/Component/customMangerTable';
 import ProfessorDetailsDialog from "@/Component/professorDetails";
 import AddProfessorForm from '@/Component/addProfessorForm';
 import ProfessorCourses from '@/Component/manageProfessorsCourses';
-import { getSpecificProf, getStudentsByCourse } from '@/actions/manager';
+import { getSpecificProf, getStudentsByCourse, deleteProf } from '@/actions/manager';
 import ExplanationCard from "@/Component/explanationCard";
+import AreYouSureDialog from '@/Component/areYouSureDialog';
 
 export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: { assignedCoursesRows: any, all_Courses: any }) {
 
@@ -29,6 +31,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 	const [profCourses, setProfCourses] = useState<any>(null);
 	const [manageCourseDialog, setManageCourseDialog] = useState(false);
 	const [specificProfApplicants, setSpecificProfApplicants] = useState<any[]>([]);
+	const [areYouSureDialogOpen, setAreYouSureDialogOpen] = useState(false);
 	let someTAs: any = [];
 
 	const handleViewDetails = (professor: { id: number; Professor: string; Courses: []; numTaHours: number, email: string }) => {
@@ -42,6 +45,8 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		setProfDetailsDialogOpen(false);
 		setAddProfDialogOpen(false);
 		setManageCourseDialog(false);
+		setAreYouSureDialogOpen(false);
+		window.location.reload(); // Reload the entire page
 	};
 
 	// New function to handle row selection
@@ -70,6 +75,28 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		setManageCourseDialog(true);
 	}
 
+	const handleSelectProfForRemoval = (prof: any) => {
+        setSelectedProfessor(prof);
+        setAreYouSureDialogOpen(true);
+    };
+
+	const handleAreYouSure = () => handleSelectProfForRemoval(selectedProfessor);
+
+	const deleteProfessorInternal = async () => {
+        try {
+            const response = await deleteProf(selectedProfessor);
+
+            if (response.success) {
+                alert(response.message);
+            } else {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error('Error deleting Professor:', error);
+            alert('An unexpected error occurred. Please try again.');
+        }
+    }
+
 	const button = (
 		<Stack direction="row">
 			<Button
@@ -83,6 +110,9 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 			<Button sx={{ margin: 1, minWidth: 'max-content' }} onClick={handleManageCourseDialog} variant="contained" endIcon={<PersonAddIcon />}>
 				Manage Courses
 			</Button>
+			<Button sx={{ margin: 1, minWidth: 'max-content' }} onClick={handleAreYouSure} variant="contained" endIcon={<PersonRemoveIcon />}>
+				Remove Professor
+			</Button>
 		</Stack>
 	);
 
@@ -90,12 +120,20 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 		{
 			label: 'View Professor Details',
 			description: 'View all important details for a professor',
-			icon: <PersonAddIcon />
+			icon: <PersonAddIcon />,
+			onClick: handleButtonOneClick
 		},
 		{
 			label: 'Manage Courses',
 			description: 'Assign or remove courses from the selected professor',
-			icon: <PersonAddIcon />
+			icon: <PersonAddIcon />,
+			onClick: handleManageCourseDialog
+		},
+		{
+			label: 'Remove Professor',
+			description: 'Remove the professor from the TAAS system',
+			icon: <PersonRemoveIcon />,
+			onClick: handleAreYouSure
 		},
 	];
 
@@ -117,6 +155,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 							startIcon={option.icon}
 							sx={{ mr: 2, width: '220px' }}
 							disabled={!selectedProfessor}
+							onClick={option.onClick}
 						>
 							{option.label}
 						</Button>
@@ -162,6 +201,7 @@ export default function ProfessorSubPage({ assignedCoursesRows, all_Courses }: {
 					allCourses={all_Courses}
 				/>
 			)}
+			{areYouSureDialogOpen && <AreYouSureDialog open={areYouSureDialogOpen} onClose={handleCloseDialog} toRemove={selectedProfessor} onConfirm={deleteProfessorInternal} />}
 		</Box>
 	)
 }
